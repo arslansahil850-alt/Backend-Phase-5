@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 12: Pagination and Filtering | Phase 5 - Arslan Weblab</title>
+  <link rel="icon" href="../logo.webp">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="top-navbar" id="topNavbar">
+    <div class="container top-navbar-inner">
+   <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+        <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
+        <span class="brand-text">Arslan Weblab</span>
+      </a>
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <nav class="top-nav-links" id="topNavLinks" aria-label="External portfolio and profile links">
+        <a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
+        <a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+        <a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="mailto:arslansahil850@gmail.com">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="course-navbar" id="courseNavbar" aria-label="Course navigation">
+    <div class="container course-navbar-inner">
+      <div class="course-label">Phase 5 / Advanced Backend Development</div>
+      <div class="course-select-wrap">
+        <label for="courseDaySelect" class="sr-only">Jump to a course day or homepage</label>
+        <select id="courseDaySelect" class="course-select" aria-label="Select course page">
+          <option value="../index.html">Home Page</option>
+          <option value="../Day 1/index.html">Day 1</option>
+          <option value="../Day 2/index.html">Day 2</option>
+          <option value="../Day 3/index.html">Day 3</option>
+          <option value="../Day 4/index.html">Day 4</option>
+          <option value="../Day 5/index.html">Day 5</option>
+          <option value="../Day 6/index.html">Day 6</option>
+          <option value="../Day 7/index.html">Day 7</option>
+          <option value="../Day 8/index.html">Day 8</option>
+          <option value="../Day 9/index.html">Day 9</option>
+          <option value="../Day 10/index.html">Day 10</option>
+          <option value="../Day 11/index.html">Day 11</option>
+          <option value="../Day 12/index.html" selected>Day 12</option>
+          <option value="../Day 13/index.html">Day 13</option>
+          <option value="../Day 14/index.html">Day 14</option>
+          <option value="../Day 15/index.html">Day 15</option>
+          <option value="../Day 16/index.html">Day 16</option>
+        </select>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content" class="main-content">
+    <div class="container">
+      <section class="hero-card">
+        <div class="badge-row">
+          <span class="day-badge">Day 12 of 16</span>
+          <span class="type-badge">Learning Module</span>
+        </div>
+        <h1>Day 12: Pagination and Filtering</h1>
+        <p class="lead-intro">
+          Calling <code>Model.find()</code> with no limits works fine when your database has 12 sample items. Once a real MongoDB collection grows to 50,000 products or 200,000 orders, returning every document in one HTTP response spikes server RAM, stalls Node.js JSON serialization, saturates network bandwidth, and freezes the user's browser. Production APIs deliver data in predictable slices using <strong>pagination, filtering, and stable sorting</strong>. Today you will master offset-based pagination in MongoDB, query validation, allow-listed filtering and sorting, tie-breaker stability, and rich pagination metadata.
+        </p>
+      </section>
+
+      <section class="card-section" id="objectives">
+        <h2>Learning Objectives</h2>
+        <p>By the end of Day 12, you will be able to:</p>
+        <ul class="styled-list">
+          <li>Explain why unbounded <code>find()</code> queries hurt database, server, network, and client performance.</li>
+          <li>Implement offset-based pagination using <code>page</code> and <code>limit</code> query parameters and MongoDB's <code>.skip()</code> and <code>.limit()</code>.</li>
+          <li>Validate query inputs strictly and enforce safe default and maximum page sizes.</li>
+          <li>Build allow-listed filtering (exact match, boolean, and numeric range filters like <code>minPrice</code>/<code>maxPrice</code>) without exposing raw Mongoose queries.</li>
+          <li>Implement allow-listed, <strong>stable sorting</strong> using <code>_id</code> as a tie-breaker so items never jump or duplicate across pages.</li>
+          <li>Return complete pagination metadata (<code>totalItems</code>, <code>totalPages</code>, <code>currentPage</code>, <code>limit</code>, <code>hasNextPage</code>, <code>hasPrevPage</code>) using parallel <code>Promise.all</code> queries.</li>
+          <li>Understand when deep-offset <code>skip()</code> slows down and how cursor-based pagination solves deep scrolling.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="prerequisites">
+        <h2>Prerequisites</h2>
+        <p>Before starting Day 12, make sure you understand:</p>
+        <ul class="styled-list">
+          <li><strong>Days 1, 3, 4 &amp; 6 Concepts:</strong> Reading <code>req.query</code> strings, MVC/service layering, Mongoose queries, and preventing NoSQL injection.</li>
+          <li><strong>MongoDB Query Operators:</strong> Familiarity with comparison operators like <code>$gte</code> and <code>$lte</code>, plus <code>countDocuments()</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="terminology">
+        <h2>Important Terminology and Definitions</h2>
+        <div class="term-grid">
+          <article class="term-card">
+            <h3>Offset-Based Pagination</h3>
+            <p>Dividing results into numbered pages using <code>page</code> and <code>limit</code>, skipping <code>(page - 1) * limit</code> records before returning up to <code>limit</code> documents.</p>
+          </article>
+          <article class="term-card">
+            <h3>Page Size Bounds</h3>
+            <p>A sensible default (e.g., <code>10</code>) when <code>limit</code> is omitted, paired with a strict server maximum (e.g., <code>50</code>) so a client cannot request <code>?limit=999999</code>.</p>
+          </article>
+          <article class="term-card">
+            <h3>Allow-Listed Filtering</h3>
+            <p>Explicitly checking and mapping known query parameters (such as <code>category</code>, <code>inStock</code>, <code>minPrice</code>) instead of passing raw <code>req.query</code> into <code>Model.find(req.query)</code>.</p>
+          </article>
+          <article class="term-card">
+            <h3>Stable Sorting</h3>
+            <p>Adding a unique secondary sort field—always <code>_id</code> in MongoDB—so ties in primary sort values (like two products with identical prices) always appear in the same deterministic page order.</p>
+          </article>
+          <article class="term-card">
+            <h3>Pagination Metadata</h3>
+            <p>Summary fields returned alongside <code>data</code>—such as <code>totalItems</code>, <code>totalPages</code>, <code>currentPage</code>, <code>hasNextPage</code>, and <code>hasPrevPage</code>—so frontends can render page buttons accurately.</p>
+          </article>
+          <article class="term-card">
+            <h3><code>.lean()</code></h3>
+            <p>A Mongoose query option that returns plain lightweight JavaScript objects instead of heavy hydrated Mongoose Document instances—cutting memory and CPU overhead on read-only list endpoints.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="theory">
+        <h2>Detailed Theory and Explanations</h2>
+
+        <h3>1. Why Large Unbounded API Responses Are Inefficient</h3>
+        <p>Returning an entire collection on <code>GET /api/v1/products</code> creates bottlenecks at every tier:</p>
+        <ul class="styled-list">
+          <li><strong>Database Tier:</strong> MongoDB reads thousands of documents from disk/cache and streams massive BSON payloads over the network to Node.js.</li>
+          <li><strong>Node.js Server Tier:</strong> Hydrating 20,000 Mongoose Documents and calling <code>JSON.stringify()</code> blocks the single JavaScript event loop thread, slowing down all other users!</li>
+          <li><strong>Client Tier:</strong> Mobile browsers waste data downloading megabytes of items the user never scrolls to.</li>
+        </ul>
+
+        <h3>2. Offset-Based Pagination Math: <code>page</code>, <code>limit</code>, and <code>skip</code></h3>
+        <p>Given a validated positive integer <code>page</code> (starting at <code>1</code>) and a bounded integer <code>limit</code> (say, <code>10</code>):</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Page Requested</th>
+                <th>Formula: <code>skip = (page - 1) * limit</code></th>
+                <th>MongoDB Slice Returned</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>?page=1&amp;limit=10</code></td>
+                <td><code>(1 - 1) * 10 = 0</code></td>
+                <td>Items 1 through 10</td>
+              </tr>
+              <tr>
+                <td><code>?page=2&amp;limit=10</code></td>
+                <td><code>(2 - 1) * 10 = 10</code></td>
+                <td>Items 11 through 20</td>
+              </tr>
+              <tr>
+                <td><code>?page=3&amp;limit=10</code></td>
+                <td><code>(3 - 1) * 10 = 20</code></td>
+                <td>Items 21 through 30</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          And total pages is calculated using <code>Math.ceil(totalItems / limit)</code> (returning <code>0</code> or <code>1</code> cleanly when <code>totalItems === 0</code>).
+        </p>
+
+        <h3>3. Query Validation, Defaults, and Maximum Page Sizes</h3>
+        <p>
+          Remember that values inside <code>req.query</code> are untrusted strings. Without validation, a user sending <code>?page=-3</code> passes a negative number to <code>.skip(-40)</code> (crashing MongoDB!), sending <code>?page=abc</code> produces <code>NaN</code>, and sending <code>?limit=500000</code> bypasses pagination completely!
+        </p>
+        <p>Always parse integers strictly, reject invalid negative/non-numeric inputs with <code>400 Bad Request</code> (or clamp thoughtfully depending on API contract), apply a safe default like <code>DEFAULT_LIMIT = 10</code>, and enforce a hard ceiling like <code>MAX_LIMIT = 50</code>.</p>
+
+        <h3>4. Safe Filtering &amp; Sorting (Allow-Listing)</h3>
+        <p>
+          A common beginner anti-pattern is writing <code>Model.find(req.query)</code>. Never do that! First, query keys like <code>page</code>, <code>limit</code>, and <code>sort</code> are not document fields, so MongoDB would find zero matches. Second, an attacker could query private fields (like <code>?passwordResetToken=...</code>) or inject MongoDB operators!
+        </p>
+        <p>
+          Instead, construct a clean <code>filter</code> object from explicit allow-listed fields (e.g., <code>category</code>, <code>inStock</code>, <code>minPrice</code>, <code>maxPrice</code>) and map <code>sort</code> strictly through an allow-list dictionary such as:
+        </p>
+        <ul class="styled-list">
+          <li><code>newest</code> &rarr; <code>{ createdAt: -1, _id: -1 }</code></li>
+          <li><code>price_asc</code> &rarr; <code>{ price: 1, _id: 1 }</code></li>
+          <li><code>price_desc</code> &rarr; <code>{ price: -1, _id: -1 }</code></li>
+          <li><code>rating_desc</code> &rarr; <code>{ rating: -1, _id: -1 }</code></li>
+        </ul>
+
+        <h3>5. Stable Sorting &amp; Tie-Breaker Concern</h3>
+        <p>
+          Suppose 15 products all cost <code>$25</code>, and you run <code>.sort({ price: 1 }).skip(10).limit(10)</code> without a tie-breaker. Because MongoDB does not guarantee a consistent order among tied documents across separate queries, item #10 on Page 1 might shift into slot #11 on Page 2—causing users to see duplicate items or miss items completely when clicking "Next Page"! Including unique <code>_id</code> as the final sort key guarantees deterministic, stable pagination.
+        </p>
+
+        <h3>6. Efficient Database Queries &amp; Trade-Off of Deep <code>skip()</code></h3>
+        <p>
+          To build pagination metadata efficiently, execute the paginated data query and <code>Model.countDocuments(filter)</code> concurrently using <code>Promise.all([...])</code> instead of waiting sequentially. Add <code>.lean()</code> and <code>.select('-__v')</code> to the list query, and create MongoDB compound indexes matching your common filter + sort fields.
+        </p>
+        <p>
+          <strong>Trade-off to know:</strong> In MongoDB, <code>.skip(500000)</code> still forces the database to scan and discard the first 500,000 index entries before returning 10 items. For typical catalogs, dashboards, and admin tables (pages 1–200), offset pagination is ideal because users can jump directly to any page number. For infinite social feeds with millions of rows, <strong>cursor-based (keyset) pagination</strong> (e.g., <code>?afterId=...</code> using <code>_id: { $lt: lastSeenId }</code>) stays fast at any depth.
+        </p>
+      </section>
+
+      <section class="card-section" id="diagram">
+        <h2>Diagram: Pagination, Filtering &amp; Sorting Request Flow</h2>
+        <p>Trace how query parameters are parsed, validated, converted into safe MongoDB filters + stable sort + skip/limit, and returned with metadata:</p>
+        <div class="diagram-container" role="img" aria-label="Flowchart showing GET /api/v1/products?category=audio&minPrice=50&sort=price_asc&page=2&limit=10 entering Query Validation, building allow-listed MongoDB filter and stable sort with _id tie-breaker, running Model.find().skip(10).limit(10).lean() and Model.countDocuments(filter) in parallel via Promise.all, and returning data array alongside pagination metadata.">
+          <div class="flow-diagram">
+            <div class="flow-step flow-client">
+              <span class="flow-tag">1. Client Query Request</span>
+              <strong><code>GET /api/v1/products?category=audio&amp;minPrice=50&amp;sort=price_asc&amp;page=2&amp;limit=10</code></strong>
+              <span>All query params arrive as untrusted strings in <code>req.query</code></span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-app">
+              <span class="flow-tag">2. Validate &amp; Clamp Bounds</span>
+              <strong>Parse <code>page</code> (&ge;1), Clamp <code>limit</code> (1..50), Map Allow-Listed Filter &amp; Sort</strong>
+              <span>Rejects invalid numbers/sort keys (<code>400</code>); computes <code>skip = (page - 1) * limit</code></span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-router">
+              <span class="flow-tag">3. Parallel MongoDB Queries (<code>Promise.all</code>)</span>
+              <strong><code>Product.find(filter).sort({ price: 1, _id: 1 }).skip(10).limit(10).lean()</code> + <code>countDocuments(filter)</code></strong>
+              <span>Uses indexes + <code>_id</code> tie-breaker for stable ordering across pages</span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-controller">
+              <span class="flow-tag">4. Structured API Response</span>
+              <strong><code>{ status, pagination: { totalItems, totalPages, currentPage, limit, hasNextPage, hasPrevPage }, data }</code></strong>
+              <span>Frontend renders cards and accurate Next/Previous pagination controls</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card-section" id="tutorial">
+        <h2>Step-by-Step Tutorial: Paginated, Sortable, Filterable Endpoint</h2>
+        <p>
+          Let us build a complete paginated, sortable, filterable product-catalog API using Node.js, Express.js, and Mongoose. All backend code below runs on <strong>Node.js (server-side)</strong>.
+        </p>
+
+        <h3>Step 1: Define the Mongoose Schema with Supporting Indexes (<code>src/models/Product.js</code>)</h3>
+        <p>Adding compound indexes on common filter + sort combinations prevents slow full-collection scans.</p>
+        <p class="code-label">Backend Source Code: <code>src/models/Product.js</code> (Runs on Node.js)</p>
+        <pre><code>import mongoose from 'mongoose';
+
+const productSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    category: {
+      type: String,
+      required: true,
+      enum: ['audio', 'laptops', 'accessories', 'monitors'],
+      index: true
+    },
+    price: { type: Number, required: true, min: 0 },
+    rating: { type: Number, default: 4.0, min: 1, max: 5 },
+    inStock: { type: Boolean, default: true, index: true }
+  },
+  { timestamps: true }
+);
+
+productSchema.index({ category: 1, inStock: 1, price: 1, _id: 1 });
+productSchema.index({ createdAt: -1, _id: -1 });
+
+const Product = mongoose.model('Product', productSchema);
+
+export default Product;</code></pre>
+
+        <h3>Step 2: Create a Reusable Query Validation &amp; Pagination Helper (<code>src/utils/pagination.js</code>)</h3>
+        <p>Centralizing pagination parsing guarantees consistent defaults, maximum caps, and metadata formulas across every list endpoint in your API.</p>
+        <p class="code-label">Backend Source Code: <code>src/utils/pagination.js</code> (Runs on Node.js)</p>
+        <pre><code>export const parsePaginationParams = (query, { defaultLimit = 10, maxLimit = 50 } = {}) => {
+  let page = 1;
+  let limit = defaultLimit;
+
+  if (query.page !== undefined) {
+    const parsedPage = Number(query.page);
+    if (!Number.isInteger(parsedPage) || parsedPage &lt; 1) {
+      const err = new Error('Query parameter "page" must be a positive integer.');
+      err.statusCode = 400;
+      throw err;
+    }
+    page = parsedPage;
+  }
+
+  if (query.limit !== undefined) {
+    const parsedLimit = Number(query.limit);
+    if (!Number.isInteger(parsedLimit) || parsedLimit &lt; 1) {
+      const err = new Error('Query parameter "limit" must be a positive integer.');
+      err.statusCode = 400;
+      throw err;
+    }
+    limit = Math.min(parsedLimit, maxLimit);
+  }
+
+  const skip = (page - 1) * limit;
+  return { page, limit, skip };
+};
+
+export const buildPaginationMeta = ({ totalItems, page, limit }) => {
+  const totalPages = totalItems === 0 ? 0 : Math.ceil(totalItems / limit);
+  return {
+    totalItems,
+    totalPages,
+    currentPage: page,
+    limit,
+    countOnPage: 0,
+    hasNextPage: page &lt; totalPages,
+    hasPrevPage: page &gt; 1 && totalPages &gt; 0
+  };
+};</code></pre>
+
+        <h3>Step 3: Build the Filtering, Sorting &amp; Query Service (<code>src/services/productService.js</code>)</h3>
+        <p>Notice the strict allow-lists for <code>category</code>, <code>inStock</code>, numeric price bounds, and sort options—every sort includes <code>_id</code> as a tie-breaker.</p>
+        <p class="code-label">Backend Source Code: <code>src/services/productService.js</code> (Runs on Node.js)</p>
+        <pre><code>import Product from '../models/Product.js';
+import { parsePaginationParams, buildPaginationMeta } from '../utils/pagination.js';
+
+const ALLOWED_CATEGORIES = new Set(['audio', 'laptops', 'accessories', 'monitors']);
+
+const SORT_OPTIONS = Object.freeze({
+  newest: { createdAt: -1, _id: -1 },
+  oldest: { createdAt: 1, _id: 1 },
+  price_asc: { price: 1, _id: 1 },
+  price_desc: { price: -1, _id: -1 },
+  rating_desc: { rating: -1, _id: -1 }
+});
+
+const buildProductFilter = (query) => {
+  const filter = {};
+
+  if (query.category !== undefined) {
+    const cat = String(query.category).trim().toLowerCase();
+    if (!ALLOWED_CATEGORIES.has(cat)) {
+      const err = new Error('Invalid category filter.');
+      err.statusCode = 400;
+      throw err;
+    }
+    filter.category = cat;
+  }
+
+  if (query.inStock !== undefined) {
+    if (query.inStock !== 'true' && query.inStock !== 'false') {
+      const err = new Error('Query parameter "inStock" must be true or false.');
+      err.statusCode = 400;
+      throw err;
+    }
+    filter.inStock = query.inStock === 'true';
+  }
+
+  const priceFilter = {};
+  if (query.minPrice !== undefined) {
+    const min = Number(query.minPrice);
+    if (!Number.isFinite(min) || min &lt; 0) {
+      const err = new Error('Query parameter "minPrice" must be a non-negative number.');
+      err.statusCode = 400;
+      throw err;
+    }
+    priceFilter.$gte = min;
+  }
+
+  if (query.maxPrice !== undefined) {
+    const max = Number(query.maxPrice);
+    if (!Number.isFinite(max) || max &lt; 0) {
+      const err = new Error('Query parameter "maxPrice" must be a non-negative number.');
+      err.statusCode = 400;
+      throw err;
+    }
+    priceFilter.$lte = max;
+  }
+
+  if (priceFilter.$gte !== undefined && priceFilter.$lte !== undefined && priceFilter.$gte &gt; priceFilter.$lte) {
+    const err = new Error('"minPrice" cannot be greater than "maxPrice".');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  if (Object.keys(priceFilter).length &gt; 0) {
+    filter.price = priceFilter;
+  }
+
+  return filter;
+};
+
+export const queryProducts = async (query) => {
+  const { page, limit, skip } = parsePaginationParams(query, {
+    defaultLimit: 10,
+    maxLimit: 50
+  });
+
+  const sortKey = typeof query.sort === 'string' ? query.sort.trim() : 'newest';
+  const sortSpec = SORT_OPTIONS[sortKey];
+  if (!sortSpec) {
+    const err = new Error(`Invalid sort option. Allowed: ${Object.keys(SORT_OPTIONS).join(', ')}`);
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const filter = buildProductFilter(query);
+
+  const [items, totalItems] = await Promise.all([
+    Product.find(filter)
+      .select('-__v')
+      .sort(sortSpec)
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Product.countDocuments(filter)
+  ]);
+
+  const pagination = buildPaginationMeta({ totalItems, page, limit });
+  pagination.countOnPage = items.length;
+
+  return {
+    pagination,
+    data: items
+  };
+};</code></pre>
+
+        <h3>Step 4: Wire the Controller and Route</h3>
+        <p class="code-label">Backend Source Code: <code>src/controllers/productController.js</code> (Runs on Node.js)</p>
+        <pre><code>import { queryProducts } from '../services/productService.js';
+
+export const listProducts = async (req, res, next) => {
+  try {
+    const result = await queryProducts(req.query);
+    return res.status(200).json({
+      status: 'success',
+      pagination: result.pagination,
+      data: result.data
+    });
+  } catch (err) {
+    return next(err);
+  }
+};</code></pre>
+
+        <p class="code-label">Terminal Test Command (<code>curl</code>)</p>
+        <pre><code>curl "http://localhost:5000/api/v1/products?category=audio&amp;inStock=true&amp;minPrice=50&amp;sort=price_asc&amp;page=2&amp;limit=5"</code></pre>
+
+        <p class="code-label">Expected JSON Response (<code>200 OK</code>)</p>
+        <pre><code>{
+  "status": "success",
+  "pagination": {
+    "totalItems": 14,
+    "totalPages": 3,
+    "currentPage": 2,
+    "limit": 5,
+    "countOnPage": 5,
+    "hasNextPage": true,
+    "hasPrevPage": true
+  },
+  "data": [
+    {
+      "_id": "6740b21a9f10c312e84a1021",
+      "name": "Studio Monitor Headphones",
+      "category": "audio",
+      "price": 89,
+      "rating": 4.7,
+      "inStock": true
+    }
+  ]
+}</code></pre>
+      </section>
+
+      <section class="card-section" id="use-cases">
+        <h2>Real-World Use Cases</h2>
+        <div class="two-col-grid">
+          <article class="info-box">
+            <h3>1. E-Commerce Storefronts</h3>
+            <p>Shoppers filter by category, brand, availability, and price range while sorting by price or rating, browsing 12–24 products per page effortlessly.</p>
+          </article>
+          <article class="info-box">
+            <h3>2. Admin Order &amp; Audit Dashboards</h3>
+            <p>Support teams inspect thousands of customer orders filtered by status (<code>pending</code>, <code>shipped</code>) and sorted newest-first with numbered page controls.</p>
+          </article>
+          <article class="info-box">
+            <h3>3. Mobile Infinite Scroll Feeds</h3>
+            <p>Mobile apps check <code>pagination.hasNextPage</code> and fetch <code>page + 1</code> (or cursor <code>afterId</code>) only when the user nears the bottom of the screen.</p>
+          </article>
+          <article class="info-box">
+            <h3>4. Public Developer APIs</h3>
+            <p>Capping <code>MAX_LIMIT</code> prevents third-party API consumers from accidentally or maliciously draining your database bandwidth in a single request.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="mistakes-security">
+        <h2>Common Mistakes, Security Notes, and Best Practices</h2>
+        <div class="two-col-grid">
+          <article class="warning-box">
+            <h3>Common Pagination &amp; Filtering Mistakes</h3>
+            <ul class="styled-list">
+              <li><strong>Passing <code>req.query</code> straight into <code>Model.find(req.query)</code>:</strong> Breaks pagination (because <code>page</code>/<code>limit</code> are treated as document fields!) and opens NoSQL operator injection and arbitrary private-field probing.</li>
+              <li><strong>No maximum <code>limit</code> cap:</strong> Letting users pass <code>?limit=1000000</code> defeats pagination completely and enables easy DoS attacks.</li>
+              <li><strong>Sorting without a unique tie-breaker:</strong> Sorting solely on <code>{ price: 1 }</code> causes duplicate or skipped records across page boundaries when multiple items share the same price.</li>
+              <li><strong>Running <code>find()</code> and <code>countDocuments()</code> sequentially:</strong> Using two separate <code>await</code> lines doubles database round-trip latency; run both together with <code>Promise.all</code>.</li>
+              <li><strong>Crashing on <code>?page=0</code> or <code>?page=-1</code>:</strong> Produces a negative <code>skip</code> value, which MongoDB rejects with an error!</li>
+            </ul>
+          </article>
+          <article class="security-box">
+            <h3>Security &amp; Best-Practice Notes</h3>
+            <ul class="styled-list">
+              <li><strong>Allow-list every filterable and sortable field:</strong> Never let clients pass raw field names like <code>?sort=passwordHash</code> into <code>.sort()</code>.</li>
+              <li><strong>Clamp or reject absurd page numbers:</strong> Validate integer bounds cleanly before executing queries.</li>
+              <li><strong>Use <code>.lean()</code> and <code>.select()</code> on list endpoints:</strong> Returns plain objects faster with lower memory usage and excludes internal fields.</li>
+              <li><strong>Add MongoDB indexes:</strong> Index fields commonly combined in <code>filter</code> and <code>sort</code> so queries remain fast as collections scale.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="exercises">
+        <h2>Hands-On Exercises</h2>
+        <ol class="styled-list">
+          <li><strong>Boundary Input Testing:</strong> Test your paginated endpoint with <code>?page=0</code>, <code>?page=-2</code>, <code>?page=abc</code>, <code>?limit=999</code>, and <code>?minPrice=200&amp;maxPrice=50</code>. Verify invalid queries return <code>400</code> while <code>limit=999</code> safely clamps to <code>50</code>.</li>
+          <li><strong>Tie-Breaker Experiment:</strong> Insert 8 sample products with identical prices (e.g., <code>$29.99</code>), fetch pages of <code>limit=3</code> with and without <code>_id: 1</code> as secondary sort, and confirm deterministic ordering.</li>
+          <li><strong>Multi-Value Category Filter:</strong> Extend <code>buildProductFilter</code> to accept comma-separated categories (e.g., <code>?category=audio,monitors</code>), validating every item against <code>ALLOWED_CATEGORIES</code> and mapping to <code>{ $in: [...] }</code>.</li>
+          <li><strong>Cursor Pagination Prototype:</strong> Write a small second endpoint <code>GET /api/v1/products/feed?limit=10&amp;afterId=...</code> using <code>_id: { $lt: afterId }</code> and compare how it avoids <code>.skip()</code> overhead.</li>
+        </ol>
+      </section>
+
+      <section class="card-section" id="mini-project">
+        <h2>Day 12 Mini Project: Job Board Paginated Listing API</h2>
+        <p>
+          Build a complete paginated, sortable, filterable Job Listings endpoint in Express.js and MongoDB.
+        </p>
+        <h3>Project Requirements</h3>
+        <ul class="styled-list">
+          <li>Create a <code>Job</code> Mongoose schema with <code>title</code>, <code>company</code>, <code>workMode</code> (enum: <code>remote</code>, <code>hybrid</code>, <code>onsite</code>), <code>experienceLevel</code> (enum: <code>junior</code>, <code>mid</code>, <code>senior</code>), <code>salaryMin</code>, <code>isActive</code>, and <code>createdAt</code>, with compound indexes for common filter/sort paths.</li>
+          <li>Implement <code>GET /api/v1/jobs</code> supporting optional filters: <code>workMode</code>, <code>experienceLevel</code>, <code>minSalary</code>, and <code>isActive</code>.</li>
+          <li>Support allow-listed sorting: <code>newest</code>, <code>salary_desc</code>, and <code>salary_asc</code>—each including <code>_id</code> as a tie-breaker.</li>
+          <li>Validate <code>page</code> (&ge; 1) and <code>limit</code> (default <code>10</code>, max <code>40</code>), run <code>find().lean()</code> and <code>countDocuments()</code> concurrently via <code>Promise.all</code>, and return complete pagination metadata (<code>totalItems</code>, <code>totalPages</code>, <code>currentPage</code>, <code>limit</code>, <code>hasNextPage</code>, <code>hasPrevPage</code>).</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="quiz-section">
+        <h2>Day 12 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+
+        <form id="day12QuizForm" class="quiz-form" novalidate>
+          <fieldset class="quiz-question" data-question="q1">
+            <legend>1. What is the correct formula to compute MongoDB's <code>skip</code> value from 1-based <code>page</code> and <code>limit</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> <code>page * limit</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> <code>(page - 1) * limit</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> <code>(page + 1) / limit</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> <code>limit - page</code></label>
+            <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q2">
+            <legend>2. Why should you NEVER pass <code>req.query</code> directly into <code>Product.find(req.query)</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Because control keys like <code>page</code> and <code>sort</code> are treated as document fields, and attackers can inject MongoDB operators or probe private fields</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Because Express deletes <code>req.query</code> on <code>GET</code> routes</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Because MongoDB cannot query boolean values</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> Because Mongoose automatically paginates <code>req.query</code></label>
+            <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q3">
+            <legend>3. Why do we enforce a maximum page size (e.g., <code>MAX_LIMIT = 50</code>) on paginated endpoints?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> To stop clients from passing <code>?limit=500000</code> and exhausting server RAM, DB bandwidth, and CPU in one request</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Because JSON arrays cannot exceed 50 items</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Because MongoDB deletes collections over 50 documents</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> To disable browser caching</label>
+            <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q4">
+            <legend>4. Why should sorting by a non-unique field like <code>price</code> always include a unique tie-breaker like <code>_id</code> (e.g., <code>{ price: 1, _id: 1 }</code>)?</legend>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> Without a unique tie-breaker, tied items can shift order between queries, causing duplicates or skipped items across pages</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> Because MongoDB refuses to sort numbers unless <code>_id</code> is included</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> To convert prices from dollars to cents</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> To bypass <code>countDocuments()</code></label>
+            <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q5">
+            <legend>5. What does adding <code>.lean()</code> to a read-only Mongoose <code>find()</code> query accomplish?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> It deletes unused fields from MongoDB permanently</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> It skips full Mongoose Document hydration and returns lightweight plain JavaScript objects faster with lower RAM</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> It sorts documents alphabetically</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> It compresses JSON with gzip</label>
+            <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q6">
+            <legend>6. If <code>totalItems = 42</code> and <code>limit = 10</code>, what are <code>totalPages</code> and <code>hasNextPage</code> when <code>currentPage = 5</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> <code>totalPages = 4</code>, <code>hasNextPage = true</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> <code>totalPages = 5</code>, <code>hasNextPage = false</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> <code>totalPages = 5</code>, <code>hasNextPage = true</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> <code>totalPages = 42</code>, <code>hasNextPage = false</code></label>
+            <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q7">
+            <legend>7. Why should <code>Product.find(...)</code> and <code>Product.countDocuments(filter)</code> be run using <code>Promise.all([...])</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> Running both independent database queries concurrently reduces total response latency compared to running them sequentially</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Because Mongoose crashes if two queries run one after another</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> Because <code>Promise.all</code> skips validation</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> To combine two collections into one document</label>
+            <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q8">
+            <legend>8. Why must <code>countDocuments(filter)</code> receive the exact same <code>filter</code> object as <code>find(filter)</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Otherwise <code>totalItems</code> and <code>totalPages</code> would count the whole collection instead of matching the user's active filters</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> Because <code>countDocuments()</code> takes no arguments otherwise</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> To reset the MongoDB index</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> To allow negative <code>page</code> numbers</label>
+            <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q9">
+            <legend>9. What is the main performance limitation of offset-based <code>.skip(N)</code> on collections with millions of rows?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> MongoDB must still walk through and discard the first <code>N</code> entries for deep pages, making very large offsets slower than cursor-based pagination</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> <code>.skip()</code> deletes skipped documents</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> <code>.skip()</code> cannot be combined with <code>.sort()</code></label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> <code>.skip()</code> only works on strings</label>
+            <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q10">
+            <legend>10. Why should <code>sort</code> values come from an explicit allow-list map (e.g., <code>SORT_OPTIONS[sortKey]</code>) instead of passing <code>req.query.sort</code> straight to <code>.sort()</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Allow-listing prevents users from sorting on sensitive/unindexed fields and guarantees a safe tie-breaker like <code>_id</code> is always included</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Because Express blocks query strings named <code>sort</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Because MongoDB only sorts strings, not numbers</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> To disable CORS preflights</label>
+            <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="quiz-actions">
+            <button type="submit" class="btn btn-primary" id="submitQuizBtn">Submit Quiz</button>
+            <button type="button" class="btn btn-secondary" id="retryQuizBtn">Retry Quiz</button>
+          </div>
+
+          <div class="quiz-result" id="quizResult" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section class="card-section" id="short-answers">
+        <h2>Short-Answer Questions</h2>
+        <p>Think through each answer carefully before opening the explanation.</p>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary>1. Why are unbounded <code>Model.find()</code> endpoints dangerous for production APIs?</summary>
+            <p>As collections grow, returning all documents at once consumes huge database I/O, spikes Node.js memory, blocks the event loop during JSON serialization, and slows down frontend rendering.</p>
+          </details>
+          <details class="qa-item">
+            <summary>2. Explain why stable sorting requires a unique tie-breaker field such as <code>_id</code>.</summary>
+            <p>If multiple records share identical values for the primary sort field (like price or status), MongoDB does not guarantee deterministic order among ties across separate requests—so items can duplicate or vanish between pages unless unique <code>_id</code> breaks ties.</p>
+          </details>
+          <details class="qa-item">
+            <summary>3. What metadata fields help a frontend render pagination buttons cleanly?</summary>
+            <p>Returning <code>totalItems</code>, <code>totalPages</code>, <code>currentPage</code>, <code>limit</code>, <code>hasNextPage</code>, and <code>hasPrevPage</code> lets UI components show total result counts, page numbers, and enabled/disabled Next/Previous buttons without guessing.</p>
+          </details>
+          <details class="qa-item">
+            <summary>4. How should an API handle <code>?minPrice=200&amp;maxPrice=50</code> or <code>?page=-1</code>?</summary>
+            <p>Both represent invalid client query parameters and should be caught during query validation and rejected cleanly with <code>400 Bad Request</code> and a clear descriptive message.</p>
+          </details>
+          <details class="qa-item">
+            <summary>5. Compare offset pagination (<code>page/limit</code>) vs. cursor pagination (<code>afterId</code>).</summary>
+            <p>Offset pagination allows jumping directly to any page number and works great for dashboards and catalogs, though deep <code>skip()</code> offsets slow down on massive datasets. Cursor pagination filters by the last seen ID/timestamp using an index, staying fast even millions of rows deep, at the trade-off of no arbitrary page-number jumps.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="card-section" id="challenges">
+        <h2>Practical &amp; Coding Challenges</h2>
+        <div class="challenge-list">
+          <article class="challenge-card">
+            <h3>Challenge 1: Audit &amp; Fix a Broken Pagination Endpoint</h3>
+            <p>Spot all 5 flaws in the Express/Mongoose endpoint below and rewrite it safely:</p>
+            <pre><code>app.get('/api/v1/orders', async (req, res) => {
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const orders = await Order.find(req.query)
+    .sort(req.query.sort)
+    .skip((page - 1) * limit)
+    .limit(limit);
+  const total = await Order.countDocuments();
+  res.json({ total, orders });
+});</code></pre>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 2: Implement Multi-Tag Filtering with Allow-Listing</h3>
+            <p>Extend <code>buildProductFilter</code> to support <code>?tags=wireless,bluetooth</code> using MongoDB's <code>$all</code> or <code>$in</code> operator, ensuring no more than 5 tags are accepted and each tag is trimmed and validated as a non-empty alphanumeric string.</p>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 3: Build a Cursor-Based Activity Feed Endpoint</h3>
+            <p>Write a service function <code>listActivityCursor({ limit = 15, afterId })</code> that validates <code>afterId</code> with <code>mongoose.isValidObjectId</code>, queries <code>afterId ? { _id: { $lt: afterId } } : {}</code>, fetches <code>limit + 1</code> documents sorted by <code>{ _id: -1 }</code> to determine <code>hasMore</code> without running <code>countDocuments()</code>, and returns <code>{ items, nextCursor, hasMore }</code>.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="summary">
+        <h2>Day 12 Revision Summary</h2>
+        <ul class="styled-list">
+          <li>Always paginate list endpoints using validated <code>page</code> and <code>limit</code> bounds with a strict maximum cap.</li>
+          <li>Compute <code>skip = (page - 1) * limit</code> and return complete metadata (<code>totalItems</code>, <code>totalPages</code>, <code>currentPage</code>, <code>hasNextPage</code>, <code>hasPrevPage</code>).</li>
+          <li>Allow-list all filter fields and sort options—never pass raw <code>req.query</code> into <code>Model.find()</code>.</li>
+          <li>Always append unique <code>_id</code> as a tie-breaker in <code>.sort()</code> for stable, non-duplicating pages.</li>
+          <li>Use <code>Promise.all</code> for data + count queries, add <code>.lean()</code> and indexes, and consider cursor pagination for massive infinite feeds.</li>
+        </ul>
+      </section>
+
+      <section class="card-section visual-aid-section" id="lesson-visual">
+        <h2>Day 12 Visual Architecture Reference</h2>
+        <p>Visual summary diagram for Day 12: Pagination, allow-listed filtering, stable sorting, and metadata response flow.</p>
+        <div class="lesson-image-frame" id="lessonImageFrame">
+          <img src="image.webp" alt="Diagram illustrating offset pagination, allow-listed filtering, stable sorting with _id tie-breaker, and metadata calculation" class="lesson-image" id="lessonImage">
+          <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
+            <div class="fallback-icon" aria-hidden="true">&#128202;</div>
+            <p class="fallback-title">Day 12 Visual Reference (<code>image.webp</code>)</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 12/</code> folder to display the custom illustration here.</p>
+          </div>
+        </div>
+      </section>
+
+      <nav class="day-pagination" aria-label="Day navigation">
+        <a href="../Day 11/index.html" class="btn btn-secondary nav-prev">
+          &larr; Previous Day: Nodemailer
+        </a>
+        <a href="../Day 13/index.html" class="btn btn-primary nav-next">
+          Next Day: Search Functionality &rarr;
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-head">
+          <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
+          <strong>Arslan Weblab</strong>
+        </div>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+      </div>
+      <div class="footer-links">
+        <h3>Course Navigation</h3>
+        <ul>
+          <li><a href="../index.html">Course Homepage</a></li>
+          <li><a href="../Day 11/index.html">Day 11: Nodemailer</a></li>
+          <li><a href="../Day 12/index.html">Day 12: Pagination and Filtering</a></li>
+          <li><a href="../Day 13/index.html">Day 13: Search Functionality</a></li>
+          <li><a href="../Day 16/index.html">Day 16: Final Revision &amp; Assessment</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>External Links</h3>
+        <ul>
+          <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>Phase 5: Advanced Backend Development &bull; Arslan Weblab</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

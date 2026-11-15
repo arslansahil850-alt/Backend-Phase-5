@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 13: Search Functionality | Phase 5 - Arslan Weblab</title>
+  <link rel="icon" href="../logo.webp">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="top-navbar" id="topNavbar">
+    <div class="container top-navbar-inner">
+   <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+        <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
+        <span class="brand-text">Arslan Weblab</span>
+      </a>
+
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <nav class="top-nav-links" id="topNavLinks" aria-label="External portfolio and profile links">
+        <a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
+        <a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+        <a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="mailto:arslansahil850@gmail.com">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="course-navbar" id="courseNavbar" aria-label="Course navigation">
+    <div class="container course-navbar-inner">
+      <div class="course-label">Phase 5 / Advanced Backend Development</div>
+      <div class="course-select-wrap">
+        <label for="courseDaySelect" class="sr-only">Jump to a course day or homepage</label>
+        <select id="courseDaySelect" class="course-select" aria-label="Select course page">
+          <option value="../index.html">Home Page</option>
+          <option value="../Day 1/index.html">Day 1</option>
+          <option value="../Day 2/index.html">Day 2</option>
+          <option value="../Day 3/index.html">Day 3</option>
+          <option value="../Day 4/index.html">Day 4</option>
+          <option value="../Day 5/index.html">Day 5</option>
+          <option value="../Day 6/index.html">Day 6</option>
+          <option value="../Day 7/index.html">Day 7</option>
+          <option value="../Day 8/index.html">Day 8</option>
+          <option value="../Day 9/index.html">Day 9</option>
+          <option value="../Day 10/index.html">Day 10</option>
+          <option value="../Day 11/index.html">Day 11</option>
+          <option value="../Day 12/index.html">Day 12</option>
+          <option value="../Day 13/index.html" selected>Day 13</option>
+          <option value="../Day 14/index.html">Day 14</option>
+          <option value="../Day 15/index.html">Day 15</option>
+          <option value="../Day 16/index.html">Day 16</option>
+        </select>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content" class="main-content">
+    <div class="container">
+      <section class="hero-card">
+        <div class="badge-row">
+          <span class="day-badge">Day 13 of 16</span>
+          <span class="type-badge">Learning Module</span>
+        </div>
+        <h1>Day 13: Search Functionality</h1>
+        <p class="lead-intro">
+          Users expect a search bar in almost every application—whether finding open-source projects, browsing courses, or locating support articles. Building search naively by dropping raw <code>req.query.q</code> straight into a regular expression can crash your database with syntax errors when a user searches for <code>C++</code>, freeze CPU threads via ReDoS (Regular Expression Denial of Service), or force slow full-collection scans across 100,000 documents. Today you will learn how to validate and escape search inputs safely, leverage MongoDB text indexes and relevance scoring, combine search cleanly with Day 12 filters and pagination, and know when dedicated search engines are worth adopting.
+        </p>
+      </section>
+
+      <section class="card-section" id="objectives">
+        <h2>Learning Objectives</h2>
+        <p>By the end of Day 13, you will be able to:</p>
+        <ul class="styled-list">
+          <li>Design clean search query parameters (e.g., <code>?q=...</code>) with strict length and type validation.</li>
+          <li>Escape special regular-expression characters to prevent crashes and <strong>ReDoS</strong> attacks.</li>
+          <li>Compare unanchored regex matching, anchored prefix regex matching, and MongoDB <code>$text</code> indexes.</li>
+          <li>Configure weighted MongoDB text indexes and sort search results by relevance (<code>textScore</code>) with deterministic <code>_id</code> tie-breakers.</li>
+          <li>Combine search seamlessly with category/status filters and pagination metadata.</li>
+          <li>Evaluate search performance trade-offs and identify when dedicated search tools (Atlas Search, Meilisearch, Typesense, Elasticsearch) are needed.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="prerequisites">
+        <h2>Prerequisites</h2>
+        <p>Before starting Day 13, make sure you understand:</p>
+        <ul class="styled-list">
+          <li><strong>Day 12 Concepts:</strong> Offset pagination (<code>page</code>, <code>limit</code>, <code>skip</code>), allow-listed filtering, and parallel <code>Promise.all</code> queries.</li>
+          <li><strong>Days 3 &amp; 6 Concepts:</strong> Mongoose schemas, indexes, and strict server-side input validation.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="terminology">
+        <h2>Important Terminology and Definitions</h2>
+        <div class="term-grid">
+          <article class="term-card">
+            <h3>ReDoS (Regex Denial of Service)</h3>
+            <p>A vulnerability where an attacker sends crafted regex characters or catastrophic backtracking patterns inside a search string, locking up database or Node.js CPU cores.</p>
+          </article>
+          <article class="term-card">
+            <h3>Regex Escaping</h3>
+            <p>Prefixing special regex metacharacters (such as <code>+</code>, <code>*</code>, <code>?</code>, <code>(</code>, <code>[</code>, <code>$</code>) with backslashes so inputs like <code>"C++"</code> or <code>"node.js"</code> match literal text safely.</p>
+          </article>
+          <article class="term-card">
+            <h3>MongoDB Text Index (<code>$text</code>)</h3>
+            <p>A specialized index that tokenizes words, removes common stop words (like "the", "and"), applies language stemming, and enables fast keyword search via <code>$text: { $search }</code>.</p>
+          </article>
+          <article class="term-card">
+            <h3>Relevance Score (<code>textScore</code>)</h3>
+            <p>A numeric weight calculated by MongoDB via <code>{ $meta: 'textScore' }</code> indicating how strongly a document matches the search keywords based on term frequency and field weights.</p>
+          </article>
+          <article class="term-card">
+            <h3>Prefix Regex (<code>/^term/i</code>)</h3>
+            <p>A regular expression anchored to the beginning of a string with <code>^</code>. Unlike unanchored <code>/term/i</code>, a case-sensitive or collation-matched prefix regex can use a standard B-tree index.</p>
+          </article>
+          <article class="term-card">
+            <h3>Dedicated Search Engine</h3>
+            <p>Purpose-built search platforms—such as MongoDB Atlas Search, Elasticsearch, Typesense, or Meilisearch—offering fuzzy typo tolerance, instant autocomplete, synonyms, and faceted search.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="theory">
+        <h2>Detailed Theory and Explanations</h2>
+
+        <h3>1. Search Requirements &amp; Query Parameters</h3>
+        <p>
+          Most APIs accept search keywords through a dedicated query parameter such as <code>?q=express+api</code> (or <code>?search=...</code>). Always validate that <code>q</code> is a primitive string (never an object or array from query parsing like <code>?q[$ne]=1</code>), trim whitespace, collapse excessive spaces, and enforce sensible length bounds—for instance, minimum <code>2</code> characters (optional if listing all) and maximum <code>80–100</code> characters.
+        </p>
+
+        <h3>2. Escaping &amp; Safely Handling User Input</h3>
+        <p>
+          Never pass raw user text straight into <code>new RegExp(req.query.q, 'i')</code> or <code>{ $regex: req.query.q }</code>! If a learner searches for <code>C++</code> or <code>(express</code>, an unescaped regex throws <code>SyntaxError: Invalid regular expression</code> because <code>+</code> and <code>(</code> are regex operators. Worse, crafted nested patterns can cause catastrophic CPU backtracking (ReDoS) on both Node.js and MongoDB.
+        </p>
+        <p>
+          Always escape every regex metacharacter using:
+          <code>str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;')</code>
+          before constructing a <code>RegExp</code>!
+        </p>
+
+        <h3>3. Regex Matching vs. MongoDB Text Search (<code>$text</code>)</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Technique</th>
+                <th>How It Matches</th>
+                <th>Strengths &amp; Trade-Offs</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>MongoDB <code>$text</code> Index</strong></td>
+                <td>Tokenizes words, stems roots (e.g., <em>"building"</em> matches <em>"build"</em>), ranks by weighted <code>textScore</code>.</td>
+                <td>Fast indexed search across multiple fields with relevance ranking; however, only <strong>one</strong> text index is allowed per collection, and it does not match mid-word substrings (e.g., <code>"exp"</code> won't match <code>"express"</code>).</td>
+              </tr>
+              <tr>
+                <td><strong>Anchored Prefix Regex (<code>/^term/i</code>)</strong></td>
+                <td>Matches strings starting with the typed prefix.</td>
+                <td>Great for exact title/SKU autocomplete; can leverage B-tree indexes (especially with case-insensitive collation or normalized lowercase field).</td>
+              </tr>
+              <tr>
+                <td><strong>Unanchored Regex (<code>/term/i</code>)</strong></td>
+                <td>Matches substring anywhere in a field.</td>
+                <td>Easy partial-word matching on small datasets (e.g., <code>"exp"</code> finds <code>"Express"</code>), but forces a full collection scan across large collections—slow without limits or filters!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>4. Combining Search with Filters, Sorting &amp; Pagination</h3>
+        <p>
+          Users rarely just search globally—they type <code>?q=authentication&amp;category=backend&amp;difficulty=intermediate&amp;page=1&amp;limit=10&amp;sort=relevance</code>. In Mongoose, you combine search conditions with allow-listed Day 12 filters inside the same <code>filter</code> object:
+        </p>
+        <ul class="styled-list">
+          <li>When <code>q</code> is present with a <code>$text</code> index, set <code>filter.$text = { $search: cleanQuery }</code> alongside <code>filter.category = 'backend'</code>.</li>
+          <li>To sort by relevance, project <code>{ score: { $meta: 'textScore' } }</code> and call <code>.sort({ score: { $meta: 'textScore' }, _id: -1 })</code>. Notice how <code>_id</code> still serves as our deterministic tie-breaker!</li>
+          <li>When <code>q</code> is omitted, fall back cleanly to normal listing sorted by <code>newest</code> or user-selected sort key.</li>
+        </ul>
+
+        <h3>5. When Dedicated Search Services Are Useful</h3>
+        <p>
+          MongoDB text indexes and escaped prefix searches cover many small-to-medium apps well. However, dedicated search engines—such as <strong>MongoDB Atlas Search</strong> (Lucene-powered inside Atlas), <strong>Meilisearch</strong>, <strong>Typesense</strong>, or <strong>Elasticsearch / OpenSearch</strong>—become worthwhile when your product needs:
+        </p>
+        <ul class="styled-list">
+          <li><strong>Typo tolerance (fuzzy matching):</strong> Searching <code>"expres midleware"</code> still finds <em>"Express Middleware"</em>.</li>
+          <li><strong>Instant search-as-you-type autocomplete</strong> across hundreds of thousands of products.</li>
+          <li><strong>Synonyms &amp; multi-language ranking:</strong> Treating <code>"JS"</code> and <code>"JavaScript"</code> or <code>"laptop"</code> and <code>"notebook"</code> as related.</li>
+          <li><strong>Faceted aggregation counts:</strong> Showing exact filter counts (e.g., <em>Backend (42), Security (18)</em>) alongside results.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="diagram">
+        <h2>Diagram: Safe Search, Filter &amp; Pagination Pipeline</h2>
+        <p>Follow how raw user search text is validated, sanitized, combined with filters, and executed against MongoDB text indexes:</p>
+        <div class="diagram-container" role="img" aria-label="Flowchart showing GET /api/v1/projects?q=express+api&category=backend&page=1 entering Search & Query Validator (type check, trim, max length 80), branching between Keyword Text Search ($text + textScore projection) or No Keyword (standard listing), merging with allow-listed filters (category, status), running Promise.all(find + countDocuments) with skip/limit and _id tie-breaker, and returning paginated JSON results.">
+          <div class="flow-diagram">
+            <div class="flow-step flow-client">
+              <span class="flow-tag">1. Search Request</span>
+              <strong><code>GET /api/v1/projects?q=express+api&amp;category=backend&amp;page=1</code></strong>
+              <span>Untrusted query parameters arrive in <code>req.query</code></span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-app">
+              <span class="flow-tag">2. Validate &amp; Sanitize Search Term</span>
+              <strong>Confirm String Type + Trim + Cap Length (2..80 chars) + Escape Regex if Used</strong>
+              <span>Blocks NoSQL operator objects, invalid empty queries, and ReDoS metacharacters</span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-branch">
+              <div class="flow-step flow-router">
+                <span class="flow-tag">With <code>q</code> Keyword</span>
+                <strong><code>filter.$text = { $search: q }</code></strong>
+                <span>Projects <code>textScore</code> &amp; sorts by relevance + <code>_id</code></span>
+              </div>
+              <div class="flow-step flow-app">
+                <span class="flow-tag">Without <code>q</code></span>
+                <strong>Standard Filter Only</strong>
+                <span>Sorts by newest / popularity + <code>_id</code></span>
+              </div>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-controller">
+              <span class="flow-tag">3. Concurrent Paginated Execution</span>
+              <strong><code>Promise.all([Project.find(filter)..., Project.countDocuments(filter)])</code></strong>
+              <span>Returns ranked matching documents + pagination metadata</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card-section" id="tutorial">
+        <h2>Step-by-Step Tutorial: Sample Projects Search API</h2>
+        <p>
+          Let us build a complete search API for a collection of sample developer projects in Node.js, Express.js, and Mongoose—supporting weighted MongoDB text search, safe prefix fallback, allow-listed filtering, relevance sorting, and pagination.
+        </p>
+
+        <h3>Step 1: Create the Project Model with a Weighted Text Index (<code>src/models/Project.js</code>)</h3>
+        <p>Assigning higher weights to <code>title</code> (<code>10</code>) and <code>tags</code> (<code>5</code>) than <code>summary</code> (<code>2</code>) ensures a keyword match in a project's title ranks above an incidental mention in its summary.</p>
+        <p class="code-label">Backend Source Code: <code>src/models/Project.js</code> (Runs on Node.js)</p>
+        <pre><code>import mongoose from 'mongoose';
+
+const projectSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true, maxlength: 120 },
+    summary: { type: String, required: true, trim: true, maxlength: 600 },
+    category: {
+      type: String,
+      required: true,
+      enum: ['backend', 'fullstack', 'security', 'devops'],
+      index: true
+    },
+    difficulty: {
+      type: String,
+      required: true,
+      enum: ['beginner', 'intermediate', 'advanced'],
+      index: true
+    },
+    tags: [{ type: String, trim: true, lowercase: true }],
+    stars: { type: Number, default: 0, min: 0 }
+  },
+  { timestamps: true }
+);
+
+projectSchema.index(
+  { title: 'text', tags: 'text', summary: 'text' },
+  {
+    weights: { title: 10, tags: 5, summary: 2 },
+    name: 'project_text_search_idx'
+  }
+);
+
+projectSchema.index({ category: 1, difficulty: 1, stars: -1, _id: -1 });
+
+const Project = mongoose.model('Project', projectSchema);
+
+export default Project;</code></pre>
+
+        <h3>Step 2: Create Search Validation &amp; Regex Escaping Utilities (<code>src/utils/searchHelpers.js</code>)</h3>
+        <p>Always validate string type and length bounds, and provide an explicit regex escaper whenever prefix or substring matching is needed safely.</p>
+        <p class="code-label">Backend Source Code: <code>src/utils/searchHelpers.js</code> (Runs on Node.js)</p>
+        <pre><code>export const escapeRegex = (input) => {
+  return String(input).replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;');
+};
+
+export const parseSearchQuery = (rawQuery, { minLength = 2, maxLength = 80 } = {}) => {
+  if (rawQuery === undefined) {
+    return null;
+  }
+
+  if (typeof rawQuery !== 'string') {
+    const err = new Error('Search query "q" must be a text string.');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const normalized = rawQuery.trim().replace(/\s+/g, ' ');
+  if (normalized.length === 0) {
+    return null;
+  }
+
+  if (normalized.length &lt; minLength) {
+    const err = new Error(`Search query "q" must be at least ${minLength} characters.`);
+    err.statusCode = 400;
+    throw err;
+  }
+
+  if (normalized.length &gt; maxLength) {
+    const err = new Error(`Search query "q" cannot exceed ${maxLength} characters.`);
+    err.statusCode = 400;
+    throw err;
+  }
+
+  return normalized;
+};</code></pre>
+
+        <h3>Step 3: Implement Search + Filter + Pagination Service (<code>src/services/projectSearchService.js</code>)</h3>
+        <p>
+          Notice how the service combines <code>$text</code> search with allow-listed <code>category</code> and <code>difficulty</code> filters, supports both relevance sorting and standard sorting, and also provides an autocomplete prefix search endpoint using <code>escapeRegex</code>!
+        </p>
+        <p class="code-label">Backend Source Code: <code>src/services/projectSearchService.js</code> (Runs on Node.js)</p>
+        <pre><code>import Project from '../models/Project.js';
+import { escapeRegex, parseSearchQuery } from '../utils/searchHelpers.js';
+import { parsePaginationParams, buildPaginationMeta } from '../utils/pagination.js';
+
+const ALLOWED_CATEGORIES = new Set(['backend', 'fullstack', 'security', 'devops']);
+const ALLOWED_DIFFICULTIES = new Set(['beginner', 'intermediate', 'advanced']);
+
+export const searchProjects = async (query) => {
+  const keyword = parseSearchQuery(query.q);
+  const { page, limit, skip } = parsePaginationParams(query, {
+    defaultLimit: 10,
+    maxLimit: 40
+  });
+
+  const filter = {};
+
+  if (query.category !== undefined) {
+    const cat = String(query.category).trim().toLowerCase();
+    if (!ALLOWED_CATEGORIES.has(cat)) {
+      const err = new Error('Invalid category filter.');
+      err.statusCode = 400;
+      throw err;
+    }
+    filter.category = cat;
+  }
+
+  if (query.difficulty !== undefined) {
+    const diff = String(query.difficulty).trim().toLowerCase();
+    if (!ALLOWED_DIFFICULTIES.has(diff)) {
+      const err = new Error('Invalid difficulty filter.');
+      err.statusCode = 400;
+      throw err;
+    }
+    filter.difficulty = diff;
+  }
+
+  if (keyword) {
+    filter.$text = { $search: keyword };
+  }
+
+  const requestedSort = typeof query.sort === 'string' ? query.sort.trim() : 'default';
+
+  let projection = '-__v';
+  let sortSpec = { createdAt: -1, _id: -1 };
+
+  if (keyword && (requestedSort === 'default' || requestedSort === 'relevance')) {
+    projection = { title: 1, summary: 1, category: 1, difficulty: 1, tags: 1, stars: 1, createdAt: 1, score: { $meta: 'textScore' } };
+    sortSpec = { score: { $meta: 'textScore' }, _id: -1 };
+  } else if (requestedSort === 'stars_desc') {
+    sortSpec = { stars: -1, _id: -1 };
+  } else if (requestedSort === 'newest' || requestedSort === 'default') {
+    sortSpec = { createdAt: -1, _id: -1 };
+  } else {
+    const err = new Error('Invalid sort option. Allowed: relevance, newest, stars_desc');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const [projects, totalItems] = await Promise.all([
+    Project.find(filter)
+      .select(projection)
+      .sort(sortSpec)
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Project.countDocuments(filter)
+  ]);
+
+  const pagination = buildPaginationMeta({ totalItems, page, limit });
+  pagination.countOnPage = projects.length;
+
+  return {
+    queryApplied: keyword,
+    pagination,
+    data: projects
+  };
+};
+
+export const autocompleteProjectTitles = async (rawPrefix) => {
+  const prefix = parseSearchQuery(rawPrefix, { minLength: 1, maxLength: 40 });
+  if (!prefix) {
+    return [];
+  }
+
+  const safePattern = new RegExp(`^${escapeRegex(prefix)}`, 'i');
+
+  return Project.find({ title: safePattern })
+    .select('title category difficulty')
+    .sort({ stars: -1, _id: -1 })
+    .limit(8)
+    .lean();
+};</code></pre>
+
+        <h3>Step 4: Wire Controllers and Test Search Queries</h3>
+        <p class="code-label">Backend Source Code: <code>src/controllers/projectController.js</code> (Runs on Node.js)</p>
+        <pre><code>import { searchProjects, autocompleteProjectTitles } from '../services/projectSearchService.js';
+
+export const getProjects = async (req, res, next) => {
+  try {
+    const result = await searchProjects(req.query);
+    return res.status(200).json({
+      status: 'success',
+      query: result.queryApplied,
+      pagination: result.pagination,
+      data: result.data
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const getTitleSuggestions = async (req, res, next) => {
+  try {
+    const suggestions = await autocompleteProjectTitles(req.query.q);
+    return res.status(200).json({
+      status: 'success',
+      count: suggestions.length,
+      data: suggestions
+    });
+  } catch (err) {
+    return next(err);
+  }
+};</code></pre>
+
+        <p class="code-label">Terminal Test Command (<code>curl</code>)</p>
+        <pre><code>curl "http://localhost:5000/api/v1/projects?q=express+security&amp;category=backend&amp;sort=relevance&amp;page=1&amp;limit=5"</code></pre>
+      </section>
+
+      <section class="card-section" id="use-cases">
+        <h2>Real-World Use Cases</h2>
+        <div class="two-col-grid">
+          <article class="info-box">
+            <h3>1. Technical Docs &amp; Knowledge Bases</h3>
+            <p>Weighted text indexes give title matches 5&times; higher priority than body matches so searching <code>"rate limit"</code> puts the dedicated Rate Limiting guide right at #1.</p>
+          </article>
+          <article class="info-box">
+            <h3>2. Marketplace Product Search + Filters</h3>
+            <p>Shoppers search <code>"wireless headphones"</code> while simultaneously filtering by <code>category=audio</code>, <code>inStock=true</code>, and <code>maxPrice=150</code> on a single paginated query.</p>
+          </article>
+          <article class="info-box">
+            <h3>3. Prefix Autocomplete Bars</h3>
+            <p>An autocomplete endpoint uses an escaped <code>^prefix</code> query capped at 8 results so users see instant project title suggestions while typing.</p>
+          </article>
+          <article class="info-box">
+            <h3>4. Scaling to Dedicated Search</h3>
+            <p>Once an e-commerce catalog needs typo tolerance (<code>"iphne"</code> &rarr; <code>"iPhone"</code>) or live faceted counts across 500k SKUs, teams sync documents into Atlas Search, Typesense, or Meilisearch.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="mistakes-security">
+        <h2>Common Mistakes, Security Notes, and Best Practices</h2>
+        <div class="two-col-grid">
+          <article class="warning-box">
+            <h3>Common Search Mistakes</h3>
+            <ul class="styled-list">
+              <li><strong>Passing unescaped <code>req.query.q</code> to <code>new RegExp()</code>:</strong> Searching <code>"C++"</code> or <code>"[test"</code> throws an unhandled <code>SyntaxError</code> and exposes your API to ReDoS CPU freezes.</li>
+              <li><strong>Trying to create two separate <code>text</code> indexes on one collection:</strong> MongoDB allows only <strong>one</strong> text index per collection; include all searchable text fields inside a single compound text index with weights.</li>
+              <li><strong>Sorting by <code>textScore</code> when <code>$text</code> is NOT in the filter:</strong> Calling <code>{ $meta: 'textScore' }</code> without an active <code>$text</code> query throws a MongoDB error!</li>
+              <li><strong>Using unanchored <code>/term/i</code> on giant collections:</strong> Forces MongoDB to scan every document on disk rather than using an index.</li>
+            </ul>
+          </article>
+          <article class="security-box">
+            <h3>Security &amp; Best-Practice Notes</h3>
+            <ul class="styled-list">
+              <li><strong>Always check <code>typeof q === 'string'</code>:</strong> Prevents attackers from sending <code>?q[$ne]=secret</code> objects via Express's extended query parser.</li>
+              <li><strong>Cap search query length:</strong> Limit <code>q</code> to ~80–100 characters so overly long search strings cannot waste regex or tokenization CPU.</li>
+              <li><strong>Always escape regex metacharacters:</strong> Use <code>escapeRegex(input)</code> before every <code>RegExp</code> construction.</li>
+              <li><strong>Always paginate search results:</strong> Never return unlimited search matches; combine search with Day 12 pagination and <code>_id</code> tie-breakers.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="exercises">
+        <h2>Hands-On Exercises</h2>
+        <ol class="styled-list">
+          <li><strong>Metacharacter Safety Test:</strong> Send <code>?q=C%2B%2B+(v2)</code> (URL-encoded <code>C++ (v2)</code>) to your autocomplete endpoint and confirm <code>escapeRegex</code> prevents any <code>SyntaxError</code>.</li>
+          <li><strong>Type Validation Test:</strong> Send <code>?q[$gt]=a</code> to your search endpoint and confirm <code>parseSearchQuery</code> rejects the non-string object with <code>400 Bad Request</code>.</li>
+          <li><strong>Weight Tuning Experiment:</strong> Create two sample projects—one with <code>"Redis"</code> in the <code>title</code> and one with <code>"Redis"</code> only in the <code>summary</code>—and confirm <code>sort=relevance</code> places the title match first.</li>
+          <li><strong>Empty-Search Graceful Fallback:</strong> Call <code>GET /api/v1/projects?q=%20%20%20</code> (only whitespace) and verify it cleanly treats the query as empty and returns normal paginated projects without throwing a MongoDB <code>$text</code> error.</li>
+        </ol>
+      </section>
+
+      <section class="card-section" id="mini-project">
+        <h2>Day 13 Mini Project: Developer Portfolio &amp; Course Search API</h2>
+        <p>
+          Build a searchable, filterable, paginated API for a collection of sample developer projects using Express.js and MongoDB.
+        </p>
+        <h3>Project Requirements</h3>
+        <ul class="styled-list">
+          <li>Define a Mongoose <code>Project</code> model with a single compound weighted text index covering <code>title</code> (weight 10), <code>tags</code> (weight 5), and <code>summary</code> (weight 2).</li>
+          <li>Implement <code>GET /api/v1/projects</code> supporting optional <code>q</code> search, <code>category</code> and <code>difficulty</code> filters, <code>sort</code> (<code>relevance</code>, <code>newest</code>, <code>stars_desc</code>), and bounded <code>page</code>/<code>limit</code> pagination.</li>
+          <li>Validate <code>q</code> strictly as a string (2–80 characters when non-empty) and only project/sort by <code>textScore</code> when <code>$text</code> is actively applied.</li>
+          <li>Add <code>GET /api/v1/projects/suggest?q=...</code> using <code>escapeRegex()</code> and anchored prefix matching (<code>^prefix</code>) capped at 8 lightweight title suggestions.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="quiz-section">
+        <h2>Day 13 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+
+        <form id="day13QuizForm" class="quiz-form" novalidate>
+          <fieldset class="quiz-question" data-question="q1">
+            <legend>1. What happens if you pass unescaped user search input like <code>"C++"</code> directly into <code>new RegExp(req.query.q, 'i')</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> MongoDB automatically converts <code>++</code> into spaces</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> JavaScript throws a <code>SyntaxError</code> because <code>+</code> is a regex quantifier operator, and unescaped inputs also risk ReDoS attacks</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Express automatically strips <code>+</code> characters from URLs</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> It speeds up MongoDB queries by 10&times;</label>
+            <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q2">
+            <legend>2. What does ReDoS (Regular Expression Denial of Service) do to a backend server?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> It drops all MongoDB collections</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Crafted regex patterns cause catastrophic backtracking that spikes CPU usage and stalls the server</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> It disables HTTPS certificates</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> It clears browser cookies</label>
+            <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q3">
+            <legend>3. How many <code>text</code> indexes can a single MongoDB collection have?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Unlimited text indexes</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> At most one text index per collection (which can span multiple fields with custom weights)</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Exactly three</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> Zero—MongoDB does not support text indexes</label>
+            <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q4">
+            <legend>4. In a weighted MongoDB text index <code>{ weights: { title: 10, summary: 2 } }</code>, why do we assign higher weight to <code>title</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> So documents matching the search keyword in their <code>title</code> receive a higher <code>textScore</code> and rank higher than matches found only in <code>summary</code></label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> So <code>summary</code> cannot be returned in JSON</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> Because MongoDB limits <code>title</code> strings to 10 characters</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> To skip pagination completely</label>
+            <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q5">
+            <legend>5. Why is validating <code>typeof req.query.q === 'string'</code> important before passing it to a search query?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Because Express's query parser can turn parameters like <code>?q[$ne]=1</code> into an object instead of a string</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Because <code>req.query.q</code> is always a Boolean</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> Because MongoDB cannot search strings</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> To convert all letters to uppercase</label>
+            <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q6">
+            <legend>6. What is a notable limitation of MongoDB's built-in <code>$text</code> index?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> It does not support relevance scoring</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> It matches tokenized whole words/stems rather than arbitrary mid-word substrings or fuzzy typos</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> It cannot be combined with <code>category</code> filters</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> It only works on numeric fields</label>
+            <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q7">
+            <legend>7. Why is an unanchored case-insensitive regex (<code>/keyword/i</code>) slow on a 500,000-document collection?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> It cannot narrow down starting ranges in a standard B-tree index, forcing MongoDB to scan through documents across the collection</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Because Node.js pauses for 5 seconds on every <code>i</code> flag</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> Because regex forces <code>limit=1</code></label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> Because MongoDB ignores unanchored regexes</label>
+            <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q8">
+            <legend>8. What happens if you try to sort by <code>{ score: { $meta: 'textScore' } }</code> when no <code>$text</code> operator is present in the <code>find(filter)</code> query?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> MongoDB sorts alphabetically by title automatically</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> MongoDB throws a query error because <code>textScore</code> metadata only exists for <code>$text</code> queries</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> Mongoose deletes the sort clause silently</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> It returns <code>204 No Content</code></label>
+            <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q9">
+            <legend>9. Why should relevance-sorted search queries still include <code>_id: -1</code> alongside <code>score: { $meta: 'textScore' }</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> To guarantee stable deterministic pagination when multiple documents receive the exact same relevance score</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because <code>$meta</code> requires an odd number of keys</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> To hide <code>_id</code> from the response</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> To disable MongoDB indexes</label>
+            <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q10">
+            <legend>10. When should a backend team consider adopting a dedicated search service like Atlas Search, Meilisearch, Typesense, or Elasticsearch?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Only for 10-row static configuration tables</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> When the app needs fuzzy typo tolerance, instant search-as-you-type autocomplete, synonyms, or faceted counts across large catalogs</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> When they want to store passwords in plaintext</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> Whenever Express runs on port 5000</label>
+            <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="quiz-actions">
+            <button type="submit" class="btn btn-primary" id="submitQuizBtn">Submit Quiz</button>
+            <button type="button" class="btn btn-secondary" id="retryQuizBtn">Retry Quiz</button>
+          </div>
+
+          <div class="quiz-result" id="quizResult" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section class="card-section" id="short-answers">
+        <h2>Short-Answer Questions</h2>
+        <p>Think through each answer carefully before opening the explanation.</p>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary>1. Why must user search strings be escaped before passing them into <code>new RegExp()</code>?</summary>
+            <p>Characters like <code>+</code>, <code>*</code>, <code>?</code>, <code>(</code>, and <code>[</code> have special meanings in regular expressions. Unescaped inputs crash on syntax errors (like searching <code>"C++"</code>) and can trigger ReDoS CPU exhaustion.</p>
+          </details>
+          <details class="qa-item">
+            <summary>2. How does MongoDB's <code>$text</code> index handle word variations like "developing" and "developer"?</summary>
+            <p>MongoDB's text index tokenizes text, strips stop words, and applies language stemming so related word stems match cleanly, while ranking results using weighted <code>textScore</code>.</p>
+          </details>
+          <details class="qa-item">
+            <summary>3. Why should search endpoints always enforce length bounds and string type checks on <code>req.query.q</code>?</summary>
+            <p>Type checking blocks NoSQL operator objects (like <code>?q[$ne]=1</code>), minimum length checks avoid overly broad 1-letter scans, and maximum length caps protect tokenization and regex CPU time.</p>
+          </details>
+          <details class="qa-item">
+            <summary>4. How can search be combined cleanly with Day 12 filters and pagination?</summary>
+            <p>Include <code>filter.$text = { $search: keyword }</code> inside the same <code>filter</code> object as allow-listed fields like <code>category</code>, then pass that unified <code>filter</code> to both <code>find(filter).skip().limit()</code> and <code>countDocuments(filter)</code> via <code>Promise.all</code>.</p>
+          </details>
+          <details class="qa-item">
+            <summary>5. Name three features that justify migrating from MongoDB <code>$text</code> to a dedicated search engine.</summary>
+            <p>Fuzzy typo tolerance (matching misspelled words), fast partial-word autocomplete at scale, custom synonyms, and real-time faceted filter counts.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="card-section" id="challenges">
+        <h2>Practical &amp; Coding Challenges</h2>
+        <div class="challenge-list">
+          <article class="challenge-card">
+            <h3>Challenge 1: Fix 4 Search Security &amp; Query Bugs</h3>
+            <p>Identify all 4 bugs in the route below and rewrite it safely:</p>
+            <pre><code>app.get('/api/v1/articles', async (req, res) => {
+  const results = await Article.find({
+    title: new RegExp(req.query.q, 'i')
+  }).sort({ score: { $meta: 'textScore' } });
+  res.json(results);
+});</code></pre>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 2: Exact-Phrase vs. Keyword Search</h3>
+            <p>Update <code>parseSearchQuery</code> or your search service to support an optional <code>?exact=true</code> flag that wraps the sanitized keyword in double quotes (<code>`"${keyword}"`</code>) before passing it to MongoDB's <code>$text: { $search }</code> so MongoDB matches an exact phrase instead of OR-ing separate words.</p>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 3: Multi-Field Safe Autocomplete</h3>
+            <p>Extend <code>autocompleteProjectTitles</code> so it searches safely with an escaped prefix regex across <strong>both</strong> <code>title</code> and <code>tags</code> using <code>$or</code>, returning distinct top 8 projects ordered by <code>stars</code> descending.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="summary">
+        <h2>Day 13 Revision Summary</h2>
+        <ul class="styled-list">
+          <li>Validate search query strings strictly for type and length bounds (e.g., 2–80 characters).</li>
+          <li>Always escape regex metacharacters with <code>escapeRegex()</code> to prevent syntax crashes and ReDoS attacks.</li>
+          <li>Use weighted MongoDB <code>$text</code> indexes for fast multi-field keyword search and <code>textScore</code> relevance ranking (remembering only one text index is allowed per collection).</li>
+          <li>Combine search filters, allow-listed category filters, pagination, and <code>_id</code> tie-breakers inside one unified <code>Promise.all</code> query flow.</li>
+          <li>Adopt dedicated search engines (Atlas Search, Typesense, Meilisearch, Elasticsearch) when typo tolerance, synonyms, and large-scale faceted autocomplete are required.</li>
+        </ul>
+      </section>
+
+      <section class="card-section visual-aid-section" id="lesson-visual">
+        <h2>Day 13 Visual Architecture Reference</h2>
+        <p>Visual summary diagram for Day 13: Safe search validation, regex escaping, MongoDB text indexing, and combined pagination.</p>
+        <div class="lesson-image-frame" id="lessonImageFrame">
+          <img src="image.webp" alt="Diagram illustrating backend search functionality with input validation, regex escaping, MongoDB weighted text index, and paginated relevance sorting" class="lesson-image" id="lessonImage">
+          <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
+            <div class="fallback-icon" aria-hidden="true">&#128202;</div>
+            <p class="fallback-title">Day 13 Visual Reference (<code>image.webp</code>)</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 13/</code> folder to display the custom illustration here.</p>
+          </div>
+        </div>
+      </section>
+
+      <nav class="day-pagination" aria-label="Day navigation">
+        <a href="../Day 12/index.html" class="btn btn-secondary nav-prev">
+          &larr; Previous Day: Pagination and Filtering
+        </a>
+        <a href="../Day 14/index.html" class="btn btn-primary nav-next">
+          Next Day: API Documentation &rarr;
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-head">
+          <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
+          <strong>Arslan Weblab</strong>
+        </div>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+      </div>
+      <div class="footer-links">
+        <h3>Course Navigation</h3>
+        <ul>
+          <li><a href="../index.html">Course Homepage</a></li>
+          <li><a href="../Day 12/index.html">Day 12: Pagination and Filtering</a></li>
+          <li><a href="../Day 13/index.html">Day 13: Search Functionality</a></li>
+          <li><a href="../Day 14/index.html">Day 14: API Documentation</a></li>
+          <li><a href="../Day 16/index.html">Day 16: Final Revision &amp; Assessment</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>External Links</h3>
+        <ul>
+          <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>Phase 5: Advanced Backend Development &bull; Arslan Weblab</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

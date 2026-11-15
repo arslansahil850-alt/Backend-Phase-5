@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 16: Complete Revision and Final Assessment | Phase 5 - Arslan Weblab</title>
+    <link rel="icon" href="../logo.webp">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <a class="skip-link" href="#main-content">Skip to main content</a>
+
+    <header class="top-navbar" id="topNavbar">
+        <div class="container top-navbar-inner">
+            <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+                <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
+                <span class="brand-text">Arslan Weblab</span>
+            </a>
+
+            <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+                aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </button>
+
+            <nav class="top-nav-links" id="topNavLinks" aria-label="External portfolio and profile links">
+                <a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
+                <a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+                <a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="mailto:arslansahil850@gmail.com">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <nav class="course-navbar" id="courseNavbar" aria-label="Course navigation">
+        <div class="container course-navbar-inner">
+            <div class="course-label">Phase 5 / Advanced Backend Development</div>
+            <div class="course-select-wrap">
+                <label for="courseDaySelect" class="sr-only">Jump to a course day or homepage</label>
+                <select id="courseDaySelect" class="course-select" aria-label="Select course page">
+                    <option value="../index.html">Home Page</option>
+                    <option value="../Day 1/index.html">Day 1</option>
+                    <option value="../Day 2/index.html">Day 2</option>
+                    <option value="../Day 3/index.html">Day 3</option>
+                    <option value="../Day 4/index.html">Day 4</option>
+                    <option value="../Day 5/index.html">Day 5</option>
+                    <option value="../Day 6/index.html">Day 6</option>
+                    <option value="../Day 7/index.html">Day 7</option>
+                    <option value="../Day 8/index.html">Day 8</option>
+                    <option value="../Day 9/index.html">Day 9</option>
+                    <option value="../Day 10/index.html">Day 10</option>
+                    <option value="../Day 11/index.html">Day 11</option>
+                    <option value="../Day 12/index.html">Day 12</option>
+                    <option value="../Day 13/index.html">Day 13</option>
+                    <option value="../Day 14/index.html">Day 14</option>
+                    <option value="../Day 15/index.html">Day 15</option>
+                    <option value="../Day 16/index.html" selected>Day 16</option>
+                </select>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main-content" class="main-content">
+        <div class="container">
+            <section class="hero-card">
+                <div class="badge-row">
+                    <span class="day-badge">Day 16 of 16</span>
+                    <span class="type-badge type-revision">Revision &amp; Final Assessment</span>
+                </div>
+                <h1>Day 16: Complete Revision &amp; Final Assessment</h1>
+                <p class="lead-intro">
+                    Congratulations on completing all 15 learning modules of Phase 5: Advanced Backend Development!
+                    Today introduces no new tools or topics. Instead, it brings together every architectural layer,
+                    security defense, file/image/email workflow, query technique, documentation standard, and
+                    performance pattern from Days 1–15—followed by a comprehensive Final Assessment (30 MCQs, 15
+                    Short-Answer Questions, and 10 Practical Challenges) and your Course Completion Checklist.
+                </p>
+            </section>
+
+            <section class="card-section" id="objectives">
+                <h2>Revision &amp; Assessment Objectives</h2>
+                <ul class="styled-list">
+                    <li>Consolidate all backend concepts taught across Days 1–15 into one cohesive mental model.</li>
+                    <li>Trace how an HTTP request flows end-to-end through a production-ready Express + MongoDB
+                        architecture.</li>
+                    <li>Spot and correct the most frequent security, architectural, middleware, and query mistakes.</li>
+                    <li>Demonstrate readiness by completing the 30-MCQ exam, 15 short-answer questions, and 10
+                        coding/debugging challenges.</li>
+                </ul>
+            </section>
+
+            <section class="card-section" id="day-by-day-revision">
+                <h2>Complete Day-by-Day Revision (Days 1–15)</h2>
+                <div class="term-grid">
+                    <article class="term-card">
+                        <h3>Day 1: Advanced Express.js</h3>
+                        <p>Express wraps Node.js HTTP streams into <code>req</code>/<code>res</code>. Separate
+                            <code>app.js</code> from <code>server.js</code>, mount modular <code>express.Router()</code>
+                            files, place static routes before <code>:id</code> params, disable
+                            <code>x-powered-by</code>, set <code>trust proxy</code>, wrap async routes with
+                            <code>asyncHandler</code>, and handle <code>SIGINT</code>/<code>SIGTERM</code> gracefully.
+                        </p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 2: Advanced Middleware</h3>
+                        <p>Middleware executes strictly in registration order with <code>(req, res, next)</code>. Always
+                            terminate with <code>return res.status(...).json(...)</code> or forward with
+                            <code>next()</code> / <code>next(err)</code>. Mount <code>express.json()</code> before
+                            routers, log timing on <code>res.on('finish')</code>, separate auth (<code>401</code>) from
+                            role authorization (<code>403</code>), and build factories like
+                            <code>restrictTo(...roles)</code>.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 3: MVC Architecture</h3>
+                        <p>Divide responsibilities cleanly: <strong>Models</strong> (Mongoose schemas, validation,
+                            queries—no <code>req/res</code>), <strong>Views</strong> (HTML templates or safe JSON DTO
+                            presenters stripping <code>__v</code>/secrets), and <strong>Controllers</strong> (HTTP
+                            coordination). Always pass <code>{ runValidators: true }</code> on updates and validate
+                            ObjectIds.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 4: Professional Project Structure</h3>
+                        <p>Organize <code>src/</code> into <code>config/</code>, <code>routes/</code>,
+                            <code>middleware/</code>, <code>controllers/</code>, <code>services/</code>,
+                            <code>models/</code>, and <code>utils/</code>. Validate env vars once at startup in
+                            <code>env.js</code>, keep business workflows in HTTP-independent <code>services/</code>,
+                            separate <code>devDependencies</code>, and enforce one-way downward imports to avoid
+                            circular dependencies.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 5: Advanced Error Handling</h3>
+                        <p>Separate predictable <strong>operational errors</strong> (<code>AppError</code> with
+                            <code>isOperational: true</code>) from unexpected <strong>programming bugs</strong>. Place
+                            <code>notFoundHandler</code> then one 4-arg
+                            <code>globalErrorHandler(err, req, res, next)</code> last in <code>app.js</code>. Normalize
+                            JSON syntax errors, <code>CastError</code>, <code>ValidationError</code>, and MongoDB
+                            <code>11000</code> conflicts; hide stack traces in production.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 6: API Security</h3>
+                        <p>Layer defenses: <code>helmet()</code> headers, JSON size caps, strict type checks + recursive
+                            <code>$</code>/<code>.</code> NoSQL key sanitization, salted slow password hashing
+                            (<code>bcrypt</code>/<code>scrypt</code>) with <code>select: false</code>, least privilege,
+                            anti-BOLA ownership verification, neutral login error messages, gitignored
+                            <code>.env</code>, and <code>npm audit</code>.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 7: Rate Limiting</h3>
+                        <p>Prevent brute-forcing, scraping, and DoS using tiered windows (general API vs. strict
+                            <code>/login</code> keyed by <code>ip + email</code>). Configure <code>trust proxy</code>,
+                            skip <code>/health</code> probes, return <code>429 Too Many Requests</code> with
+                            <code>RateLimit-*</code> and <code>Retry-After</code> headers, and use Redis when scaling
+                            across multiple instances.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 8: CORS</h3>
+                        <p>Enforced exclusively by browsers under the Same-Origin Policy (scheme + host + port).
+                            Non-simple requests trigger an automatic <code>OPTIONS</code> preflight—mount
+                            <code>cors</code> before auth guards. Never combine <code>origin: '*'</code> or blind
+                            <code>origin: true</code> with <code>credentials: true</code>. CORS never replaces
+                            server-side auth.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 9: File Uploads</h3>
+                        <p>Use <code>multer</code> for <code>multipart/form-data</code> with strict <code>limits</code>
+                            (<code>fileSize</code>, <code>files</code>). Never trust <code>originalname</code> or
+                            <code>mimetype</code> alone: generate UUID names, stage safely, check binary magic bytes,
+                            delete invalid temp files, handle <code>MulterError</code>, and prefer object storage
+                            (S3/R2) in production.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 10: Image Handling</h3>
+                        <p>Validate dimensions and guard against pixel bombs (<code>limitInputPixels</code>). Call
+                            <code>sharp(buffer).rotate()</code> before resizing to preserve phone orientation while
+                            stripping private EXIF GPS metadata. Re-encode into WebP main + thumbnail variants, roll
+                            back partial files on error, and store relative keys in MongoDB.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 11: Nodemailer</h3>
+                        <p>Run SMTP exclusively on Node.js via env credentials (<code>587</code> STARTTLS
+                            <code>secure: false</code> / <code>465</code> SMTPS <code>secure: true</code>), testing
+                            locally with Ethereal/Mailtrap. Set verified <code>from</code> + visitor
+                            <code>replyTo</code>, strip <code>\r\n</code> headers, HTML-escape template inputs, include
+                            both <code>text</code> and <code>html</code>, set timeouts, and rate-limit contact routes.
+                        </p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 12: Pagination &amp; Filtering</h3>
+                        <p>Bound <code>page</code> (&ge; 1) and <code>limit</code> (e.g., max 50) using
+                            <code>skip = (page - 1) * limit</code>. Allow-list filters and sorts—never pass raw
+                            <code>req.query</code> to <code>find()</code>. Always append <code>_id</code> tie-breakers
+                            for stable pages, use <code>.lean()</code>, and run <code>find</code> +
+                            <code>countDocuments</code> concurrently via <code>Promise.all</code>.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 13: Search Functionality</h3>
+                        <p>Validate search strings for type and length. Escape regex metacharacters to stop syntax
+                            crashes and ReDoS. Use one weighted compound <code>$text</code> index per collection,
+                            project/sort by <code>textScore</code> + <code>_id</code> only when <code>$text</code> is
+                            active, and adopt dedicated search engines when typo tolerance/facets are needed.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 14: API Documentation</h3>
+                        <p>Document paths, methods, auth, params, headers, bodies, success JSON, and all error schemas
+                            via OpenAPI 3.0. Reuse <code>components</code> (<code>schemas</code>,
+                            <code>responses</code>, <code>securitySchemes</code>) with <code>$ref</code>, keep specs in
+                            the same Git repo to avoid drift, use placeholder examples only, and restrict interactive
+                            Swagger UI in production if needed.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Day 15: Performance Optimization</h3>
+                        <p>Measure baseline latency (p95) and <code>explain('executionStats')</code> before tuning. Fix
+                            N+1 loops with batched <code>$in</code> queries, use <code>.lean()</code> +
+                            <code>.select()</code> + ESR compound indexes, enable <code>compression()</code>, add
+                            bounded TTL caches with write invalidation (never share private user cache keys), offload
+                            slow jobs, and load-test locally/staging only.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="card-section" id="topic-revisions">
+                <h2>Deep-Dive Thematic Revisions</h2>
+
+                <h3>1. End-to-End Request Lifecycle, Middleware &amp; Error Flow</h3>
+                <div class="diagram-container" role="img"
+                    aria-label="End-to-end Phase 5 backend architecture diagram showing Client request passing through Reverse Proxy (trust proxy), Helmet security headers, CORS preflight/allowlist, Rate Limiter, Express body parser and NoSQL Sanitizer, Feature Router, AuthN/AuthZ and Validation Middleware, Thin Controller, Service Layer with Caching, Mongoose Model and Indexed MongoDB, Response Compression and DTO View, or Centralized Error Middleware.">
+                    <div class="flow-diagram">
+                        <div class="flow-step flow-client">
+                            <span class="flow-tag">1. Perimeter &amp; Cross-Origin</span>
+                            <strong>Proxy (<code>trust proxy</code>) &rarr; <code>helmet()</code> &rarr;
+                                <code>cors(allowlist)</code> &rarr; <code>rateLimit</code></strong>
+                            <span>Secures headers, resolves real <code>req.ip</code>, handles <code>OPTIONS</code>
+                                preflight, throttles abuse</span>
+                        </div>
+                        <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+                        <div class="flow-step flow-app">
+                            <span class="flow-tag">2. Parsing, Sanitization &amp; Routing</span>
+                            <strong><code>express.json({ limit: '10kb' })</code> &rarr; <code>sanitizeInput</code>
+                                &rarr; <code>Router</code></strong>
+                            <span>Strips <code>$</code>/<code>.</code> keys; runs <code>requireAuth</code> (401),
+                                <code>restrictTo</code> (403), and validators (400)</span>
+                        </div>
+                        <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+                        <div class="flow-step flow-router">
+                            <span class="flow-tag">3. Layered Core (One-Way Dependencies)</span>
+                            <strong>Controller (<code>asyncHandler</code>) &rarr; Service (Cache / Business Logic)
+                                &rarr; Model &rarr; MongoDB</strong>
+                            <span>Uses ESR indexes, <code>.lean()</code>, <code>.select()</code>,
+                                <code>Promise.all</code>, and invalidates cache on writes</span>
+                        </div>
+                        <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+                        <div class="flow-branch">
+                            <div class="flow-step flow-controller">
+                                <span class="flow-tag">4a. Success Output</span>
+                                <strong>DTO View + <code>compression()</code></strong>
+                                <span>Strips secrets/<code>__v</code>, compresses JSON, logs timing on
+                                    <code>finish</code></span>
+                            </div>
+                            <div class="flow-step flow-error">
+                                <span class="flow-tag">4b. Any Error / 404</span>
+                                <strong><code>notFoundHandler</code> &rarr; <code>globalErrorHandler</code></strong>
+                                <span>Normalizes Mongoose/Multer/JSON errors; hides stack traces in production</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h3>2. MVC &amp; Professional Project Structure Revision</h3>
+                <pre><code>project-root/
+  server.js              (connects DB, app.listen, SIGINT/SIGTERM, unhandledRejection)
+  .env.example           (safe placeholder variables committed; .env gitignored)
+  src/
+    app.js               (global middleware, compression, routes, 404, globalErrorHandler)
+    config/              (env.js fail-fast validator, database.js, corsOptions.js)
+    routes/              (index.js, authRoutes.js, projectRoutes.js, uploadRoutes.js)
+    middleware/          (authMiddleware.js, rateLimiters.js, sanitizeInput.js, errorHandler.js)
+    controllers/         (thin HTTP extractors calling services &amp; returning DTOs)
+    services/            (HTTP-agnostic business logic, caching, Sharp, Nodemailer)
+    models/              (Mongoose schemas, ESR &amp; text indexes, select: false)
+    views/               (JSON DTO formatters stripping private/internal fields)
+    utils/               (AppError.js, asyncHandler.js, pagination.js, searchHelpers.js, ttlCache.js)
+    docs/                (openapi.yaml served via swagger-ui-express outside production)</code></pre>
+
+                <h3>3. Security, Rate Limiting &amp; CORS Quick-Reference</h3>
+                <ul class="styled-list">
+                    <li><strong>NoSQL Injection &amp; Mass Assignment:</strong> Strip <code>$</code>/<code>.</code> keys
+                        recursively, validate primitive types (<code>typeof q === 'string'</code>), and allow-list
+                        fields instead of spreading raw <code>req.body</code> or <code>req.query</code>.</li>
+                    <li><strong>AuthN vs. AuthZ &amp; BOLA:</strong> Return <code>401</code> for missing/invalid
+                        credentials, <code>403</code> when authenticated users lack the role or resource ownership
+                        (<code>record.ownerId === req.user.id</code>).</li>
+                    <li><strong>Passwords &amp; Errors:</strong> Hash with salted
+                        <code>bcrypt</code>/<code>scrypt</code>, mark <code>select: false</code>, use neutral login
+                        failure messages, and hide stack traces when <code>NODE_ENV === 'production'</code>.</li>
+                    <li><strong>Rate Limits &amp; CORS:</strong> Mount <code>cors(allowlist)</code> before route auth so
+                        <code>OPTIONS</code> succeeds; never mix <code>origin: '*'</code> with
+                        <code>credentials: true</code>; use Redis for distributed rate-limit counters.</li>
+                </ul>
+
+                <h3>4. File Uploads, Image Handling &amp; Nodemailer Workflows</h3>
+                <ul class="styled-list">
+                    <li><strong>File Uploads (Day 9):</strong> <code>multipart/form-data</code> via <code>multer</code>
+                        with strict <code>fileSize</code>/<code>files</code> caps, UUID filenames, binary magic-byte
+                        inspection, cleanup of rejected temp files, and <code>MulterError</code> normalization.</li>
+                    <li><strong>Image Processing (Day 10):</strong> Inspect metadata with <code>limitInputPixels</code>,
+                        call <code>sharp(buffer).rotate()</code> to auto-orient before stripping EXIF GPS data, output
+                        WebP main + thumbnail variants, roll back partial files on failure, and save relative keys.</li>
+                    <li><strong>Nodemailer (Day 11):</strong> Env-only SMTP credentials with timeouts, verified
+                        <code>EMAIL_FROM</code> + visitor <code>replyTo</code>, CR/LF stripping, HTML escaping in
+                        reusable templates, <code>text</code> + <code>html</code> bodies, and strict rate limiting.</li>
+                </ul>
+
+                <h3>5. Pagination, Filtering, Search, Docs &amp; Performance</h3>
+                <ul class="styled-list">
+                    <li><strong>Pagination &amp; Search (Days 12–13):</strong> Enforce bounded
+                        <code>page</code>/<code>limit</code>, allow-list filters/sorts with <code>_id</code>
+                        tie-breakers, escape regex metacharacters, use weighted <code>$text</code> indexes with
+                        <code>textScore</code>, and run <code>find().lean()</code> + <code>countDocuments()</code> via
+                        <code>Promise.all</code>.</li>
+                    <li><strong>Documentation &amp; Performance (Days 14–15):</strong> Keep OpenAPI 3.0 YAML
+                        synchronized in the repo with <code>components</code> + <code>$ref</code>; measure p95 and
+                        <code>explain('executionStats')</code> before optimizing; fix N+1 loops with <code>$in</code>;
+                        compress JSON; and use bounded TTL caching with write-path invalidation.</li>
+                </ul>
+            </section>
+
+            <section class="card-section" id="code-patterns">
+                <h2>Essential Code Patterns from Days 1–15</h2>
+
+                <p class="code-label">Pattern 1: Async Wrapper + Custom Operational Error (Days 1 &amp; 5)</p>
+                <pre><code>export const asyncHandler = (fn) => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
+export class AppError extends Error {
+  constructor(message, statusCode = 500, errorCode = 'INTERNAL_ERROR') {
+    super(message);
+    this.statusCode = statusCode;
+    this.status = statusCode &lt; 500 ? 'fail' : 'error';
+    this.errorCode = errorCode;
+    this.isOperational = true;
+    Error.captureStackTrace(this, this.constructor);
+  }
+}</code></pre>
+
+                <p class="code-label">Pattern 2: Allow-Listed Pagination + Escaped Search + Parallel Count (Days 12, 13
+                    &amp; 15)</p>
+                <pre><code>export const escapeRegex = (str) => String(str).replace(/[.*+?^${}()|[\]\\]/g, '\\$&amp;');
+
+const filter = {};
+if (keyword) filter.$text = { $search: keyword };
+if (allowedCategory) filter.category = allowedCategory;
+
+const [items, totalItems] = await Promise.all([
+  Project.find(filter)
+    .select('title category stars')
+    .sort(keyword ? { score: { $meta: 'textScore' }, _id: -1 } : { createdAt: -1, _id: -1 })
+    .skip((page - 1) * limit)
+    .limit(limit)
+    .lean(),
+  Project.countDocuments(filter)
+]);</code></pre>
+
+                <p class="code-label">Pattern 3: Safe Image Processing + Rollback Cleanup (Day 10)</p>
+                <pre><code>const metadata = await sharp(buffer, { limitInputPixels: 40_000_000 }).metadata();
+if (!['jpeg', 'png', 'webp'].includes(metadata.format)) {
+  throw new AppError('Unsupported image content.', 400, 'INVALID_IMAGE');
+}
+await sharp(buffer, { limitInputPixels: 40_000_000 })
+  .rotate()
+  .resize({ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true })
+  .webp({ quality: 82 })
+  .toFile(mainAbsPath);</code></pre>
+            </section>
+
+            <section class="card-section" id="common-mistakes">
+                <h2>Top Common Mistakes &amp; Their Corrections</h2>
+                <div class="table-wrap">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Common Mistake</th>
+                                <th>Why It Fails / Threat</th>
+                                <th>Correct Pattern</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Passing <code>req.query</code> to <code>Model.find(req.query)</code></td>
+                                <td>Breaks pagination &amp; enables NoSQL injection</td>
+                                <td>Build explicit allow-listed filter + clamp <code>limit</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>cors({ origin: '*', credentials: true })</code></td>
+                                <td>Rejected by browsers; insecure if reflected</td>
+                                <td>Explicit origin allow-list array/Set with <code>credentials: true</code></td>
+                            </tr>
+                            <tr>
+                                <td>Using <code>req.file.originalname</code> on disk</td>
+                                <td>Path traversal (<code>../../</code>) &amp; overwrites</td>
+                                <td>Generate server UUID name + check binary magic bytes</td>
+                            </tr>
+                            <tr>
+                                <td>Setting <code>from: req.body.email</code> in Nodemailer</td>
+                                <td>SPF/DKIM failure causes spam rejection</td>
+                                <td>Use verified <code>EMAIL_FROM</code> + <code>replyTo: visitorEmail</code></td>
+                            </tr>
+                            <tr>
+                                <td><code>new RegExp(req.query.q)</code> unescaped</td>
+                                <td>Crashes on <code>"C++"</code> &amp; risks ReDoS freeze</td>
+                                <td>Validate string type/length + <code>escapeRegex()</code></td>
+                            </tr>
+                            <tr>
+                                <td>Caching user-private routes globally</td>
+                                <td>Leaks User A's private data to User B</td>
+                                <td>Namespace private cache keys by <code>userId</code> or cache public data</td>
+                            </tr>
+                            <tr>
+                                <td>Sending <code>err.stack</code> in production JSON</td>
+                                <td>Leaks file paths &amp; internal architecture</td>
+                                <td>Return generic <code>500</code> + <code>requestId</code> in production; log stack
+                                    privately</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="card-section" id="glossary">
+                <h2>Glossary of Key Terms</h2>
+                <div class="term-grid">
+                    <article class="term-card">
+                        <h3><code>asyncHandler</code></h3>
+                        <p>Higher-order wrapper forwarding rejected promises from async Express handlers straight to
+                            <code>next(err)</code>.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>BOLA</h3>
+                        <p>Broken Object Level Authorization—when an authenticated user accesses another user's record
+                            due to missing ownership checks.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Circular Dependency</h3>
+                        <p>Mutual imports between modules causing incomplete/<code>undefined</code> exports; avoided via
+                            one-way layered architecture.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3><code>COLLSCAN</code> vs. <code>IXSCAN</code></h3>
+                        <p>MongoDB full collection scan vs. fast indexed tree scan visible via
+                            <code>.explain('executionStats')</code>.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>ESR Rule</h3>
+                        <p>Compound index ordering guideline: Equality fields first, Sort fields second, Range fields
+                            last.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>EXIF Metadata</h3>
+                        <p>Camera/GPS metadata inside photos; strip for privacy after calling <code>.rotate()</code> to
+                            preserve orientation.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Magic Bytes</h3>
+                        <p>Leading binary file signature bytes used on the server to verify true file format beyond
+                            spoofable extensions.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>N+1 Query Problem</h3>
+                        <p>Running <code>N</code> sequential DB queries inside a loop after fetching <code>N</code>
+                            parent items; fixed via batched <code>$in</code> queries.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>OpenAPI &amp; Swagger UI</h3>
+                        <p>Machine-readable API contract specification (YAML/JSON) and interactive browser explorer
+                            rendered from that spec.</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Operational vs. Programming Error</h3>
+                        <p>Predictable runtime failures (404, 400, 409) vs. unintended developer code bugs (500).</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>Preflight (<code>OPTIONS</code>)</h3>
+                        <p>Automatic browser check sent before non-simple cross-origin CORS requests (e.g.,
+                            <code>PATCH</code>, JSON, <code>Authorization</code>).</p>
+                    </article>
+                    <article class="term-card">
+                        <h3>ReDoS</h3>
+                        <p>Regular Expression Denial of Service—catastrophic CPU backtracking triggered by unescaped
+                            malicious regex input.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section class="card-section" id="quiz-section">
+                <h2>Final Assessment Part 1: Comprehensive Quiz (30 MCQs)</h2>
+                <p>This 30-question exam covers all 15 learning days. Select one answer for each question, then click
+                    <strong>Submit Final Assessment</strong> to view your score and full answer key with explanations.
+                </p>
+
+                <form id="day16QuizForm" class="quiz-form" novalidate>
+                    <fieldset class="quiz-question" data-question="q1">
+                        <legend>1. (Day 1) Why is separating <code>app.js</code> from <code>server.js</code> recommended
+                            in Express applications?</legend>
+                        <label class="quiz-option"><input type="radio" name="q1" value="a"> It lets Express execute
+                            directly inside a web browser</label>
+                        <label class="quiz-option"><input type="radio" name="q1" value="b"> It keeps middleware/routes
+                            modular and lets tests import <code>app</code> without binding a TCP port</label>
+                        <label class="quiz-option"><input type="radio" name="q1" value="c"> It removes the need for
+                            <code>express.json()</code></label>
+                        <label class="quiz-option"><input type="radio" name="q1" value="d"> It doubles MongoDB write
+                            throughput automatically</label>
+                        <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q2">
+                        <legend>2. (Day 1) If <code>router.get('/:id', getById)</code> is registered ABOVE
+                            <code>router.get('/featured', getFeatured)</code>, what happens on
+                            <code>GET /featured</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q2" value="a"> Express matches
+                            <code>/featured</code> automatically</label>
+                        <label class="quiz-option"><input type="radio" name="q2" value="b"> Express matches
+                            <code>/:id</code> first and sets <code>req.params.id = "featured"</code></label>
+                        <label class="quiz-option"><input type="radio" name="q2" value="c"> Express returns
+                            <code>405 Method Not Allowed</code></label>
+                        <label class="quiz-option"><input type="radio" name="q2" value="d"> Express runs both handlers
+                            together</label>
+                        <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q3">
+                        <legend>3. (Day 2) How does Express identify a function as error-handling middleware rather than
+                            standard middleware?</legend>
+                        <label class="quiz-option"><input type="radio" name="q3" value="a"> By checking its function
+                            name for the word <code>error</code></label>
+                        <label class="quiz-option"><input type="radio" name="q3" value="b"> By checking that it declares
+                            four parameters: <code>(err, req, res, next)</code></label>
+                        <label class="quiz-option"><input type="radio" name="q3" value="c"> By mounting it at the very
+                            top of <code>app.js</code></label>
+                        <label class="quiz-option"><input type="radio" name="q3" value="d"> By returning
+                            <code>false</code></label>
+                        <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q4">
+                        <legend>4. (Day 2) Which HTTP status code should authorization middleware return when a user IS
+                            authenticated, but lacks the required role?</legend>
+                        <label class="quiz-option"><input type="radio" name="q4" value="a">
+                            <code>400 Bad Request</code></label>
+                        <label class="quiz-option"><input type="radio" name="q4" value="b">
+                            <code>401 Unauthorized</code></label>
+                        <label class="quiz-option"><input type="radio" name="q4" value="c">
+                            <code>403 Forbidden</code></label>
+                        <label class="quiz-option"><input type="radio" name="q4" value="d">
+                            <code>404 Not Found</code></label>
+                        <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q5">
+                        <legend>5. (Day 3) In an MVC REST API, why should Mongoose Models NEVER accept Express
+                            <code>req</code> or <code>res</code> objects?</legend>
+                        <label class="quiz-option"><input type="radio" name="q5" value="a"> Models must stay
+                            HTTP-agnostic so data rules and queries remain reusable outside Express</label>
+                        <label class="quiz-option"><input type="radio" name="q5" value="b"> JavaScript forbids passing
+                            objects into model files</label>
+                        <label class="quiz-option"><input type="radio" name="q5" value="c"> Mongoose deletes documents
+                            created during HTTP requests</label>
+                        <label class="quiz-option"><input type="radio" name="q5" value="d"> <code>req</code> only exists
+                            in browser CSS</label>
+                        <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q6">
+                        <legend>6. (Day 3) What happens in Mongoose if you run
+                            <code>findByIdAndUpdate(id, data, { new: true })</code> WITHOUT
+                            <code>runValidators: true</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q6" value="a"> Schema validators run
+                            automatically on updates</label>
+                        <label class="quiz-option"><input type="radio" name="q6" value="b"> Update validation is
+                            skipped, allowing invalid enum or out-of-range values to save</label>
+                        <label class="quiz-option"><input type="radio" name="q6" value="c"> The document is
+                            deleted</label>
+                        <label class="quiz-option"><input type="radio" name="q6" value="d"> MongoDB closes the
+                            connection</label>
+                        <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q7">
+                        <legend>7. (Day 4) Which module dependency flow prevents circular dependencies in a layered
+                            Node.js backend?</legend>
+                        <label class="quiz-option"><input type="radio" name="q7" value="a"> Models &rarr; Services
+                            &rarr; Controllers &rarr; Routes</label>
+                        <label class="quiz-option"><input type="radio" name="q7" value="b"> Routes &rarr; Controllers
+                            &rarr; Services &rarr; Models (with <code>config/</code> and <code>utils/</code> at the
+                            base)</label>
+                        <label class="quiz-option"><input type="radio" name="q7" value="c"> Utils &rarr; App &rarr;
+                            Server</label>
+                        <label class="quiz-option"><input type="radio" name="q7" value="d"> Services importing
+                            Controllers directly</label>
+                        <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q8">
+                        <legend>8. (Day 4) Why should environment variables like <code>MONGO_URI</code> be validated at
+                            startup inside <code>src/config/env.js</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q8" value="a"> To fail fast immediately on
+                            boot rather than crashing hours later during a live request</label>
+                        <label class="quiz-option"><input type="radio" name="q8" value="b"> So you can commit real
+                            secrets in <code>.env</code> safely</label>
+                        <label class="quiz-option"><input type="radio" name="q8" value="c"> Because Node.js only reads
+                            <code>process.env</code> once per year</label>
+                        <label class="quiz-option"><input type="radio" name="q8" value="d"> To avoid installing
+                            <code>express</code></label>
+                        <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q9">
+                        <legend>9. (Day 5) Which HTTP status code should centralized error middleware return when
+                            normalizing MongoDB duplicate key error code <code>11000</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q9" value="a"> <code>200 OK</code></label>
+                        <label class="quiz-option"><input type="radio" name="q9" value="b">
+                            <code>404 Not Found</code></label>
+                        <label class="quiz-option"><input type="radio" name="q9" value="c">
+                            <code>409 Conflict</code></label>
+                        <label class="quiz-option"><input type="radio" name="q9" value="d">
+                            <code>503 Service Unavailable</code></label>
+                        <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q10">
+                        <legend>10. (Day 5) When an unexpected programming bug (<code>isOperational</code> is false)
+                            happens in production, what should the API send to the client?</legend>
+                        <label class="quiz-option"><input type="radio" name="q10" value="a"> Full <code>err.stack</code>
+                            and file paths</label>
+                        <label class="quiz-option"><input type="radio" name="q10" value="b"> A generic <code>500</code>
+                            JSON message + <code>requestId</code> while logging full stack details privately on the
+                            server</label>
+                        <label class="quiz-option"><input type="radio" name="q10" value="c">
+                            <code>204 No Content</code></label>
+                        <label class="quiz-option"><input type="radio" name="q10" value="d"> Raw MongoDB connection
+                            URIs</label>
+                        <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q11">
+                        <legend>11. (Day 6) What is Broken Object Level Authorization (BOLA)?</legend>
+                        <label class="quiz-option"><input type="radio" name="q11" value="a"> Missing
+                            <code>helmet()</code> headers</label>
+                        <label class="quiz-option"><input type="radio" name="q11" value="b"> An authenticated user
+                            accessing or modifying another user's resource by changing an <code>:id</code> because
+                            ownership was not checked</label>
+                        <label class="quiz-option"><input type="radio" name="q11" value="c"> Forgetting to run
+                            <code>npm audit</code></label>
+                        <label class="quiz-option"><input type="radio" name="q11" value="d"> Compressing responses with
+                            gzip</label>
+                        <div class="quiz-feedback" id="feedback-q11" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q12">
+                        <legend>12. (Day 6) How do we defend Express + MongoDB endpoints against NoSQL operator
+                            injection like <code>{"email": {"$ne": null}}</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q12" value="a"> Enforce strict primitive
+                            type checks (<code>typeof email === 'string'</code>) and sanitize keys starting with
+                            <code>$</code> or containing <code>.</code></label>
+                        <label class="quiz-option"><input type="radio" name="q12" value="b"> Validate inputs only inside
+                            browser HTML attributes</label>
+                        <label class="quiz-option"><input type="radio" name="q12" value="c"> Disable
+                            <code>express.json()</code></label>
+                        <label class="quiz-option"><input type="radio" name="q12" value="d"> Use <code>SHA-256</code>
+                            for passwords</label>
+                        <div class="quiz-feedback" id="feedback-q12" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q13">
+                        <legend>13. (Day 7) Why must <code>app.set('trust proxy', 1)</code> be configured before
+                            IP-based rate limiting on cloud hosting?</legend>
+                        <label class="quiz-option"><input type="radio" name="q13" value="a"> Otherwise
+                            <code>req.ip</code> resolves to the load balancer's IP and one user can trigger
+                            <code>429</code> for all visitors</label>
+                        <label class="quiz-option"><input type="radio" name="q13" value="b"> Otherwise Express blocks
+                            all <code>GET</code> requests</label>
+                        <label class="quiz-option"><input type="radio" name="q13" value="c"> To allow unlimited failed
+                            logins</label>
+                        <label class="quiz-option"><input type="radio" name="q13" value="d"> To skip Redis in
+                            distributed systems</label>
+                        <div class="quiz-feedback" id="feedback-q13" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q14">
+                        <legend>14. (Day 7) Why does in-memory rate limiting break when scaling across multiple server
+                            containers behind a load balancer?</legend>
+                        <label class="quiz-option"><input type="radio" name="q14" value="a"> Each container holds
+                            isolated RAM counters instead of sharing a central Redis store</label>
+                        <label class="quiz-option"><input type="radio" name="q14" value="b"> Containers forbid HTTP
+                            <code>429</code> responses</label>
+                        <label class="quiz-option"><input type="radio" name="q14" value="c"> In-memory stores only count
+                            <code>DELETE</code> requests</label>
+                        <label class="quiz-option"><input type="radio" name="q14" value="d"> Node.js clears RAM every 5
+                            seconds</label>
+                        <div class="quiz-feedback" id="feedback-q14" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q15">
+                        <legend>15. (Day 8) Why does a browser reject <code>Access-Control-Allow-Origin: *</code> paired
+                            with <code>Access-Control-Allow-Credentials: true</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q15" value="a"> Because wildcard +
+                            credentials would allow any arbitrary site on the web to read authenticated
+                            responses</label>
+                        <label class="quiz-option"><input type="radio" name="q15" value="b"> Because Express cannot
+                            output two CORS headers</label>
+                        <label class="quiz-option"><input type="radio" name="q15" value="c"> Because cookies cannot
+                            cross HTTP ports</label>
+                        <label class="quiz-option"><input type="radio" name="q15" value="d"> Because
+                            <code>OPTIONS</code> is a simple request</label>
+                        <div class="quiz-feedback" id="feedback-q15" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q16">
+                        <legend>16. (Day 8) Why is CORS NOT a substitute for server-side authentication?</legend>
+                        <label class="quiz-option"><input type="radio" name="q16" value="a"> Because non-browser tools
+                            like <code>curl</code>, Postman, and attacker scripts ignore CORS completely</label>
+                        <label class="quiz-option"><input type="radio" name="q16" value="b"> Because CORS only works on
+                            HTML files</label>
+                        <label class="quiz-option"><input type="radio" name="q16" value="c"> Because CORS blocks
+                            <code>Authorization</code> headers</label>
+                        <label class="quiz-option"><input type="radio" name="q16" value="d"> Because MongoDB enforces
+                            CORS instead</label>
+                        <div class="quiz-feedback" id="feedback-q16" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q17">
+                        <legend>17. (Day 9) Why should file upload validation check binary magic bytes in addition to
+                            <code>file.mimetype</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q17" value="a"> Because extensions and
+                            <code>Content-Type</code> headers can be spoofed trivially in HTTP requests</label>
+                        <label class="quiz-option"><input type="radio" name="q17" value="b"> Because Multer removes file
+                            sizes from <code>req.file</code></label>
+                        <label class="quiz-option"><input type="radio" name="q17" value="c"> Because magic bytes
+                            compress PDFs automatically</label>
+                        <label class="quiz-option"><input type="radio" name="q17" value="d"> Because browsers cannot
+                            upload files without magic bytes</label>
+                        <div class="quiz-feedback" id="feedback-q17" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q18">
+                        <legend>18. (Day 9) What happens if browser <code>fetch()</code> sends <code>FormData</code> AND
+                            manually sets <code>'Content-Type': 'multipart/form-data'</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q18" value="a"> It omits the required
+                            multipart <code>boundary=...</code> string and breaks server parsing</label>
+                        <label class="quiz-option"><input type="radio" name="q18" value="b"> It doubles upload
+                            speed</label>
+                        <label class="quiz-option"><input type="radio" name="q18" value="c"> It converts uploads into
+                            WebP</label>
+                        <label class="quiz-option"><input type="radio" name="q18" value="d"> It bypasses
+                            <code>LIMIT_FILE_SIZE</code></label>
+                        <div class="quiz-feedback" id="feedback-q18" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q19">
+                        <legend>19. (Day 10) Why should you call <code>sharp(buffer).rotate()</code> before re-encoding
+                            and stripping EXIF metadata?</legend>
+                        <label class="quiz-option"><input type="radio" name="q19" value="a"> To rotate portrait
+                            smartphone photos upright using the EXIF orientation flag before stripping private
+                            GPS/camera metadata</label>
+                        <label class="quiz-option"><input type="radio" name="q19" value="b"> To preserve the
+                            photographer's GPS coordinates publicly</label>
+                        <label class="quiz-option"><input type="radio" name="q19" value="c"> To upscale tiny icons to
+                            4000px</label>
+                        <label class="quiz-option"><input type="radio" name="q19" value="d"> To allow inline SVG
+                            JavaScript execution</label>
+                        <div class="quiz-feedback" id="feedback-q19" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q20">
+                        <legend>20. (Day 10) Why is storing relative image keys (e.g.,
+                            <code>samples/uuid-thumb.webp</code>) in MongoDB better than full URLs?</legend>
+                        <label class="quiz-option"><input type="radio" name="q20" value="a"> Changing domains, staging
+                            hosts, or CDNs never requires rewriting existing database records</label>
+                        <label class="quiz-option"><input type="radio" name="q20" value="b"> MongoDB rejects strings
+                            starting with <code>https://</code></label>
+                        <label class="quiz-option"><input type="radio" name="q20" value="c"> Relative keys bypass
+                            pixel-bomb checks</label>
+                        <label class="quiz-option"><input type="radio" name="q20" value="d"> Relative keys prevent
+                            <code>404</code> responses</label>
+                        <div class="quiz-feedback" id="feedback-q20" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q21">
+                        <legend>21. (Day 11) On a contact-form Nodemailer workflow, how should <code>from</code> and
+                            <code>replyTo</code> be configured?</legend>
+                        <label class="quiz-option"><input type="radio" name="q21" value="a"> Set <code>from</code> to
+                            the visitor's email directly</label>
+                        <label class="quiz-option"><input type="radio" name="q21" value="b"> Set <code>from</code> to
+                            your own verified <code>EMAIL_FROM</code> address and set <code>replyTo</code> to the
+                            visitor's validated email</label>
+                        <label class="quiz-option"><input type="radio" name="q21" value="c"> Put SMTP credentials inside
+                            browser JavaScript</label>
+                        <label class="quiz-option"><input type="radio" name="q21" value="d"> Omit plain-text fallback
+                            completely</label>
+                        <div class="quiz-feedback" id="feedback-q21" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q22">
+                        <legend>22. (Day 11) Why must user inputs be HTML-escaped before placing them into an HTML
+                            Nodemailer template?</legend>
+                        <label class="quiz-option"><input type="radio" name="q22" value="a"> To prevent HTML/phishing
+                            link injection inside the recipient's inbox</label>
+                        <label class="quiz-option"><input type="radio" name="q22" value="b"> Because SMTP port 587
+                            rejects unescaped spaces</label>
+                        <label class="quiz-option"><input type="radio" name="q22" value="c"> To enable TLS
+                            automatically</label>
+                        <label class="quiz-option"><input type="radio" name="q22" value="d"> To skip rate
+                            limiting</label>
+                        <div class="quiz-feedback" id="feedback-q22" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q23">
+                        <legend>23. (Day 12) Why should paginated sorts like <code>{ price: 1 }</code> always include
+                            <code>_id: 1</code> as a tie-breaker?</legend>
+                        <label class="quiz-option"><input type="radio" name="q23" value="a"> Without a unique
+                            tie-breaker, tied items can shift across pages, causing duplicates or skipped items</label>
+                        <label class="quiz-option"><input type="radio" name="q23" value="b"> Because MongoDB cannot sort
+                            numbers without <code>_id</code></label>
+                        <label class="quiz-option"><input type="radio" name="q23" value="c"> To bypass
+                            <code>countDocuments()</code></label>
+                        <label class="quiz-option"><input type="radio" name="q23" value="d"> To disable
+                            <code>MAX_LIMIT</code> clamping</label>
+                        <div class="quiz-feedback" id="feedback-q23" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q24">
+                        <legend>24. (Day 12) If <code>totalItems = 35</code> and <code>limit = 10</code>, what are
+                            <code>totalPages</code> and <code>skip</code> for <code>page = 3</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q24" value="a">
+                            <code>totalPages = 3</code>, <code>skip = 30</code></label>
+                        <label class="quiz-option"><input type="radio" name="q24" value="b">
+                            <code>totalPages = 4</code>, <code>skip = 20</code></label>
+                        <label class="quiz-option"><input type="radio" name="q24" value="c">
+                            <code>totalPages = 4</code>, <code>skip = 30</code></label>
+                        <label class="quiz-option"><input type="radio" name="q24" value="d">
+                            <code>totalPages = 35</code>, <code>skip = 10</code></label>
+                        <div class="quiz-feedback" id="feedback-q24" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q25">
+                        <legend>25. (Day 13) Why must regex search inputs be passed through <code>escapeRegex()</code>
+                            before calling <code>new RegExp()</code>?</legend>
+                        <label class="quiz-option"><input type="radio" name="q25" value="a"> To prevent regex syntax
+                            crashes on inputs like <code>"C++"</code> and defend against ReDoS backtracking</label>
+                        <label class="quiz-option"><input type="radio" name="q25" value="b"> Because MongoDB allows
+                            unlimited <code>text</code> indexes otherwise</label>
+                        <label class="quiz-option"><input type="radio" name="q25" value="c"> To make
+                            <code>textScore</code> work without <code>$text</code></label>
+                        <label class="quiz-option"><input type="radio" name="q25" value="d"> To enable fuzzy typo
+                            tolerance in plain regex</label>
+                        <div class="quiz-feedback" id="feedback-q25" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q26">
+                        <legend>26. (Day 13) When should a team consider adopting a dedicated search service like Atlas
+                            Search, Meilisearch, or Typesense?</legend>
+                        <label class="quiz-option"><input type="radio" name="q26" value="a"> When the application
+                            requires fuzzy typo tolerance, instant autocomplete, synonyms, and faceted counts at
+                            scale</label>
+                        <label class="quiz-option"><input type="radio" name="q26" value="b"> For every 5-row static
+                            lookup table</label>
+                        <label class="quiz-option"><input type="radio" name="q26" value="c"> Whenever <code>CORS</code>
+                            is enabled</label>
+                        <label class="quiz-option"><input type="radio" name="q26" value="d"> To avoid validating search
+                            strings</label>
+                        <div class="quiz-feedback" id="feedback-q26" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q27">
+                        <legend>27. (Day 14) How do OpenAPI <code>components</code> and <code>$ref</code> help prevent
+                            documentation drift and duplication?</legend>
+                        <label class="quiz-option"><input type="radio" name="q27" value="a"> Defining shared schemas and
+                            error responses once lets every path reference the exact same contract consistently</label>
+                        <label class="quiz-option"><input type="radio" name="q27" value="b"> They automatically generate
+                            Express controllers from CSS</label>
+                        <label class="quiz-option"><input type="radio" name="q27" value="c"> They encrypt Swagger UI in
+                            browser storage</label>
+                        <label class="quiz-option"><input type="radio" name="q27" value="d"> They remove the need for
+                            HTTP status codes</label>
+                        <div class="quiz-feedback" id="feedback-q27" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q28">
+                        <legend>28. (Day 14) What must NEVER appear inside OpenAPI <code>example</code> fields?</legend>
+                        <label class="quiz-option"><input type="radio" name="q28" value="a"> Pagination metadata
+                            examples</label>
+                        <label class="quiz-option"><input type="radio" name="q28" value="b"> Real passwords, live
+                            JWT/API keys, or database credentials</label>
+                        <label class="quiz-option"><input type="radio" name="q28" value="c"> Error status codes like
+                            <code>400</code> and <code>429</code></label>
+                        <label class="quiz-option"><input type="radio" name="q28" value="d"> Query parameter
+                            bounds</label>
+                        <div class="quiz-feedback" id="feedback-q28" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q29">
+                        <legend>29. (Day 15) What is the cleanest fix for an N+1 query loop fetching related books for
+                            100 authors?</legend>
+                        <label class="quiz-option"><input type="radio" name="q29" value="a"> Add 100 more sequential
+                            <code>await</code> calls</label>
+                        <label class="quiz-option"><input type="radio" name="q29" value="b"> Collect all author IDs and
+                            run a single batched <code>Book.find({ authorId: { $in: authorIds } }).lean()</code>
+                            query</label>
+                        <label class="quiz-option"><input type="radio" name="q29" value="c"> Switch to
+                            <code>fs.readFileSync()</code></label>
+                        <label class="quiz-option"><input type="radio" name="q29" value="d"> Remove all database
+                            indexes</label>
+                        <div class="quiz-feedback" id="feedback-q29" aria-live="polite"></div>
+                    </fieldset>
+
+                    <fieldset class="quiz-question" data-question="q30">
+                        <legend>30. (Day 15) Which practice ensures caching improves read speed WITHOUT leaking data or
+                            running out of RAM?</legend>
+                        <label class="quiz-option"><input type="radio" name="q30" value="a"> Cache authenticated private
+                            routes under one shared global key forever</label>
+                        <label class="quiz-option"><input type="radio" name="q30" value="b"> Use bounded TTL caches,
+                            namespace private keys by <code>userId</code>, invalidate keys on writes, and measure
+                            before/after safely in local/staging</label>
+                        <label class="quiz-option"><input type="radio" name="q30" value="c"> Load-test live production
+                            servers during peak traffic</label>
+                        <label class="quiz-option"><input type="radio" name="q30" value="d"> Run
+                            <code>bcrypt.hashSync()</code> inside every <code>GET</code> route</label>
+                        <div class="quiz-feedback" id="feedback-q30" aria-live="polite"></div>
+                    </fieldset>
+
+                    <div class="quiz-actions">
+                        <button type="submit" class="btn btn-primary" id="submitQuizBtn">Submit Final
+                            Assessment</button>
+                        <button type="button" class="btn btn-secondary" id="retryQuizBtn">Retry Assessment</button>
+                    </div>
+
+                    <div class="quiz-result" id="quizResult" aria-live="polite" hidden></div>
+                </form>
+            </section>
+
+            <section class="card-section" id="short-answers">
+                <h2>Final Assessment Part 2: Short-Answer Questions (15 Questions)</h2>
+                <p>Write or explain each answer in your own words before expanding the answer key.</p>
+                <div class="qa-list">
+                    <details class="qa-item">
+                        <summary>1. (Day 1) What happens when an Express 4 <code>async</code> route handler throws
+                            without <code>try/catch</code> or <code>asyncHandler</code>?</summary>
+                        <p>Express 4 does not catch returned promise rejections automatically, leaving the HTTP request
+                            hanging indefinitely and risking an unhandled rejection crash.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>2. (Day 2) Explain the difference between calling <code>next()</code>, calling
+                            <code>next(err)</code>, and calling <code>return res.status(401).json(...)</code>.</summary>
+                        <p><code>next()</code> advances to the next normal middleware/route; <code>next(err)</code>
+                            skips normal routes and jumps to the 4-arg error handler;
+                            <code>return res.status(401).json(...)</code> terminates the cycle immediately.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>3. (Day 3) What represents the "View" layer in a JSON REST API using MVC?</summary>
+                        <p>JSON response presenters/serializers (DTO formatters) that transform raw database documents
+                            into safe, consistent public JSON payloads (removing internal fields like <code>__v</code>
+                            or password hashes).</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>4. (Day 4) How do you break a circular dependency between two backend service files?
+                        </summary>
+                        <p>Extract the shared logic into a lower-level module (such as <code>src/utils/</code> or a
+                            shared lower-level service) so dependencies always flow strictly one way downward.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>5. (Day 5) Why does centralized error middleware distinguish
+                            <code>isOperational: true</code> from unexpected programming bugs?</summary>
+                        <p>Operational error messages (like <code>404</code> or <code>409</code>) are safe and helpful
+                            for clients in production, whereas programming bugs must be masked behind a generic
+                            <code>500</code> + <code>requestId</code> while logging stack traces privately.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>6. (Day 6) Why must login endpoints return the same neutral message whether the email
+                            is unknown or the password is wrong?</summary>
+                        <p>To prevent account enumeration attacks where bots discover which email addresses are
+                            registered on your application.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>7. (Day 7) Why should <code>GET /api/v1/health</code> bypass strict API rate limiters?
+                        </summary>
+                        <p>Uptime monitors and cloud load balancers ping health endpoints continuously; returning
+                            <code>429</code> makes orchestrators think the server is unhealthy and restart it.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>8. (Day 8) What causes an automatic <code>OPTIONS</code> preflight request, and why
+                            must <code>cors()</code> sit above auth middleware?</summary>
+                        <p>Cross-origin calls using non-simple methods (<code>PATCH</code>/<code>DELETE</code>), JSON
+                            content types, or custom headers like <code>Authorization</code> trigger an
+                            <code>OPTIONS</code> preflight without user tokens. Mounting <code>cors()</code> before auth
+                            lets preflights succeed with <code>204</code>.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>9. (Day 9) Why should uploaded files never be stored on disk using
+                            <code>req.file.originalname</code>?</summary>
+                        <p>Client filenames can contain path traversal sequences (<code>../../</code>), special
+                            characters, or collide and overwrite other users' files. Always generate server UUID
+                            filenames.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>10. (Day 10) How does re-encoding uploaded images through <code>sharp</code> enhance
+                            both performance and security?</summary>
+                        <p>It resizes oversized photos into lightweight WebP main/thumbnail variants, strips private
+                            EXIF GPS metadata (after <code>.rotate()</code>), and reconstructs clean pixel data free of
+                            hidden trailing payloads.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>11. (Day 11) Why must single-line email fields like <code>subject</code> have
+                            <code>\r\n</code> stripped in a contact workflow?</summary>
+                        <p>To block email header injection attacks where extra SMTP headers (such as <code>Bcc:</code>)
+                            are smuggled via newline characters.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>12. (Day 12) Why should <code>find()</code> and <code>countDocuments()</code> run via
+                            <code>Promise.all</code> on paginated endpoints?</summary>
+                        <p>Running both independent database queries concurrently cuts total database wait time compared
+                            to awaiting them one after the other.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>13. (Day 13) What error occurs if you sort by
+                            <code>{ score: { $meta: 'textScore' } }</code> when <code>$text</code> is absent from
+                            <code>filter</code>?</summary>
+                        <p>MongoDB throws a query error because <code>textScore</code> metadata is only produced when a
+                            <code>$text</code> search is active.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>14. (Day 14) Why should interactive Swagger UI often be disabled or access-restricted
+                            on private production APIs?</summary>
+                        <p>Leaving unauthenticated interactive documentation open on private/admin APIs exposes exact
+                            internal endpoints and schemas to potential attackers.</p>
+                    </details>
+                    <details class="qa-item">
+                        <summary>15. (Day 15) Explain the trade-off of adding database indexes and what the ESR rule
+                            stands for.</summary>
+                        <p>Indexes speed up reads/sorts at the cost of extra RAM/disk and slower writes. The ESR rule
+                            orders compound index fields as Equality first, Sort second, and Range last.</p>
+                    </details>
+                </div>
+            </section>
+
+            <section class="card-section" id="challenges">
+                <h2>Final Assessment Part 3: Practical &amp; Debugging Challenges (10 Challenges)</h2>
+                <div class="challenge-list">
+                    <article class="challenge-card">
+                        <h3>Challenge 1 (Days 1–2): Fix Route Shadowing &amp; Missing Early Return</h3>
+                        <p>Debug and fix why <code>GET /api/v1/items/summary</code> triggers an invalid-ID error and why
+                            bad requests crash with <code>ERR_HTTP_HEADERS_SENT</code>:</p>
+                        <pre><code>router.get('/:id', requireAuth, (req, res) => {
+  if (!isValidId(req.params.id)) {
+    res.status(400).json({ message: 'Invalid ID' });
+  }
+  res.json({ id: req.params.id });
+});
+router.get('/summary', getSummary);</code></pre>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Place <code>router.get('/summary', getSummary)</code> <strong>above</strong>
+                                <code>router.get('/:id', ...)</code> so <code>"summary"</code> is not captured as
+                                <code>:id</code>, and add <code>return</code> before
+                                <code>res.status(400).json(...)</code>.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 2 (Days 3–4): Decouple Service &amp; Break Circular Cycle</h3>
+                        <p>A controller reads <code>req.body.coupon</code>, calculates totals, and calls
+                            <code>Order.create(req.body)</code>, while <code>Order.js</code> imports a helper from
+                            <code>orderController.js</code>. Describe the exact refactor across <code>models/</code>,
+                            <code>services/</code>, <code>controllers/</code>, and <code>utils/</code>.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Move shared helpers to <code>src/utils/</code>, move discount calculation and explicit
+                                field picking into <code>src/services/orderService.js</code> (accepting plain arguments,
+                                no <code>req/res</code>), and keep <code>orderController.js</code> strictly for HTTP
+                                extraction and status responses.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 3 (Day 5): Normalize Mongoose &amp; JSON Errors</h3>
+                        <p>Write the normalization conditions inside <code>globalErrorHandler</code> to map Express
+                            malformed JSON (<code>entity.parse.failed</code>), Mongoose <code>CastError</code>, and
+                            MongoDB <code>11000</code> into <code>400</code> and <code>409</code> <code>AppError</code>
+                            instances without leaking stack traces in production.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Check <code>err.type === 'entity.parse.failed'</code> &rarr; <code>400</code>;
+                                <code>err.name === 'CastError'</code> &rarr; <code>400</code>;
+                                <code>err.code === 11000</code> &rarr; <code>409</code>. Gate <code>stack</code>
+                                strictly behind <code>!env.isProduction</code> and send generic <code>500</code> for
+                                non-operational errors.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 4 (Day 6): Patch 4 Security Vulnerabilities</h3>
+                        <p>Fix mass assignment, NoSQL injection, BOLA, and account enumeration in a signup + login +
+                            <code>GET /invoices/:id</code> controller set.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Validate string types + strip <code>$</code>/<code>.</code> keys; hardcode
+                                <code>role: 'member'</code> on signup and hash passwords with salted <code>bcrypt</code>
+                                (<code>select: false</code>); return neutral <code>"Invalid email or password."</code>
+                                on login; and verify <code>invoice.ownerId.equals(req.user.id)</code> returning
+                                <code>403</code> on mismatch.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 5 (Days 7–8): Fix CORS Preflight &amp; Proxy Rate-Limit Bug</h3>
+                        <p>An API behind Nginx has <code>app.use(requireAuth)</code> above
+                            <code>app.use(cors({ origin: '*', credentials: true }))</code> and omits
+                            <code>trust proxy</code>. List all 3 fixes needed.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>(1) Set <code>app.set('trust proxy', 1)</code>; (2) Move <code>cors(...)</code> and
+                                <code>app.options('*', ...)</code> above <code>requireAuth</code>; (3) Replace
+                                <code>origin: '*'</code> with an explicit trusted origin allow-list when
+                                <code>credentials: true</code>.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 6 (Day 9): Hardened Multer Upload Guard</h3>
+                        <p>Configure a single-PDF upload endpoint capped at <code>2 MB</code> that verifies the
+                            <code>%PDF</code> magic-byte signature after staging in <code>storage/tmp/</code> and
+                            deletes rejected files immediately.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Use
+                                <code>multer({ storage: diskStorage, limits: { fileSize: 2 * 1024 * 1024, files: 1 } })</code>
+                                with UUID names, inspect the first 4 bytes via <code>fs.open</code> for
+                                <code>%PDF</code>, unlink on mismatch/error in <code>try/catch</code>, and normalize
+                                <code>MulterError</code> (<code>LIMIT_FILE_SIZE</code> &rarr; <code>413</code>).</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 7 (Day 10): Safe Sharp WebP Pipeline</h3>
+                        <p>Write the <code>sharp</code> chain that guards against pixel bombs, preserves smartphone
+                            orientation, strips EXIF GPS data, avoids stretching tiny images, and creates a
+                            <code>320x320</code> WebP thumbnail.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Pass <code>{ limitInputPixels: 40_000_000 }</code>, inspect <code>.metadata()</code>,
+                                call <code>.rotate()</code> first (without <code>.withMetadata()</code>), use
+                                <code>withoutEnlargement: true</code> for main (<code>fit: 'inside'</code>), and
+                                <code>fit: 'cover'</code> for the <code>320x320</code> WebP thumbnail.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 8 (Day 11): Secure Nodemailer Contact Endpoint</h3>
+                        <p>Identify why hardcoding Gmail credentials, setting <code>from: req.body.email</code>, and
+                            interpolating unescaped <code>req.body.message</code> into HTML fails security and
+                            deliverability, and write the corrected transporter/sendMail call.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Load SMTP config via <code>process.env</code> with timeouts, set
+                                <code>from: process.env.EMAIL_FROM</code> and <code>replyTo: cleanEmail</code>, strip
+                                <code>\r\n</code> from subject/email, escape HTML entities in templates, provide both
+                                <code>text</code> and <code>html</code>, and rate-limit the endpoint.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 9 (Days 12–13): Combined Paginated Search Service</h3>
+                        <p>Write a Mongoose service snippet combining an optional validated <code>q</code> search (with
+                            weighted <code>$text</code>), <code>category</code> filter, bounded <code>page/limit</code>,
+                            <code>_id</code> tie-breaker, and <code>Promise.all</code> metadata.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Validate <code>q</code> as string (2–80 chars), attach
+                                <code>filter.$text = { $search: q }</code> only when present, only apply
+                                <code>score: { $meta: 'textScore' }</code> when <code>q</code> is active, append
+                                <code>_id: -1</code> to sort, and run
+                                <code>find(filter).skip(skip).limit(limit).lean()</code> alongside
+                                <code>countDocuments(filter)</code> in <code>Promise.all</code>.</p>
+                        </details>
+                    </article>
+
+                    <article class="challenge-card">
+                        <h3>Challenge 10 (Days 14–15): Document &amp; Optimize an Endpoint</h3>
+                        <p>An endpoint loops over 50 projects running <code>await User.findById(p.ownerId)</code> inside
+                            a <code>for</code> loop, sends uncompressed JSON, and has no OpenAPI spec. Explain the exact
+                            optimization + OpenAPI documentation steps.</p>
+                        <details class="qa-item">
+                            <summary>View Solution Key</summary>
+                            <p>Measure baseline p95, replace the loop with one batched
+                                <code>User.find({ _id: { $in: ownerIds } }).select('name').lean()</code> mapped by ID,
+                                enable <code>compression()</code>, add bounded TTL caching if public, and document query
+                                params, schemas, auth, and error responses in <code>openapi.yaml</code>.</p>
+                        </details>
+                    </article>
+                </div>
+            </section>
+
+            <section class="card-section" id="completion-checklist">
+                <h2>Final Course Completion Checklist (Phase 5)</h2>
+                <p>Check off every capability you have mastered across the 16 days (saved locally in your browser for
+                    your review session):</p>
+                <div class="checklist-grid" id="completionChecklist">
+                    <label class="check-item"><input type="checkbox" data-check="c1"> Organize Express apps cleanly
+                        across <code>server.js</code>, <code>app.js</code>, routers, controllers, services, models, and
+                        config.</label>
+                    <label class="check-item"><input type="checkbox" data-check="c2"> Build custom middleware pipelines
+                        for logging, validation, authentication (401), and authorization (403).</label>
+                    <label class="check-item"><input type="checkbox" data-check="c3"> Prevent circular dependencies and
+                        validate all required environment variables at startup.</label>
+                    <label class="check-item"><input type="checkbox" data-check="c4"> Normalize operational, Mongoose,
+                        Multer, and JSON errors in centralized middleware without leaking production stacks.</label>
+                    <label class="check-item"><input type="checkbox" data-check="c5"> Harden APIs with
+                        <code>helmet</code>, payload caps, NoSQL sanitization, salted password hashing, and anti-BOLA
+                        ownership checks.</label>
+                    <label class="check-item"><input type="checkbox" data-check="c6"> Configure tiered rate limiters
+                        (with <code>trust proxy</code> &amp; Redis awareness) and strict allow-listed CORS
+                        policies.</label>
+                    <label class="check-item"><input type="checkbox" data-check="c7"> Handle multipart file uploads with
+                        UUID names, magic-byte validation, and WebP image optimization via <code>sharp</code>.</label>
+                    <label class="check-item"><input type="checkbox" data-check="c8"> Send safe HTML + plain-text emails
+                        with Nodemailer using env credentials, HTML escaping, and <code>replyTo</code>.</label>
+                    <label class="check-item"><input type="checkbox" data-check="c9"> Build bounded pagination,
+                        allow-listed filtering, escaped/indexed search, OpenAPI docs, and measurable performance
+                        wins.</label>
+                </div>
+            </section>
+
+            <section class="card-section visual-aid-section" id="lesson-visual">
+                <h2>Day 16 Complete Phase 5 Architecture Reference</h2>
+                <p>Visual summary diagram for Day 16: Full Phase 5 Advanced Backend Development architecture from
+                    perimeter security to optimized data delivery.</p>
+                <div class="lesson-image-frame" id="lessonImageFrame">
+                    <img src="image.webp"
+                        alt="Diagram summarizing complete Phase 5 Advanced Backend Development architecture across all 15 learning days"
+                        class="lesson-image" id="lessonImage" download="All Days Revison Image Phase 5"> </img>
+                    </a>
+                    <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
+                        <div class="fallback-icon" aria-hidden="true">&#127891;</div>
+                        <p class="fallback-title">Day 16 Visual Reference (<code>image.webp</code>)</p>
+                        <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the
+                            <code>Day 16/</code> folder to display the custom illustration here.</p>
+                        </div>
+                    </div>
+                    <a href="image.webp" download="All Days Revison Image Phase 5" class="dbl-image"> Download Image
+            </section>
+
+            <nav class="day-pagination" aria-label="Day navigation">
+                <a href="../Day 15/index.html" class="btn btn-secondary nav-prev">
+                    &larr; Previous Day: Performance Optimization
+                </a>
+                <a href="../index.html" class="btn btn-primary nav-next">
+                    Back to Course Homepage &rarr;
+                </a>
+            </nav>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <div class="footer-brand-head">
+                    <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
+                    <strong>Arslan Weblab</strong>
+                </div>
+                <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+                    Express.js, and MongoDB.</p>
+            </div>
+            <div class="footer-links">
+                <h3>Course Navigation</h3>
+                <ul>
+                    <li><a href="../index.html">Course Homepage</a></li>
+                    <li><a href="../Day 1/index.html">Day 1: Advanced Express.js</a></li>
+                    <li><a href="../Day 8/index.html">Day 8: CORS</a></li>
+                    <li><a href="../Day 15/index.html">Day 15: Performance Optimization</a></li>
+                    <li><a href="../Day 16/index.html">Day 16: Final Revision &amp; Assessment</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h3>External Links</h3>
+                <ul>
+                    <li><a href="https://arslan-weblab.netlify.app/" target="_blank"
+                            rel="noopener noreferrer">Portfolio</a></li>
+                    <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects
+                            Hub</a></li>
+                    <li><a href="https://github.com/arslansahil850-alt/" target="_blank"
+                            rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>Phase 5: Advanced Backend Development &bull; Arslan Weblab</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

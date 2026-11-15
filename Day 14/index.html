@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 14: API Documentation | Phase 5 - Arslan Weblab</title>
+  <link rel="icon" href="../logo.webp">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="top-navbar" id="topNavbar">
+    <div class="container top-navbar-inner">
+    <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+        <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
+        <span class="brand-text">Arslan Weblab</span>
+      </a>
+
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <nav class="top-nav-links" id="topNavLinks" aria-label="External portfolio and profile links">
+        <a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
+        <a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+        <a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="mailto:arslansahil850@gmail.com">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="course-navbar" id="courseNavbar" aria-label="Course navigation">
+    <div class="container course-navbar-inner">
+      <div class="course-label">Phase 5 / Advanced Backend Development</div>
+      <div class="course-select-wrap">
+        <label for="courseDaySelect" class="sr-only">Jump to a course day or homepage</label>
+        <select id="courseDaySelect" class="course-select" aria-label="Select course page">
+          <option value="../index.html">Home Page</option>
+          <option value="../Day 1/index.html">Day 1</option>
+          <option value="../Day 2/index.html">Day 2</option>
+          <option value="../Day 3/index.html">Day 3</option>
+          <option value="../Day 4/index.html">Day 4</option>
+          <option value="../Day 5/index.html">Day 5</option>
+          <option value="../Day 6/index.html">Day 6</option>
+          <option value="../Day 7/index.html">Day 7</option>
+          <option value="../Day 8/index.html">Day 8</option>
+          <option value="../Day 9/index.html">Day 9</option>
+          <option value="../Day 10/index.html">Day 10</option>
+          <option value="../Day 11/index.html">Day 11</option>
+          <option value="../Day 12/index.html">Day 12</option>
+          <option value="../Day 13/index.html">Day 13</option>
+          <option value="../Day 14/index.html" selected>Day 14</option>
+          <option value="../Day 15/index.html">Day 15</option>
+          <option value="../Day 16/index.html">Day 16</option>
+        </select>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content" class="main-content">
+    <div class="container">
+      <section class="hero-card">
+        <div class="badge-row">
+          <span class="day-badge">Day 14 of 16</span>
+          <span class="type-badge">Learning Module</span>
+        </div>
+        <h1>Day 14: API Documentation</h1>
+        <p class="lead-intro">
+          An API is only as usable as its documentation. Without clear documentation, frontend developers, mobile engineers, and third-party integrators are forced to read your backend source code or guess field names, required headers, pagination rules, and error formats. Even worse, outdated documentation that disagrees with your live Express routes causes silent integration bugs. Today you will learn how to structure complete API reference documentation, write machine-readable OpenAPI 3.0 specifications, render interactive Swagger UI docs in Express, document authentication and errors clearly, and test endpoints against their contract.
+        </p>
+      </section>
+
+      <section class="card-section" id="objectives">
+        <h2>Learning Objectives</h2>
+        <p>By the end of Day 14, you will be able to:</p>
+        <ul class="styled-list">
+          <li>Explain why accurate API documentation is vital for developer velocity, API reliability, and team collaboration.</li>
+          <li>Document every essential endpoint component: URL path, HTTP method, path/query parameters, headers, request body schemas, and response examples.</li>
+          <li>Document success status codes alongside all possible error responses (<code>400</code>, <code>401</code>, <code>403</code>, <code>404</code>, <code>409</code>, <code>429</code>, <code>500</code>).</li>
+          <li>Explain the OpenAPI Specification (OAS 3.0) and how Swagger UI turns specs into an interactive browser explorer.</li>
+          <li>Define reusable <code>components.schemas</code>, <code>components.responses</code>, and <code>components.securitySchemes</code> (Bearer auth).</li>
+          <li>Keep documentation synchronized with Express code and verify documented endpoints safely.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="prerequisites">
+        <h2>Prerequisites</h2>
+        <p>Before starting Day 14, make sure you understand:</p>
+        <ul class="styled-list">
+          <li><strong>Days 1–13 Concepts:</strong> RESTful routes, middleware auth/rate-limiting headers, centralized JSON error envelopes, file uploads, and paginated search query params.</li>
+          <li><strong>JSON &amp; YAML Syntax:</strong> Reading structured key-value objects, arrays, and nested schemas.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="terminology">
+        <h2>Important Terminology and Definitions</h2>
+        <div class="term-grid">
+          <article class="term-card">
+            <h3>API Contract</h3>
+            <p>The formal agreement between backend producers and frontend/mobile consumers specifying exact endpoint paths, input types, authentication rules, and output JSON shapes.</p>
+          </article>
+          <article class="term-card">
+            <h3>OpenAPI Specification (OAS)</h3>
+            <p>A vendor-neutral, machine-readable standard (written in YAML or JSON) for describing RESTful APIs—covering paths, parameters, schemas, security, and responses.</p>
+          </article>
+          <article class="term-card">
+            <h3>Swagger UI</h3>
+            <p>An interactive web interface that reads an OpenAPI specification and renders live browsable documentation with a "Try it out" request runner.</p>
+          </article>
+          <article class="term-card">
+            <h3>Schema Component</h3>
+            <p>A reusable model definition inside <code>components.schemas</code> (such as <code>Project</code>, <code>PaginationMeta</code>, or <code>ErrorResponse</code>) referenced via <code>$ref</code> to avoid repetition.</p>
+          </article>
+          <article class="term-card">
+            <h3>Security Scheme</h3>
+            <p>An OpenAPI declaration inside <code>components.securitySchemes</code> describing how clients authenticate (for example, HTTP <code>bearer</code> tokens or API keys).</p>
+          </article>
+          <article class="term-card">
+            <h3>Documentation Drift</h3>
+            <p>When backend routes or fields change in code while the documentation remains outdated, misleading developers into sending wrong payloads.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="theory">
+        <h2>Detailed Theory and Explanations</h2>
+
+        <h3>1. Why API Documentation Matters</h3>
+        <p>
+          In real engineering teams, backend and frontend developers often build features in parallel. When an API endpoint is well-documented upfront—including exact field names, validation constraints, pagination metadata, and error codes—the frontend developer can immediately write <code>fetch()</code> calls without waiting or interrupting the backend developer on chat. Good documentation also powers automated client SDK generation, Postman collection imports, and onboarding for new hires.
+        </p>
+
+        <h3>2. Anatomy of Complete Endpoint Documentation</h3>
+        <p>Every documented endpoint should clearly answer seven questions:</p>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Element</th>
+                <th>What to Include</th>
+                <th>Example</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Method &amp; Path</strong></td>
+                <td>Exact HTTP verb and versioned path</td>
+                <td><code>GET /api/v1/projects/{id}</code></td>
+              </tr>
+              <tr>
+                <td><strong>Summary &amp; Auth</strong></td>
+                <td>What it does + whether Bearer token / role is required</td>
+                <td>Public read vs. <code>Bearer Auth (admin)</code></td>
+              </tr>
+              <tr>
+                <td><strong>Parameters</strong></td>
+                <td>Path params (<code>id</code>) and query params (<code>page</code>, <code>limit</code>, <code>q</code>), types, defaults, bounds</td>
+                <td><code>limit</code>: integer, default <code>10</code>, max <code>40</code></td>
+              </tr>
+              <tr>
+                <td><strong>Headers</strong></td>
+                <td>Required request headers + notable response headers</td>
+                <td><code>Authorization</code>, <code>Content-Type</code>, <code>RateLimit-*</code></td>
+              </tr>
+              <tr>
+                <td><strong>Request Body</strong></td>
+                <td>Content type (<code>application/json</code> or <code>multipart/form-data</code>), required fields, constraints</td>
+                <td><code>title</code> (string, 4–120 chars)</td>
+              </tr>
+              <tr>
+                <td><strong>Success Responses</strong></td>
+                <td>Exact status code (<code>200</code>, <code>201</code>, <code>204</code>) and realistic JSON example</td>
+                <td><code>201 Created</code> with created project DTO</td>
+              </tr>
+              <tr>
+                <td><strong>Error Responses</strong></td>
+                <td>Every failure status code and shared error schema</td>
+                <td><code>400</code>, <code>401</code>, <code>403</code>, <code>404</code>, <code>429</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3. OpenAPI 3.0 Structure &amp; Swagger UI Concepts</h3>
+        <p>
+          An OpenAPI 3.0 document contains five primary top-level sections:
+        </p>
+        <ul class="styled-list">
+          <li><code>openapi</code> &amp; <code>info</code>: Spec version (<code>"3.0.3"</code>), API title, version, and contact/description.</li>
+          <li><code>servers</code>: Base URLs for local development (<code>http://localhost:5000/api/v1</code>) and staging/production.</li>
+          <li><code>tags</code>: Logical grouping of endpoints (such as <code>Health</code>, <code>Authentication</code>, <code>Projects</code>, <code>Uploads</code>).</li>
+          <li><code>paths</code>: Every route path, HTTP method, parameters, requestBody, security rules, and status-code responses.</li>
+          <li><code>components</code>: Reusable <code>schemas</code>, <code>parameters</code>, <code>responses</code>, and <code>securitySchemes</code> referenced cleanly via <code>$ref: '#/components/schemas/...'</code>.</li>
+        </ul>
+
+        <h3>4. Documenting Authentication Requirements</h3>
+        <p>
+          Never leave authentication implicit. Define a <code>bearerAuth</code> security scheme inside <code>components.securitySchemes</code>, then apply <code>security: [{ bearerAuth: [] }]</code> strictly on protected operations (such as <code>POST /projects</code> or <code>DELETE /projects/{id}</code>) while leaving public endpoints (<code>GET /health</code>, <code>GET /projects</code>) open. In Swagger UI, this renders a lock icon and an "Authorize" button where testers can paste a sample token once to test protected routes.
+        </p>
+
+        <h3>5. Keeping Documentation Synchronized with Code</h3>
+        <p>
+          Outdated docs are worse than no docs. Teams prevent <strong>documentation drift</strong> using three practical habits:
+        </p>
+        <ul class="styled-list">
+          <li><strong>Store the OpenAPI spec inside the same repository:</strong> Keep <code>docs/openapi.yaml</code> (or <code>src/docs/openapiSpec.js</code>) right next to your Express code so every pull request that changes a route updates the spec in the same commit.</li>
+          <li><strong>Reuse components aggressively:</strong> Reference one shared <code>ErrorResponse</code> and <code>PaginationMeta</code> schema everywhere rather than copy-pasting JSON shapes across 20 endpoints.</li>
+          <li><strong>Automate validation &amp; testing:</strong> Lint your OpenAPI file in CI and verify responses in tests against the documented schemas.</li>
+        </ul>
+
+        <h3>6. Testing Documented Endpoints &amp; Production Considerations</h3>
+        <p>
+          You can import your OpenAPI file directly into Postman/Insomnia or click "Try it out" inside Swagger UI during development. Keep two security/CORS notes in mind:
+        </p>
+        <ul class="styled-list">
+          <li><strong>Same-Origin Advantage:</strong> Mounting Swagger UI on your Express server (e.g., at <code>/api-docs</code>) avoids cross-origin issues when testing against the same origin, whereas calling another server in <code>servers</code> requires CORS support.</li>
+          <li><strong>Production Exposure Policy:</strong> For internal or private APIs, restrict <code>/api-docs</code> behind authentication or disable Swagger UI in production (<code>if (!env.isProduction)</code>) while keeping documentation on an internal developer portal. Never put real admin tokens or passwords inside OpenAPI <code>example</code> fields!</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="diagram">
+        <h2>Diagram: OpenAPI Documentation Architecture &amp; Sync Workflow</h2>
+        <p>Notice how reusable <code>components</code> feed into <code>paths</code> inside one single-source-of-truth OpenAPI spec that powers Swagger UI, Postman collections, and API verification:</p>
+        <div class="diagram-container" role="img" aria-label="Diagram showing reusable OpenAPI components (schemas, securitySchemes, common error responses) feeding into paths (/health, /auth/login, /projects), stored in the same Git repo as Express routes, powering interactive Swagger UI at /api-docs, Postman/SDK generation, and automated contract verification.">
+          <div class="flow-diagram">
+            <div class="flow-step flow-client">
+              <span class="flow-tag">1. Reusable Building Blocks</span>
+              <strong><code>components</code> (<code>schemas</code>, <code>securitySchemes</code>, <code>responses</code>)</strong>
+              <span>Defines <code>Project</code>, <code>PaginationMeta</code>, <code>ErrorResponse</code>, and <code>bearerAuth</code> once</span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-app">
+              <span class="flow-tag">2. Endpoint Contracts (<code>$ref</code>)</span>
+              <strong><code>paths</code> in OpenAPI 3.0 Spec (<code>src/docs/openapi.yaml</code>)</strong>
+              <span>Documents methods, query/path params, bodies, status codes (<code>200..429</code>), and examples</span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-branch">
+              <div class="flow-step flow-controller">
+                <span class="flow-tag">Interactive Explorer</span>
+                <strong><code>swagger-ui-express</code> at <code>/api-docs</code></strong>
+                <span>Lets developers test endpoints &amp; Bearer auth live in browser</span>
+              </div>
+              <div class="flow-step flow-router">
+                <span class="flow-tag">Team &amp; QA Sync</span>
+                <strong>Postman Import + PR Review</strong>
+                <span>Updated in same commit as Express controllers to prevent drift</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card-section" id="tutorial">
+        <h2>Step-by-Step Tutorial: Documenting the Course API with OpenAPI &amp; Swagger UI</h2>
+        <p>
+          Let us document the core endpoints of our Phase 5 Course Projects API—covering health checks, login, paginated search, project creation, and standardized error responses—and serve interactive Swagger UI from Express on <strong>Node.js (server-side)</strong>.
+        </p>
+
+        <h3>Step 1: Install Swagger UI and YAML Parser Packages</h3>
+        <p class="code-label">Terminal Commands</p>
+        <pre><code>npm install swagger-ui-express yaml</code></pre>
+
+        <h3>Step 2: Write a Clean OpenAPI 3.0 Specification (<code>src/docs/openapi.yaml</code>)</h3>
+        <p>Notice how reusable schemas (<code>Project</code>, <code>PaginationMeta</code>, <code>ErrorResponse</code>) and <code>bearerAuth</code> keep every endpoint definition concise and consistent. Use safe placeholder examples only.</p>
+        <p class="code-label">OpenAPI Specification: <code>src/docs/openapi.yaml</code></p>
+        <pre><code>openapi: 3.0.3
+info:
+  title: Phase 5 Course Projects API
+  version: 1.0.0
+  description: RESTful API for managing, searching, and documenting technical backend projects.
+servers:
+  - url: http://localhost:5000/api/v1
+    description: Local development server
+tags:
+  - name: Health
+    description: Service readiness probe
+  - name: Auth
+    description: Authentication endpoints
+  - name: Projects
+    description: Paginated search and project management
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Project:
+      type: object
+      properties:
+        _id:
+          type: string
+          example: 6740b21a9f10c312e84a1021
+        title:
+          type: string
+          example: Rate-Limited Express Gateway
+        summary:
+          type: string
+          example: Modular Express API with Redis-backed rate limiting and helmet headers.
+        category:
+          type: string
+          enum: [backend, fullstack, security, devops]
+          example: security
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+          example: intermediate
+        tags:
+          type: array
+          items:
+            type: string
+          example: [express, security, rate-limit]
+        stars:
+          type: integer
+          example: 42
+
+    CreateProjectInput:
+      type: object
+      required: [title, summary, category, difficulty]
+      properties:
+        title:
+          type: string
+          minLength: 4
+          maxLength: 120
+          example: Rate-Limited Express Gateway
+        summary:
+          type: string
+          minLength: 10
+          maxLength: 600
+          example: Modular Express API with Redis-backed rate limiting and helmet headers.
+        category:
+          type: string
+          enum: [backend, fullstack, security, devops]
+        difficulty:
+          type: string
+          enum: [beginner, intermediate, advanced]
+        tags:
+          type: array
+          items:
+            type: string
+          example: [express, security]
+
+    PaginationMeta:
+      type: object
+      properties:
+        totalItems:
+          type: integer
+          example: 24
+        totalPages:
+          type: integer
+          example: 3
+        currentPage:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 10
+        countOnPage:
+          type: integer
+          example: 10
+        hasNextPage:
+          type: boolean
+          example: true
+        hasPrevPage:
+          type: boolean
+          example: false
+
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [fail, error]
+          example: fail
+        errorCode:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Validation failed for one or more fields.
+        requestId:
+          type: string
+          nullable: true
+          example: 9f2a1d4c-3b8a-4e92-a210-7764b19d0f21
+
+  responses:
+    BadRequest:
+      description: Invalid query parameter or request payload
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Missing or invalid Bearer authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Requested resource was not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: Rate limit exceeded; inspect Retry-After header
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+          description: Seconds to wait before retrying
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Check server health status
+      responses:
+        '200':
+          description: Server is healthy
+          content:
+            application/json:
+              example:
+                status: ok
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Authenticate user and issue sample token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: learner@example.com
+                password:
+                  type: string
+                  format: password
+                  example: SamplePassword123!
+      responses:
+        '200':
+          description: Authenticated successfully
+          content:
+            application/json:
+              example:
+                status: success
+                token: sample-jwt-token-placeholder
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /projects:
+    get:
+      tags: [Projects]
+      summary: Search, filter, and paginate projects
+      parameters:
+        - in: query
+          name: q
+          schema:
+            type: string
+            minLength: 2
+            maxLength: 80
+          description: Keyword search term
+        - in: query
+          name: category
+          schema:
+            type: string
+            enum: [backend, fullstack, security, devops]
+        - in: query
+          name: difficulty
+          schema:
+            type: string
+            enum: [beginner, intermediate, advanced]
+        - in: query
+          name: sort
+          schema:
+            type: string
+            enum: [relevance, newest, stars_desc]
+            default: newest
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 40
+            default: 10
+      responses:
+        '200':
+          description: Paginated list of matching projects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  pagination:
+                    $ref: '#/components/schemas/PaginationMeta'
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+    post:
+      tags: [Projects]
+      summary: Create a new project entry
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProjectInput'
+      responses:
+        '201':
+          description: Project created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /projects/{id}:
+    get:
+      tags: [Projects]
+      summary: Fetch a single project by MongoDB ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          example: 6740b21a9f10c312e84a1021
+      responses:
+        '200':
+          description: Project found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    $ref: '#/components/schemas/Project'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'</code></pre>
+
+        <h3>Step 3: Serve Swagger UI Safely in Express (<code>src/app.js</code>)</h3>
+        <p>Load the YAML file at startup, serve Swagger UI at <code>/api-docs</code> (optionally gated outside production), and also expose the raw JSON spec at <code>/api-docs.json</code> so tools like Postman can import it in one click.</p>
+        <p class="code-label">Backend Source Code: <code>src/docs/loadSpec.js</code> (Runs on Node.js)</p>
+        <pre><code>import fs from 'node:fs';
+import path from 'node:path';
+import YAML from 'yaml';
+
+export const loadOpenApiSpec = () => {
+  const specPath = path.resolve(process.cwd(), 'src', 'docs', 'openapi.yaml');
+  const rawYaml = fs.readFileSync(specPath, 'utf8');
+  return YAML.parse(rawYaml);
+};</code></pre>
+
+        <p class="code-label">Backend Source Code: <code>src/app.js</code> (Runs on Node.js)</p>
+        <pre><code>import express from 'express';
+import swaggerUi from 'swagger-ui-express';
+import { loadOpenApiSpec } from './docs/loadSpec.js';
+
+const app = express();
+app.disable('x-powered-by');
+app.use(express.json({ limit: '10kb' }));
+
+if (process.env.NODE_ENV !== 'production') {
+  const openApiSpec = loadOpenApiSpec();
+  app.get('/api-docs.json', (req, res) => res.json(openApiSpec));
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+}
+
+app.get('/api/v1/health', (req, res) => {
+  res.status(200).json({ status: 'ok' });
+});
+
+app.listen(5000, () => {
+  console.log('API running on http://localhost:5000');
+  console.log('Swagger docs available at http://localhost:5000/api-docs');
+});</code></pre>
+      </section>
+
+      <section class="card-section" id="use-cases">
+        <h2>Real-World Use Cases</h2>
+        <div class="two-col-grid">
+          <article class="info-box">
+            <h3>1. Frontend &amp; Mobile Parallel Development</h3>
+            <p>Once an OpenAPI spec is agreed upon, frontend and mobile teams immediately know exact URLs, query parameters, required fields, and error shapes—cutting integration friction in half.</p>
+          </article>
+          <article class="info-box">
+            <h3>2. One-Click Postman &amp; SDK Generation</h3>
+            <p>Exposing <code>/api-docs.json</code> allows QA engineers to import every endpoint into Postman automatically or generate strongly typed TypeScript client functions.</p>
+          </article>
+          <article class="info-box">
+            <h3>3. External Partner Integrations</h3>
+            <p>SaaS platforms publish clean OpenAPI portals showing rate limits, webhook/error codes, and Bearer auth headers so third-party developers integrate reliably without support tickets.</p>
+          </article>
+          <article class="info-box">
+            <h3>4. Live Endpoint Verification</h3>
+            <p>Developers open <code>/api-docs</code> locally, click <strong>Authorize</strong> with a test token, and test edge cases like invalid ObjectIds or missing body fields interactively.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="mistakes-security">
+        <h2>Common Mistakes, Security Notes, and Best Practices</h2>
+        <div class="two-col-grid">
+          <article class="warning-box">
+            <h3>Common Documentation Mistakes</h3>
+            <ul class="styled-list">
+              <li><strong>Documenting only <code>200 OK</code> happy paths:</strong> Frontend apps break when they do not know what <code>400</code>, <code>401</code>, <code>404</code>, or <code>429</code> responses look like.</li>
+              <li><strong>Letting docs drift behind code changes:</strong> Adding a new required field in a controller without updating <code>openapi.yaml</code> wastes hours of debugging.</li>
+              <li><strong>Duplicating response schemas across 25 routes:</strong> Always extract shared <code>Project</code>, <code>PaginationMeta</code>, and <code>ErrorResponse</code> models into <code>components.schemas</code>.</li>
+              <li><strong>Forgetting to document rate-limit and pagination defaults:</strong> Integrators need to know default <code>limit</code>, maximum <code>limit</code>, and <code>Retry-After</code> behavior.</li>
+            </ul>
+          </article>
+          <article class="security-box">
+            <h3>Security &amp; Best-Practice Notes</h3>
+            <ul class="styled-list">
+              <li><strong>Never put real secrets in OpenAPI examples:</strong> Use obvious placeholders like <code>sample-jwt-token-placeholder</code>—never real passwords, SMTP keys, or live tokens!</li>
+              <li><strong>Protect or disable interactive docs on sensitive production APIs:</strong> Leaving unauthenticated Swagger UI public on private internal admin APIs acts as a blueprint for attackers. Gate it behind auth or disable in production.</li>
+              <li><strong>Be mindful of <code>helmet</code> CSP with Swagger UI:</strong> Swagger UI uses inline scripts/styles; if you mount <code>helmet()</code> globally, either mount Swagger UI only in non-production or configure CSP specifically for the docs route.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="exercises">
+        <h2>Hands-On Exercises</h2>
+        <ol class="styled-list">
+          <li><strong>Document File Upload Endpoint:</strong> Write an OpenAPI path entry for Day 9's <code>POST /api/v1/uploads</code> specifying <code>requestBody.content['multipart/form-data']</code> with a binary field <code>document</code> (<code>type: string, format: binary</code>) plus <code>201</code>, <code>400</code>, and <code>413</code> responses.</li>
+          <li><strong>Test Live in Swagger UI:</strong> Boot the Express app locally, visit <code>http://localhost:5000/api-docs</code>, and execute <code>GET /api/v1/health</code> using the "Try it out" button.</li>
+          <li><strong>Verify Error Contract Consistency:</strong> Compare the actual JSON returned by an invalid request (like <code>?page=-1</code>) against your documented <code>ErrorResponse</code> schema and make sure every key matches identically.</li>
+          <li><strong>Postman Import Check:</strong> Save or fetch <code>/api-docs.json</code> and import it into Postman/Insomnia or an OpenAPI validator to verify zero syntax errors.</li>
+        </ol>
+      </section>
+
+      <section class="card-section" id="mini-project">
+        <h2>Day 14 Mini Project: Complete Course API OpenAPI Reference</h2>
+        <p>
+          Create a comprehensive, synchronized OpenAPI 3.0 specification covering the primary endpoints built across Phase 5.
+        </p>
+        <h3>Project Requirements</h3>
+        <ul class="styled-list">
+          <li>Create <code>src/docs/openapi.yaml</code> documenting at least <strong>6 endpoints</strong>: <code>GET /health</code>, <code>POST /auth/login</code>, <code>GET /projects</code> (with search, filters, sort, pagination params), <code>POST /projects</code> (protected by <code>bearerAuth</code>), <code>GET /projects/{id}</code>, and <code>POST /contact</code> (with rate-limit <code>429</code> documentation).</li>
+          <li>Define reusable <code>components.schemas</code> (<code>Project</code>, <code>PaginationMeta</code>, <code>ErrorResponse</code>), <code>components.responses</code> (<code>400</code>, <code>401</code>, <code>404</code>, <code>429</code>), and <code>components.securitySchemes.bearerAuth</code>.</li>
+          <li>Serve interactive Swagger UI at <code>/api-docs</code> and raw JSON at <code>/api-docs.json</code> when <code>NODE_ENV !== 'production'</code>.</li>
+          <li>Test every documented endpoint via Swagger UI or <code>curl</code> and confirm every real response matches its documented schema and status code.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="quiz-section">
+        <h2>Day 14 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+
+        <form id="day14QuizForm" class="quiz-form" novalidate>
+          <fieldset class="quiz-question" data-question="q1">
+            <legend>1. What is the OpenAPI Specification (OAS)?</legend>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> A MongoDB database driver</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> A standardized, machine-readable YAML/JSON format for describing REST API endpoints, parameters, schemas, and authentication</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> A CSS grid framework</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> A rate-limiting algorithm</label>
+            <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q2">
+            <legend>2. What is the purpose of Swagger UI in an Express project?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> It renders an OpenAPI specification into interactive browser documentation with "Try it out" request testing</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> It hashes user passwords with bcrypt</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> It compresses uploaded images into WebP</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> It replaces Express routers</label>
+            <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q3">
+            <legend>3. Why should shared models like <code>ErrorResponse</code> and <code>PaginationMeta</code> be placed inside OpenAPI <code>components.schemas</code> and referenced with <code>$ref</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> To avoid duplicating schemas across every endpoint and keep contract updates consistent in one place</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Because OpenAPI forbids defining objects inside <code>paths</code></label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> To hide endpoints from Swagger UI</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> To bypass CORS restrictions</label>
+            <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q4">
+            <legend>4. What does "documentation drift" mean?</legend>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> Moving docs to a different folder</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> When API implementation code changes over time while documentation stays outdated, causing mismatches and broken client integrations</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> Adding dark mode to Swagger UI</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> Compressing YAML into JSON</label>
+            <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q5">
+            <legend>5. How do you document Bearer token authentication in OpenAPI 3.0?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Put your real production admin token inside the <code>info.description</code></label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Define a <code>bearer</code> HTTP scheme in <code>components.securitySchemes</code> and attach <code>security</code> to protected operations</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> Add a query parameter <code>?password=...</code> to every route</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> Disable <code>401</code> responses in the spec</label>
+            <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q6">
+            <legend>6. Why is documenting error responses (<code>400</code>, <code>401</code>, <code>403</code>, <code>404</code>, <code>429</code>) just as important as documenting <code>200 OK</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Frontend and mobile clients must handle validation failures, expired tokens, missing resources, and rate limits gracefully using exact error codes</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> Because Express crashes if <code>404</code> is not written in YAML</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> Because browsers only read <code>4xx</code> responses</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> To slow down Postman imports</label>
+            <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q7">
+            <legend>7. How should an OpenAPI spec document a file-upload endpoint (like Day 9's Multer upload route)?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> Using <code>requestBody.content['multipart/form-data']</code> with a property of <code>type: string</code> and <code>format: binary</code></label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Using <code>GET</code> query parameters for binary bytes</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> Using <code>application/json</code> only</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> Omitting <code>requestBody</code> completely</label>
+            <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q8">
+            <legend>8. What security mistake must you avoid when writing OpenAPI <code>example</code> values?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Including real API keys, real database credentials, or real user passwords/tokens instead of safe placeholders</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> Including example pagination metadata</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> Showing sample email formats like <code>learner@example.com</code></label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> Documenting default <code>limit</code> bounds</label>
+            <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q9">
+            <legend>9. Why do many teams disable or password-protect interactive <code>/api-docs</code> routes in production for private internal APIs?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Exposing internal admin endpoints and exact schemas publicly gives attackers a complete map of private routes</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because Node.js cannot parse YAML in production</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Because Swagger UI deletes MongoDB documents on boot</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> To prevent <code>200 OK</code> responses</label>
+            <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q10">
+            <legend>10. What is the best practice to keep OpenAPI documentation synchronized with Express code as a project evolves?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Store the spec in the same Git repo, update it in the same pull request as route changes, and verify responses match schemas</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Write documentation once a year in an external email</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Never document query parameters or error codes</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> Store docs only on one developer's desktop</label>
+            <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="quiz-actions">
+            <button type="submit" class="btn btn-primary" id="submitQuizBtn">Submit Quiz</button>
+            <button type="button" class="btn btn-secondary" id="retryQuizBtn">Retry Quiz</button>
+          </div>
+
+          <div class="quiz-result" id="quizResult" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section class="card-section" id="short-answers">
+        <h2>Short-Answer Questions</h2>
+        <p>Think through each answer carefully before opening the explanation.</p>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary>1. What makes OpenAPI better than writing an informal plain-text README list of URLs?</summary>
+            <p>OpenAPI is a standardized, machine-readable contract that validates structure, eliminates ambiguity around types/required fields/errors, powers interactive Swagger UI testing, and imports directly into Postman or SDK generators.</p>
+          </details>
+          <details class="qa-item">
+            <summary>2. Explain how <code>components</code> and <code>$ref</code> keep large OpenAPI specifications maintainable.</summary>
+            <p>Defining shared models like <code>ErrorResponse</code>, <code>PaginationMeta</code>, and <code>bearerAuth</code> once under <code>components</code> and referencing them with <code>$ref</code> avoids repetition and ensures global format updates apply everywhere immediately.</p>
+          </details>
+          <details class="qa-item">
+            <summary>3. What details should be included when documenting query parameters for a paginated search route?</summary>
+            <p>Parameter name, location (<code>in: query</code>), type, min/max bounds, enum options, default value (e.g., <code>page=1</code>, <code>limit=10</code>, max <code>40</code>), and whether it is required or optional.</p>
+          </details>
+          <details class="qa-item">
+            <summary>4. How can a backend team prevent documentation drift in day-to-day workflows?</summary>
+            <p>Keep the OpenAPI file inside the same repository as the backend code, require spec updates in the same pull request whenever routes/fields change, and test endpoints against the documented contract.</p>
+          </details>
+          <details class="qa-item">
+            <summary>5. Why might Swagger UI conflict with strict <code>helmet()</code> Content-Security-Policy headers, and how should you handle it?</summary>
+            <p>Swagger UI relies on inline scripts/styles that strict default CSP blocks. Mount Swagger UI only in non-production environments or configure CSP carefully specifically for the <code>/api-docs</code> route without weakening CSP on your API endpoints.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="card-section" id="challenges">
+        <h2>Practical &amp; Coding Challenges</h2>
+        <div class="challenge-list">
+          <article class="challenge-card">
+            <h3>Challenge 1: Complete a Missing OpenAPI Endpoint Spec</h3>
+            <p>Write a complete OpenAPI 3.0 YAML entry for <code>PATCH /api/v1/projects/{id}</code> that requires <code>bearerAuth</code>, validates a path parameter <code>id</code>, accepts optional partial fields (<code>title</code>, <code>summary</code>, <code>difficulty</code>), and documents <code>200</code>, <code>400</code>, <code>401</code>, <code>403</code>, and <code>404</code> responses using <code>$ref</code>.</p>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 2: Fix 3 Security &amp; Accuracy Flaws in a Spec</h3>
+            <p>Identify and fix the 3 problems in this OpenAPI snippet:</p>
+            <pre><code>paths:
+  /login:
+    post:
+      requestBody:
+        content:
+          application/json:
+            example:
+              email: admin@realcompany.com
+              password: RealAdminPassword99!
+      responses:
+        '200':
+          description: Logged in</code></pre>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 3: Add Rate-Limit Header Documentation</h3>
+            <p>Update the <code>TooManyRequests</code> reusable component response in <code>openapi.yaml</code> to document all standard headers (<code>RateLimit-Limit</code>, <code>RateLimit-Remaining</code>, <code>RateLimit-Reset</code>, and <code>Retry-After</code>) with descriptions and integer schemas.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="summary">
+        <h2>Day 14 Revision Summary</h2>
+        <ul class="styled-list">
+          <li>API documentation defines the clear contract between backend and frontend/mobile consumers.</li>
+          <li>Document every endpoint's method, path, auth requirement, parameters, headers, request body, success examples, and all error responses.</li>
+          <li>Use OpenAPI 3.0 with reusable <code>components</code> (<code>schemas</code>, <code>responses</code>, <code>securitySchemes</code>) and <code>$ref</code> to keep specs clean.</li>
+          <li>Serve interactive Swagger UI safely in development, keep specs in the same repository to prevent drift, and never put real secrets in examples.</li>
+        </ul>
+      </section>
+
+      <section class="card-section visual-aid-section" id="lesson-visual">
+        <h2>Day 14 Visual Architecture Reference</h2>
+        <p>Visual summary diagram for Day 14: OpenAPI 3.0 structure, reusable components, Swagger UI testing, and contract synchronization.</p>
+        <div class="lesson-image-frame" id="lessonImageFrame">
+          <img src="image.webp" alt="Diagram illustrating OpenAPI 3.0 documentation structure, reusable components, Bearer security schemes, and Swagger UI testing" class="lesson-image" id="lessonImage">
+          <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
+            <div class="fallback-icon" aria-hidden="true">&#128202;</div>
+            <p class="fallback-title">Day 14 Visual Reference (<code>image.webp</code>)</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 14/</code> folder to display the custom illustration here.</p>
+          </div>
+        </div>
+      </section>
+
+      <nav class="day-pagination" aria-label="Day navigation">
+        <a href="../Day 13/index.html" class="btn btn-secondary nav-prev">
+          &larr; Previous Day: Search Functionality
+        </a>
+        <a href="../Day 15/index.html" class="btn btn-primary nav-next">
+          Next Day: Performance Optimization &rarr;
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-head">
+          <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
+          <strong>Arslan Weblab</strong>
+        </div>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+      </div>
+      <div class="footer-links">
+        <h3>Course Navigation</h3>
+        <ul>
+          <li><a href="../index.html">Course Homepage</a></li>
+          <li><a href="../Day 13/index.html">Day 13: Search Functionality</a></li>
+          <li><a href="../Day 14/index.html">Day 14: API Documentation</a></li>
+          <li><a href="../Day 15/index.html">Day 15: Performance Optimization</a></li>
+          <li><a href="../Day 16/index.html">Day 16: Final Revision &amp; Assessment</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>External Links</h3>
+        <ul>
+          <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>Phase 5: Advanced Backend Development &bull; Arslan Weblab</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

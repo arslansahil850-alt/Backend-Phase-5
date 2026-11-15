@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 6: API Security | Phase 5 - Arslan Weblab</title>
+  <link rel="icon" href="../logo.webp">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="top-navbar" id="topNavbar">
+    <div class="container top-navbar-inner">
+ <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+        <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
+        <span class="brand-text">Arslan Weblab</span>
+      </a>
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <nav class="top-nav-links" id="topNavLinks" aria-label="External portfolio and profile links">
+        <a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
+        <a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+        <a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="mailto:arslansahil850@gmail.com">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="course-navbar" id="courseNavbar" aria-label="Course navigation">
+    <div class="container course-navbar-inner">
+      <div class="course-label">Phase 5 / Advanced Backend Development</div>
+      <div class="course-select-wrap">
+        <label for="courseDaySelect" class="sr-only">Jump to a course day or homepage</label>
+        <select id="courseDaySelect" class="course-select" aria-label="Select course page">
+          <option value="../index.html">Home Page</option>
+          <option value="../Day 1/index.html">Day 1</option>
+          <option value="../Day 2/index.html">Day 2</option>
+          <option value="../Day 3/index.html">Day 3</option>
+          <option value="../Day 4/index.html">Day 4</option>
+          <option value="../Day 5/index.html">Day 5</option>
+          <option value="../Day 6/index.html" selected>Day 6</option>
+          <option value="../Day 7/index.html">Day 7</option>
+          <option value="../Day 8/index.html">Day 8</option>
+          <option value="../Day 9/index.html">Day 9</option>
+          <option value="../Day 10/index.html">Day 10</option>
+          <option value="../Day 11/index.html">Day 11</option>
+          <option value="../Day 12/index.html">Day 12</option>
+          <option value="../Day 13/index.html">Day 13</option>
+          <option value="../Day 14/index.html">Day 14</option>
+          <option value="../Day 15/index.html">Day 15</option>
+          <option value="../Day 16/index.html">Day 16</option>
+        </select>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content" class="main-content">
+    <div class="container">
+      <section class="hero-card">
+        <div class="badge-row">
+          <span class="day-badge">Day 6 of 16</span>
+          <span class="type-badge">Learning Module</span>
+        </div>
+        <h1>Day 6: API Security</h1>
+        <p class="lead-intro">
+          A functional API that lacks security is an open invitation for data breaches, account takeovers, and service outages. Because backend APIs are directly exposed to the internet, attackers can bypass your browser UI completely and send crafted HTTP requests directly to your endpoints using scripts or <code>curl</code>. Today you will learn the core threats facing Node.js, Express, and MongoDB APIs—and how to build defense-in-depth protections through validation, sanitization, credential hashing, secure headers, least privilege, and dependency hygiene.
+        </p>
+      </section>
+
+      <section class="card-section" id="objectives">
+        <h2>Learning Objectives</h2>
+        <p>By the end of Day 6, you will be able to:</p>
+        <ul class="styled-list">
+          <li>Identify common backend API risks including NoSQL injection, Broken Object Level Authorization (BOLA), mass assignment, and sensitive data exposure.</li>
+          <li>Implement strict input validation and sanitize payloads against MongoDB operator injection (<code>$</code> and <code>.</code> keys).</li>
+          <li>Protect environment variables and credentials from leaking into Git history, logs, or API responses.</li>
+          <li>Hash passwords safely using slow salted algorithms (<code>bcryptjs</code> / <code>scrypt</code>) and prevent user-enumeration via safe error messages.</li>
+          <li>Harden HTTP response headers using <code>helmet</code> and payload limits.</li>
+          <li>Distinguish Authentication from Authorization and enforce the <strong>Principle of Least Privilege</strong>, including resource ownership checks.</li>
+          <li>Maintain dependency and configuration hygiene using <code>npm audit</code> and lockfiles.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="prerequisites">
+        <h2>Prerequisites</h2>
+        <p>Before starting Day 6, make sure you are comfortable with:</p>
+        <ul class="styled-list">
+          <li><strong>Days 1–5 Concepts:</strong> Express middleware pipelines, layered services/controllers, and centralized <code>AppError</code> handling.</li>
+          <li><strong>HTTP Headers &amp; Status Codes:</strong> Understanding <code>400</code>, <code>401</code>, <code>403</code>, and standard headers like <code>Authorization</code> and <code>Content-Type</code>.</li>
+          <li><strong>Client vs. Server Trust Boundary:</strong> Understanding that browser-side HTML/JS validation only helps UX; attackers can bypass browsers and send raw HTTP requests straight to Node.js, so all security enforcement must happen on the server.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="terminology">
+        <h2>Important Terminology and Definitions</h2>
+        <div class="term-grid">
+          <article class="term-card">
+            <h3>Defense in Depth</h3>
+            <p>A security strategy that layers multiple independent safeguards—headers, payload limits, validation, authentication, authorization, and database protections—so one failure does not compromise the system.</p>
+          </article>
+          <article class="term-card">
+            <h3>NoSQL Injection</h3>
+            <p>An attack where malicious JSON objects containing MongoDB operators (such as <code>{ "$ne": null }</code> or <code>{ "$gt": "" }</code>) are injected into queries to bypass authentication or dump records.</p>
+          </article>
+          <article class="term-card">
+            <h3>BOLA (Broken Object Level Authorization)</h3>
+            <p>A critical vulnerability where an authenticated user accesses or modifies another user's record simply by changing an <code>:id</code> parameter in the URL because the server never checked ownership.</p>
+          </article>
+          <article class="term-card">
+            <h3>Principle of Least Privilege</h3>
+            <p>Giving every user, API token, and database account only the minimum permissions and fields required to perform its intended job—nothing more.</p>
+          </article>
+          <article class="term-card">
+            <h3>Salted Password Hashing</h3>
+            <p>Transforming a plaintext password with a unique random salt through a deliberately slow one-way algorithm (like <code>bcrypt</code> or <code>argon2</code>) so stored hashes cannot be reversed or cracked quickly.</p>
+          </article>
+          <article class="term-card">
+            <h3>Account Enumeration</h3>
+            <p>An information leak where login or password-reset errors reveal whether an email exists (e.g., <code>"Email not found"</code> vs. <code>"Wrong password"</code>), letting attackers build a list of registered users.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="theory">
+        <h2>Detailed Theory and Explanations</h2>
+
+        <h3>1. Common API Security Risks</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Risk</th>
+                <th>How It Happens</th>
+                <th>Defense</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>NoSQL Operator Injection</strong></td>
+                <td>Passing <code>{ email: req.body.email }</code> directly to <code>User.findOne()</code> when <code>req.body.email</code> is <code>{ "$gt": "" }</code>.</td>
+                <td>Validate strict string types (<code>typeof email === 'string'</code>) and strip keys starting with <code>$</code> or containing <code>.</code>.</td>
+              </tr>
+              <tr>
+                <td><strong>BOLA / Missing Ownership Check</strong></td>
+                <td>Checking <code>requireAuth</code> on <code>GET /invoices/:id</code>, but failing to verify <code>invoice.ownerId === req.user.id</code>.</td>
+                <td>Query with both ID and owner (<code>_id</code> + <code>ownerId</code>) or verify ownership before returning/mutating data.</td>
+              </tr>
+              <tr>
+                <td><strong>Mass Assignment</strong></td>
+                <td>Passing entire <code>req.body</code> into <code>User.create(req.body)</code> so a user supplies <code>"role": "admin"</code>.</td>
+                <td>Allow-list only permitted fields explicitly before calling Mongoose.</td>
+              </tr>
+              <tr>
+                <td><strong>Sensitive Data Exposure</strong></td>
+                <td>Returning full Mongoose documents containing <code>passwordHash</code>, tokens, or internal flags.</td>
+                <td>Set <code>select: false</code> on sensitive schema fields and use explicit DTO formatters.</td>
+              </tr>
+              <tr>
+                <td><strong>Credential &amp; Secret Leaks</strong></td>
+                <td>Hardcoding DB URIs or JWT secrets in source code or committing <code>.env</code> to Git.</td>
+                <td>Store secrets in environment variables, ignore <code>.env</code> in <code>.gitignore</code>, and validate at startup.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2. Input Validation &amp; Sanitization</h3>
+        <p>
+          <strong>Validation</strong> checks that incoming data matches the exact shape, type, and constraints expected (for example, <code>email</code> must be a string matching email format and under 120 characters). <strong>Sanitization</strong> cleans or neutralizes dangerous characters or structures before your app stores or queries them.
+        </p>
+        <p>
+          In MongoDB/Express APIs, JSON bodies allow nested objects! If an endpoint expects a string <code>username</code> and an attacker sends <code>{ "username": { "$ne": "" } }</code>, Mongoose queries can behave unexpectedly unless you both validate primitive types <strong>and</strong> strip dangerous MongoDB operator keys (keys beginning with <code>$</code> or containing <code>.</code>).
+        </p>
+
+        <h3>3. Secure Handling of Environment Variables</h3>
+        <ul class="styled-list">
+          <li>Never put passwords, API keys, JWT secrets, or database connection strings inside JavaScript files.</li>
+          <li>Add <code>.env</code> to <code>.gitignore</code> before your very first commit. If a secret is ever committed—even once—assume it is compromised and rotate it immediately.</li>
+          <li>Use separate credentials for development, staging, and production environments.</li>
+          <li>On the database side, create a dedicated MongoDB user scoped only to your application's database with read/write rights rather than using a cluster-wide root admin account.</li>
+        </ul>
+
+        <h3>4. Password and Credential Safety</h3>
+        <p>
+          Never store plaintext passwords and never use fast general-purpose hashes like <code>SHA-256</code> or <code>MD5</code> for passwords—modern GPUs can guess billions of SHA-256 hashes per second. Always use an adaptive, salted, slow password-hashing function such as <strong>bcrypt</strong> (cost factor 10–12), <strong>Argon2id</strong>, or Node's built-in <strong><code>crypto.scrypt</code></strong>.
+        </p>
+        <p>
+          Furthermore, mark <code>passwordHash</code> with <code>select: false</code> in your Mongoose schema so normal <code>User.find()</code> queries never fetch password hashes accidentally, and compare hashes with constant-time functions (<code>bcrypt.compare</code> or <code>crypto.timingSafeEqual</code>) to avoid timing side-channel leaks.
+        </p>
+
+        <h3>5. Secure HTTP Headers with <code>helmet</code></h3>
+        <p>
+          Every HTTP response includes metadata headers that instruct browsers how to handle your responses safely. By default, Express sends <code>X-Powered-By: Express</code> and omits protective headers. Installing and mounting <code>helmet()</code> sets crucial security headers automatically:
+        </p>
+        <ul class="styled-list">
+          <li><code>X-Content-Type-Options: nosniff</code>: Prevents browsers from MIME-sniffing files into executable scripts.</li>
+          <li><code>X-Frame-Options: SAMEORIGIN</code> / <code>frame-ancestors</code>: Protects against clickjacking attacks.</li>
+          <li><code>Strict-Transport-Security (HSTS)</code>: Instructs browsers to connect exclusively over HTTPS.</li>
+          <li><code>Content-Security-Policy (CSP)</code>: Restricts where scripts, styles, and frames can load from.</li>
+          <li>Removes <code>X-Powered-By</code> to reduce framework fingerprinting.</li>
+        </ul>
+
+        <h3>6. Authentication, Authorization &amp; Least Privilege</h3>
+        <p>
+          Authentication answers <em>"Who are you?"</em> (returning <code>401 Unauthorized</code> if missing/invalid). Authorization answers <em>"Are you allowed to touch this specific resource or action?"</em> (returning <code>403 Forbidden</code> if denied).
+        </p>
+        <p>
+          Applying the <strong>Principle of Least Privilege</strong> means:
+        </p>
+        <ul class="styled-list">
+          <li>New user registrations always default to the lowest role (<code>'member'</code>), ignoring any <code>role</code> property sent in <code>req.body</code>.</li>
+          <li>Users can only view, edit, or delete records where <code>record.ownerId</code> matches <code>req.user.id</code> (unless an explicit admin role is verified).</li>
+          <li>Responses project only the fields needed by that endpoint instead of dumping entire database objects.</li>
+        </ul>
+
+        <h3>7. Safe Error Messages &amp; Dependency Hygiene</h3>
+        <p>
+          Safe error messages help real users without educating attackers. On login endpoints, always return the exact same neutral message—such as <code>"Invalid email or password."</code>—whether the email was not found or the password did not match. Never return database table names, index errors, or stack traces in production.
+        </p>
+        <p>
+          Finally, keep your dependencies clean: commit <code>package-lock.json</code> so builds use verified package versions, run <code>npm audit</code> regularly to spot known CVEs, remove unused packages, and avoid unmaintained third-party libraries.
+        </p>
+      </section>
+
+      <section class="card-section" id="diagram">
+        <h2>Diagram: Defense-in-Depth API Security Layers</h2>
+        <p>Security works best in concentric layers—if a request fails any gate, it is stopped safely before reaching your database:</p>
+        <div class="diagram-container" role="img" aria-label="Layered API security flow showing an incoming request passing through Layer 1 Transport & Helmet Headers, Layer 2 Payload Limit & Input Sanitization, Layer 3 Strict Type Validation, Layer 4 Authentication (401), Layer 5 Role & Ownership Authorization / Least Privilege (403), and Layer 6 Safe Database Queries & Sanitized Error/DTO Responses.">
+          <div class="flow-diagram">
+            <div class="flow-step flow-client">
+              <span class="flow-tag">Layer 1 &bull; Perimeter &amp; Headers</span>
+              <strong><code>helmet()</code> + Payload Limits + HTTPS</strong>
+              <span>Sets protective HTTP headers, hides <code>X-Powered-By</code>, caps JSON body to <code>10kb</code></span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-app">
+              <span class="flow-tag">Layer 2 &bull; Sanitization &amp; Validation</span>
+              <strong>Strip <code>$</code> / <code>.</code> Keys + Explicit Schema Allow-Listing</strong>
+              <span>Blocks NoSQL operator injection and mass assignment before logic runs</span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-router">
+              <span class="flow-tag">Layer 3 &bull; Identity &amp; Least Privilege</span>
+              <strong>Authentication (<code>401</code>) &rarr; Role + Ownership Check (<code>403</code>)</strong>
+              <span>Verifies identity and confirms user owns the target record (prevents BOLA)</span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-controller">
+              <span class="flow-tag">Layer 4 &bull; Data &amp; Output Safety</span>
+              <strong>Salted Password Hashing + Field Projection + Safe Errors</strong>
+              <span>Hides <code>passwordHash</code>/<code>__v</code>, returns clean DTOs, suppresses stack traces in production</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card-section" id="tutorial">
+        <h2>Step-by-Step Tutorial: Hardening an Express &amp; MongoDB API</h2>
+        <p>
+          Let us review a vulnerable route snippet and build a hardened, production-styled Express + MongoDB implementation running on <strong>Node.js (server-side)</strong>.
+        </p>
+
+        <h3>Before: Vulnerable Patterns to Spot</h3>
+        <p>Look at how many security holes exist in just 12 lines of careless code:</p>
+        <p class="code-label">Insecure Anti-Pattern (Do NOT use in production)</p>
+        <pre><code>app.use(express.json());
+
+app.post('/api/register', async (req, res) => {
+  const user = await User.create(req.body);
+  res.json(user);
+});
+
+app.post('/api/login', async (req, res) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) return res.status(404).json({ message: 'No user with that email' });
+  if (user.password !== req.body.password) return res.status(401).json({ message: 'Wrong password' });
+  res.json({ user });
+});</code></pre>
+        <p>Problems here: no payload size cap, no <code>helmet</code> headers, mass assignment on <code>User.create(req.body)</code>, plaintext passwords, NoSQL injection risk if <code>req.body.email</code> is an object, account enumeration on login messages, and leaking the entire user document including password!</p>
+
+        <h3>Step 1: Install Security &amp; Hashing Dependencies</h3>
+        <p class="code-label">Terminal Commands</p>
+        <pre><code>mkdir secure-notes-api
+cd secure-notes-api
+npm init -y
+npm install express mongoose dotenv helmet bcryptjs
+npm audit</code></pre>
+
+        <p class="code-label">Configuration Template: <code>.env.example</code></p>
+        <pre><code>NODE_ENV=development
+PORT=5000
+MONGO_URI=mongodb://127.0.0.1:27017/secure_notes_demo
+BCRYPT_ROUNDS=12</code></pre>
+
+        <h3>Step 2: Build Recursive NoSQL Operator Sanitization Middleware</h3>
+        <p>This middleware removes any key starting with <code>$</code> or containing <code>.</code> from <code>req.body</code>, <code>req.query</code>, and <code>req.params</code> recursively, preventing operator injection payloads.</p>
+        <p class="code-label">Backend Source Code: <code>src/middleware/sanitizeInput.js</code></p>
+        <pre><code>const stripDangerousKeys = (value) => {
+  if (Array.isArray(value)) {
+    return value.map(stripDangerousKeys);
+  }
+
+  if (value !== null && typeof value === 'object') {
+    const cleanObject = {};
+    for (const [key, nestedValue] of Object.entries(value)) {
+      if (key.startsWith('$') || key.includes('.')) {
+        continue;
+      }
+      cleanObject[key] = stripDangerousKeys(nestedValue);
+    }
+    return cleanObject;
+  }
+
+  return value;
+};
+
+export const sanitizeInput = (req, res, next) => {
+  if (req.body && typeof req.body === 'object') {
+    req.body = stripDangerousKeys(req.body);
+  }
+  if (req.query && typeof req.query === 'object') {
+    req.query = stripDangerousKeys(req.query);
+  }
+  if (req.params && typeof req.params === 'object') {
+    req.params = stripDangerousKeys(req.params);
+  }
+  next();
+};</code></pre>
+
+        <h3>Step 3: Secure the User Model with Salted Hashing &amp; Hidden Hash Field</h3>
+        <p class="code-label">Backend Source Code: <code>src/models/User.js</code></p>
+        <pre><code>import mongoose from 'mongoose';
+import bcrypt from 'bcryptjs';
+
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+      minlength: 2,
+      maxlength: 80
+    },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true
+    },
+    passwordHash: {
+      type: String,
+      required: true,
+      select: false
+    },
+    role: {
+      type: String,
+      enum: ['member', 'admin'],
+      default: 'member'
+    }
+  },
+  { timestamps: true }
+);
+
+userSchema.methods.verifyPassword = async function (candidatePassword) {
+  return bcrypt.compare(candidatePassword, this.passwordHash);
+};
+
+const User = mongoose.model('User', userSchema);
+
+export default User;</code></pre>
+
+        <h3>Step 4: Safe Registration, Login, and Ownership-Protected Notes</h3>
+        <p class="code-label">Backend Source Code: <code>src/models/Note.js</code></p>
+        <pre><code>import mongoose from 'mongoose';
+
+const noteSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, trim: true, maxlength: 120 },
+    content: { type: String, required: true, trim: true, maxlength: 2000 },
+    ownerId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true, index: true }
+  },
+  { timestamps: true }
+);
+
+const Note = mongoose.model('Note', noteSchema);
+
+export default Note;</code></pre>
+
+        <p class="code-label">Backend Source Code: <code>src/controllers/authController.js</code></p>
+        <pre><code>import bcrypt from 'bcryptjs';
+import User from '../models/User.js';
+
+const toPublicUser = (userDoc) => ({
+  id: userDoc._id,
+  name: userDoc.name,
+  email: userDoc.email,
+  role: userDoc.role,
+  createdAt: userDoc.createdAt
+});
+
+export const register = async (req, res, next) => {
+  try {
+    const { name, email, password } = req.body;
+
+    if (typeof name !== 'string' || name.trim().length &lt; 2) {
+      return res.status(400).json({ status: 'fail', message: 'Valid name is required.' });
+    }
+
+    if (typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return res.status(400).json({ status: 'fail', message: 'Valid email is required.' });
+    }
+
+    if (typeof password !== 'string' || password.length &lt; 10 || password.length &gt; 128) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'Password must be between 10 and 128 characters.'
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const existing = await User.findOne({ email: normalizedEmail });
+    if (existing) {
+      return res.status(409).json({ status: 'fail', message: 'Unable to register with these details.' });
+    }
+
+    const rounds = Number(process.env.BCRYPT_ROUNDS) || 12;
+    const passwordHash = await bcrypt.hash(password, rounds);
+
+    const createdUser = await User.create({
+      name: name.trim(),
+      email: normalizedEmail,
+      passwordHash,
+      role: 'member'
+    });
+
+    return res.status(201).json({
+      status: 'success',
+      data: toPublicUser(createdUser)
+    });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+export const login = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+
+    if (typeof email !== 'string' || typeof password !== 'string') {
+      return res.status(400).json({ status: 'fail', message: 'Email and password must be strings.' });
+    }
+
+    const user = await User.findOne({ email: email.trim().toLowerCase() }).select('+passwordHash');
+
+    const isValid = user ? await user.verifyPassword(password) : false;
+
+    if (!user || !isValid) {
+      return res.status(401).json({
+        status: 'fail',
+        message: 'Invalid email or password.'
+      });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      data: toPublicUser(user)
+    });
+  } catch (err) {
+    return next(err);
+  }
+};</code></pre>
+
+        <h3>Step 5: Enforce Ownership (Prevent BOLA) in Note Controller</h3>
+        <p class="code-label">Backend Source Code: <code>src/controllers/noteController.js</code></p>
+        <pre><code>import mongoose from 'mongoose';
+import Note from '../models/Note.js';
+
+export const getMyNote = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ status: 'fail', message: 'Invalid note ID.' });
+    }
+
+    const note = await Note.findById(id).select('-__v');
+    if (!note) {
+      return res.status(404).json({ status: 'fail', message: 'Note not found.' });
+    }
+
+    const isOwner = note.ownerId.toString() === req.user.id;
+    const isAdmin = req.user.role === 'admin';
+
+    if (!isOwner && !isAdmin) {
+      return res.status(403).json({
+        status: 'fail',
+        message: 'You do not have permission to access this note.'
+      });
+    }
+
+    return res.status(200).json({ status: 'success', data: note });
+  } catch (err) {
+    return next(err);
+  }
+};</code></pre>
+
+        <h3>Step 6: Harden Global Express App Setup</h3>
+        <p class="code-label">Backend Source Code: <code>src/app.js</code></p>
+        <pre><code>import express from 'express';
+import helmet from 'helmet';
+import { sanitizeInput } from './middleware/sanitizeInput.js';
+import authRoutes from './routes/authRoutes.js';
+import noteRoutes from './routes/noteRoutes.js';
+
+const app = express();
+
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+
+app.use(helmet());
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: false, limit: '10kb' }));
+app.use(sanitizeInput);
+
+app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/notes', noteRoutes);
+
+app.all('*', (req, res) => {
+  res.status(404).json({ status: 'fail', message: 'Endpoint not found.' });
+});
+
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  res.status(statusCode).json({
+    status: statusCode &lt; 500 ? 'fail' : 'error',
+    message: process.env.NODE_ENV === 'production' && statusCode === 500 ? 'Internal server error.' : err.message
+  });
+});
+
+export default app;</code></pre>
+      </section>
+
+      <section class="card-section" id="use-cases">
+        <h2>Real-World Use Cases</h2>
+        <div class="two-col-grid">
+          <article class="info-box">
+            <h3>1. Multi-Tenant Patient or Student Portals</h3>
+            <p>Checking resource ownership (<code>record.ownerId === req.user.id</code>) stops a logged-in student from reading another student's grades simply by incrementing a numeric or ObjectId URL parameter.</p>
+          </article>
+          <article class="info-box">
+            <h3>2. Preventing Login Bypass via NoSQL Injection</h3>
+            <p>Enforcing <code>typeof email === 'string'</code> and stripping <code>$</code> keys prevents attackers from sending JSON objects like <code>{ "$ne": null }</code> to trick <code>findOne()</code> into returning the first admin account.</p>
+          </article>
+          <article class="info-box">
+            <h3>3. Protecting User Credentials After a Database Leak</h3>
+            <p>Salted <code>bcrypt</code> or <code>scrypt</code> hashing ensures that even if an attacker obtains a database backup, plaintext user passwords remain protected against rainbow-table and brute-force cracking.</p>
+          </article>
+          <article class="info-box">
+            <h3>4. Supply-Chain Hygiene in CI/CD Pipelines</h3>
+            <p>Running <code>npm audit</code> and installing dependencies via <code>npm ci</code> (which strictly honors <code>package-lock.json</code>) blocks unexpected vulnerable dependency upgrades in production deployments.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="mistakes-security">
+        <h2>Common Mistakes &amp; API Security Checklist</h2>
+        <div class="two-col-grid">
+          <article class="warning-box">
+            <h3>Common Security Mistakes</h3>
+            <ul class="styled-list">
+              <li><strong>Relying only on browser-side validation:</strong> HTML <code>required</code> attributes and frontend JavaScript checks can be bypassed in 2 seconds with <code>curl</code>. Server validation is mandatory.</li>
+              <li><strong>Using <code>SHA-256</code> for passwords:</strong> Fast hashes make offline cracking trivial. Always use slow salted algorithms (<code>bcrypt</code>, <code>argon2</code>, or <code>scrypt</code>).</li>
+              <li><strong>Setting <code>role: req.body.role</code> during signup:</strong> Allows any visitor to register as an administrator. Hardcode <code>role: 'member'</code> on public signup.</li>
+              <li><strong>Skipping ownership checks after authentication:</strong> Authentication proves who you are; it does <strong>not</strong> prove you own <code>/api/v1/orders/999</code>.</li>
+              <li><strong>Committing <code>.env</code> once and deleting it later:</strong> Secrets remain in Git commit history forever—rotate any exposed credential immediately.</li>
+            </ul>
+          </article>
+          <article class="security-box">
+            <h3>Production API Security Checklist</h3>
+            <ul class="styled-list">
+              <li><code>helmet()</code> registered and <code>x-powered-by</code> disabled.</li>
+              <li>Body parser limits configured (e.g., <code>limit: '10kb'</code>).</li>
+              <li>Strict type validation + NoSQL operator sanitization enabled.</li>
+              <li>Passwords hashed with salted <code>bcrypt</code>/<code>argon2</code>/<code>scrypt</code> and marked <code>select: false</code>.</li>
+              <li>Explicit allow-listing on create/update inputs (no raw <code>req.body</code> spreads).</li>
+              <li>Least privilege enforced on roles, ownership checks (anti-BOLA), and DB user permissions.</li>
+              <li>Neutral auth error messages + zero stack traces leaked in production.</li>
+              <li><code>.env</code> gitignored; <code>package-lock.json</code> committed; <code>npm audit</code> clean.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="exercises">
+        <h2>Hands-On Exercises</h2>
+        <ol class="styled-list">
+          <li><strong>Inspect Security Headers:</strong> Start your Express app with <code>helmet()</code> enabled, run <code>curl -I http://localhost:5000/api/v1/health</code>, and list every security header added by Helmet (and confirm <code>X-Powered-By</code> is absent).</li>
+          <li><strong>Test NoSQL Sanitization:</strong> Send a <code>POST</code> request containing <code>{"email":{"$ne":null},"password":"test"}</code> with and without your <code>sanitizeInput</code> middleware and observe how <code>$ne</code> is stripped cleanly.</li>
+          <li><strong>Fix a BOLA Vulnerability:</strong> Write a <code>DELETE /api/v1/projects/:id</code> controller that verifies both <code>req.user</code> authentication AND confirms <code>project.ownerId.equals(req.user.id)</code> before deleting.</li>
+          <li><strong>Audit Dependencies:</strong> Run <code>npm audit</code> inside one of your practice projects and inspect the severity breakdown and remediation commands.</li>
+        </ol>
+      </section>
+
+      <section class="card-section" id="mini-project">
+        <h2>Day 6 Mini Project: Security Review &amp; Hardening Audit</h2>
+        <p>
+          Take an unhardened Express + MongoDB User Profile &amp; Task API and apply a full security hardening pass.
+        </p>
+        <h3>Project Requirements</h3>
+        <ul class="styled-list">
+          <li>Install and configure <code>helmet()</code>, disable <code>x-powered-by</code>, and enforce <code>10kb</code> limits on <code>express.json()</code>.</li>
+          <li>Add recursive <code>sanitizeInput</code> middleware to strip <code>$</code> and <code>.</code> keys from <code>req.body</code>, <code>req.query</code>, and <code>req.params</code>.</li>
+          <li>Update the <code>User</code> Mongoose model so <code>passwordHash</code> has <code>select: false</code>, passwords are hashed with <code>bcryptjs</code> (cost 12), and public signup hardcodes <code>role: 'member'</code>.</li>
+          <li>Update login errors to return a neutral <code>401</code> message (<code>"Invalid email or password."</code>) regardless of whether the email exists or the password is wrong.</li>
+          <li>Add resource ownership checks (anti-BOLA) on single-item <code>GET</code>, <code>PATCH</code>, and <code>DELETE</code> endpoints, returning <code>403 Forbidden</code> for non-owners, and ensure production error responses never expose stack traces or secret values.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="quiz-section">
+        <h2>Day 6 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+
+        <form id="day6QuizForm" class="quiz-form" novalidate>
+          <fieldset class="quiz-question" data-question="q1">
+            <legend>1. Why can browser-side JavaScript form validation never replace server-side validation?</legend>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> Because browsers cannot validate strings</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> Because attackers can bypass your browser UI completely and send crafted HTTP requests directly via <code>curl</code> or scripts</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Because Express ignores requests sent from browsers</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> Because JSON does not support numbers</label>
+            <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q2">
+            <legend>2. How does a NoSQL injection payload like <code>{"email": {"$gt": ""}}</code> attack an unvalidated MongoDB query?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> It shuts down the Node.js event loop</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> MongoDB interprets <code>$gt</code> as a query operator ("greater than empty string"), potentially matching records without knowing a real email</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> It rewrites the CSS files on the frontend</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> It converts MongoDB into a SQL database</label>
+            <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q3">
+            <legend>3. What vulnerability is known as Broken Object Level Authorization (BOLA)?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Forgetting to install <code>helmet</code></label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Allowing an authenticated user to access or modify another user's record by changing an <code>:id</code> parameter because ownership was not checked</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Using <code>dotenv</code> to load port numbers</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> Returning <code>204 No Content</code> after deleting an item</label>
+            <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q4">
+            <legend>4. Why are algorithms like <code>bcrypt</code>, <code>argon2</code>, or <code>scrypt</code> preferred over <code>SHA-256</code> for storing user passwords?</legend>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> Because <code>SHA-256</code> is reversible back into plaintext</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> Because adaptive password hashers use per-password salts and tunable high computational cost, making brute-force cracking orders of magnitude slower</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> Because <code>bcrypt</code> does not require storage in MongoDB</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> Because Node.js cannot compute SHA-256</label>
+            <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q5">
+            <legend>5. What does the <code>helmet()</code> middleware primarily add to an Express application?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Automatic MongoDB backups</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Protective HTTP response headers (such as <code>X-Content-Type-Options</code>, CSP, and HSTS) and removal of <code>X-Powered-By</code></label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> Password hashing for user schemas</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> Automated unit testing</label>
+            <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q6">
+            <legend>6. Why should a login endpoint return the identical message <code>"Invalid email or password."</code> whether the email is missing or the password is wrong?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> To prevent account enumeration, where attackers probe which email addresses are registered on your service</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> Because HTTP <code>401</code> only allows 26-character strings</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> To allow users to log in without a password</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> To reduce database index size</label>
+            <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q7">
+            <legend>7. How does setting <code>select: false</code> on <code>passwordHash</code> in a Mongoose schema improve security?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> It deletes passwords after 24 hours</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> It excludes <code>passwordHash</code> from query results by default unless explicitly requested with <code>.select('+passwordHash')</code></label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> It prevents users from changing their passwords</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> It encrypts all HTTP traffic without HTTPS</label>
+            <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q8">
+            <legend>8. Which practice demonstrates the <strong>Principle of Least Privilege</strong>?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Giving your Express app a cluster-wide MongoDB root admin user</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> Accepting <code>role: req.body.role</code> on public registration</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> Defaulting new users to <code>'member'</code>, scoping database credentials strictly to one database, and checking record ownership on every action</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> Logging full user objects on every request</label>
+            <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q9">
+            <legend>9. If you accidentally committed your <code>.env</code> file with real database credentials to a public GitHub repo and then deleted it in a second commit, are the secrets safe?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Yes, deleting the file in a new commit erases it completely</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> No, Git history still contains the secret; you must treat it as compromised and rotate all exposed keys/passwords immediately</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Yes, as long as <code>helmet()</code> is installed</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> Yes, if <code>NODE_ENV=production</code></label>
+            <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q10">
+            <legend>10. Which npm command helps identify known security vulnerabilities in your installed Node.js packages?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> <code>npm init -y</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> <code>npm audit</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> <code>npm run dev</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> <code>node -v</code></label>
+            <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="quiz-actions">
+            <button type="submit" class="btn btn-primary" id="submitQuizBtn">Submit Quiz</button>
+            <button type="button" class="btn btn-secondary" id="retryQuizBtn">Retry Quiz</button>
+          </div>
+
+          <div class="quiz-result" id="quizResult" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section class="card-section" id="short-answers">
+        <h2>Short-Answer Questions</h2>
+        <p>Formulate your answer carefully before opening each model explanation.</p>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary>1. What is the difference between input validation and input sanitization?</summary>
+            <p>Validation verifies that incoming data meets strict rules (type, format, length, allowed values) and rejects invalid payloads with <code>400</code>/<code>422</code>. Sanitization cleans or strips dangerous constructs (such as removing <code>$</code> and <code>.</code> keys to stop MongoDB operator injection) before processing.</p>
+          </details>
+          <details class="qa-item">
+            <summary>2. Explain how Broken Object Level Authorization (BOLA) occurs and how to prevent it.</summary>
+            <p>BOLA occurs when an authenticated endpoint fetches or mutates a resource by <code>:id</code> without verifying that the authenticated user actually owns or is authorized for that specific record. Prevent it by checking ownership (<code>doc.ownerId.equals(req.user.id)</code>) or filtering queries by both <code>_id</code> and <code>ownerId</code>.</p>
+          </details>
+          <details class="qa-item">
+            <summary>3. Why is <code>express.json({ limit: '10kb' })</code> important for API security?</summary>
+            <p>Capping request body sizes protects server memory and CPU against oversized JSON payloads that could otherwise slow down or crash the Node.js process.</p>
+          </details>
+          <details class="qa-item">
+            <summary>4. How does committing <code>package-lock.json</code> and running <code>npm audit</code> support dependency hygiene?</summary>
+            <p><code>package-lock.json</code> pins exact deterministic dependency versions and checksums across environments, while <code>npm audit</code> scans the dependency tree against known vulnerability advisories so outdated packages can be patched.</p>
+          </details>
+          <details class="qa-item">
+            <summary>5. What does "least privilege" mean for both API users and database connections?</summary>
+            <p>API users should only receive minimum default roles and access only records they own or are permitted to view. Database connections should use dedicated credentials limited strictly to the single application database with only needed read/write privileges—never cluster root admin credentials.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="card-section" id="challenges">
+        <h2>Practical &amp; Coding Challenges</h2>
+        <div class="challenge-list">
+          <article class="challenge-card">
+            <h3>Challenge 1: Security Audit &amp; Fix</h3>
+            <p>List all 5 security vulnerabilities in the route below and write a hardened replacement:</p>
+            <pre><code>app.post('/api/v1/users/signup', async (req, res) => {
+  const created = await User.create(req.body);
+  res.status(200).json(created);
+});
+
+app.get('/api/v1/orders/:id', requireAuth, async (req, res) => {
+  const order = await Order.findById(req.params.id);
+  res.json(order);
+});</code></pre>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 2: Enforce Strict String Checks Against NoSQL Injection</h3>
+            <p>Write a reusable validation helper <code>requireNonEmptyString(value, fieldName, maxLen)</code> that throws a <code>BadRequestError</code> whenever a value is an object, array, number, or empty string—blocking MongoDB query-operator objects even before database queries run.</p>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 3: Password Hashing with Node's Built-In <code>crypto.scrypt</code></h3>
+            <p>Using Node's built-in <code>node:crypto</code> module (without external libraries), write two async functions: <code>hashPassword(plainText)</code> (generating a random 16-byte salt and storing <code>salt:hash</code>) and <code>verifyPassword(plainText, storedValue)</code> using <code>crypto.timingSafeEqual</code>.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="summary">
+        <h2>Day 6 Revision Summary</h2>
+        <ul class="styled-list">
+          <li>Validate strict types and sanitize nested keys (<code>$</code> and <code>.</code>) on the server to prevent NoSQL injection and mass assignment.</li>
+          <li>Use <code>helmet()</code>, disable <code>x-powered-by</code>, and enforce JSON body size limits at the Express perimeter.</li>
+          <li>Hash passwords using slow salted algorithms (<code>bcrypt</code>, <code>argon2</code>, or <code>scrypt</code>) and hide hashes with <code>select: false</code> + DTOs.</li>
+          <li>Enforce authentication (<code>401</code>), role authorization (<code>403</code>), and resource ownership checks (anti-BOLA) following the Principle of Least Privilege.</li>
+          <li>Return neutral error messages on auth endpoints, keep secrets out of Git, and run <code>npm audit</code> regularly.</li>
+        </ul>
+      </section>
+
+      <section class="card-section visual-aid-section" id="lesson-visual">
+        <h2>Day 6 Visual Architecture Reference</h2>
+        <p>Visual summary diagram for Day 6: API Security defense-in-depth layers from HTTP perimeter down to database protection.</p>
+        <div class="lesson-image-frame" id="lessonImageFrame">
+          <img src="image.webp" alt="Diagram illustrating API Security defense-in-depth layers including Helmet headers, sanitization, validation, authentication, authorization, and safe data responses" class="lesson-image" id="lessonImage">
+          <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
+            <div class="fallback-icon" aria-hidden="true">&#128202;</div>
+            <p class="fallback-title">Day 6 Visual Reference (<code>image.webp</code>)</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 6/</code> folder to display the custom illustration here.</p>
+          </div>
+        </div>
+      </section>
+
+      <nav class="day-pagination" aria-label="Day navigation">
+        <a href="../Day 5/index.html" class="btn btn-secondary nav-prev">
+          &larr; Previous Day: Advanced Error Handling
+        </a>
+        <a href="../Day 7/index.html" class="btn btn-primary nav-next">
+          Next Day: Rate Limiting &rarr;
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-head">
+          <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
+          <strong>Arslan Weblab</strong>
+        </div>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+      </div>
+      <div class="footer-links">
+        <h3>Course Navigation</h3>
+        <ul>
+          <li><a href="../index.html">Course Homepage</a></li>
+          <li><a href="../Day 5/index.html">Day 5: Advanced Error Handling</a></li>
+          <li><a href="../Day 6/index.html">Day 6: API Security</a></li>
+          <li><a href="../Day 7/index.html">Day 7: Rate Limiting</a></li>
+          <li><a href="../Day 16/index.html">Day 16: Final Revision &amp; Assessment</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>External Links</h3>
+        <ul>
+          <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>Phase 5: Advanced Backend Development &bull; Arslan Weblab</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

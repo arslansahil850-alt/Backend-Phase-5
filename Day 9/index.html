@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Day 9: File Uploads | Phase 5 - Arslan Weblab</title>
+  <link rel="icon" href="../logo.webp">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+
+  <header class="top-navbar" id="topNavbar">
+    <div class="container top-navbar-inner">
+     <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+        <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
+        <span class="brand-text">Arslan Weblab</span>
+      </a>
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+      </button>
+
+      <nav class="top-nav-links" id="topNavLinks" aria-label="External portfolio and profile links">
+        <a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a>
+        <a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+        <a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <a href="mailto:arslansahil850@gmail.com">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <nav class="course-navbar" id="courseNavbar" aria-label="Course navigation">
+    <div class="container course-navbar-inner">
+      <div class="course-label">Phase 5 / Advanced Backend Development</div>
+      <div class="course-select-wrap">
+        <label for="courseDaySelect" class="sr-only">Jump to a course day or homepage</label>
+        <select id="courseDaySelect" class="course-select" aria-label="Select course page">
+          <option value="../index.html">Home Page</option>
+          <option value="../Day 1/index.html">Day 1</option>
+          <option value="../Day 2/index.html">Day 2</option>
+          <option value="../Day 3/index.html">Day 3</option>
+          <option value="../Day 4/index.html">Day 4</option>
+          <option value="../Day 5/index.html">Day 5</option>
+          <option value="../Day 6/index.html">Day 6</option>
+          <option value="../Day 7/index.html">Day 7</option>
+          <option value="../Day 8/index.html">Day 8</option>
+          <option value="../Day 9/index.html" selected>Day 9</option>
+          <option value="../Day 10/index.html">Day 10</option>
+          <option value="../Day 11/index.html">Day 11</option>
+          <option value="../Day 12/index.html">Day 12</option>
+          <option value="../Day 13/index.html">Day 13</option>
+          <option value="../Day 14/index.html">Day 14</option>
+          <option value="../Day 15/index.html">Day 15</option>
+          <option value="../Day 16/index.html">Day 16</option>
+        </select>
+      </div>
+    </div>
+  </nav>
+
+  <main id="main-content" class="main-content">
+    <div class="container">
+      <section class="hero-card">
+        <div class="badge-row">
+          <span class="day-badge">Day 9 of 16</span>
+          <span class="type-badge">Learning Module</span>
+        </div>
+        <h1>Day 9: File Uploads</h1>
+        <p class="lead-intro">
+          Accepting files from users—such as PDF resumes, assignment documents, or profile attachments—introduces entirely new backend challenges. <code>express.json()</code> cannot parse binary file streams, uncapped uploads can fill your server disk or crash RAM in seconds, and trusting a client's original filename or MIME header opens the door to path traversal and malicious uploads. Today you will learn how HTTP <code>multipart/form-data</code> works, how to configure <code>multer</code> upload middleware safely, how to verify real file contents beyond extensions, and when to move from local disk storage to cloud object storage.
+        </p>
+      </section>
+
+      <section class="card-section" id="objectives">
+        <h2>Learning Objectives</h2>
+        <p>By the end of Day 9, you will be able to:</p>
+        <ul class="styled-list">
+          <li>Explain how binary file uploads travel over HTTP using <code>multipart/form-data</code> boundaries.</li>
+          <li>Describe why dedicated upload middleware (such as <code>multer</code>) is required instead of <code>express.json()</code>.</li>
+          <li>Compare local disk storage (<code>diskStorage</code>), temporary staging folders, and memory buffers (<code>memoryStorage</code>).</li>
+          <li>Enforce strict file size limits, file count caps, and allow-listed file types.</li>
+          <li>Verify real file content using magic bytes (file signatures) rather than trusting spoofable extensions or <code>Content-Type</code> headers alone.</li>
+          <li>Generate collision-free, safe filenames that prevent path-traversal attacks (<code>../../</code>).</li>
+          <li>Handle <code>MulterError</code> exceptions cleanly and clean up rejected temporary files.</li>
+          <li>Explain why scalable production apps use dedicated object storage services instead of local container disks.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="prerequisites">
+        <h2>Prerequisites</h2>
+        <p>Before starting Day 9, make sure you understand:</p>
+        <ul class="styled-list">
+          <li><strong>Days 1, 2, 5 &amp; 6 Concepts:</strong> Express middleware pipelines, centralized error handling, and server-side validation rules.</li>
+          <li><strong>Node.js Built-In Modules:</strong> Familiarity with <code>node:path</code>, <code>node:fs/promises</code>, and <code>node:crypto</code>.</li>
+          <li><strong>Browser vs. Server Boundary:</strong> Browser HTML forms or <code>fetch()</code> with <code>FormData</code> send binary bytes over HTTP; Express + Multer on Node.js receive, validate, and store them on the server.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="terminology">
+        <h2>Important Terminology and Definitions</h2>
+        <div class="term-grid">
+          <article class="term-card">
+            <h3><code>multipart/form-data</code></h3>
+            <p>An HTTP encoding format that splits a single request body into multiple boundary-separated parts so text fields and raw binary files can travel together without heavy Base64 inflation.</p>
+          </article>
+          <article class="term-card">
+            <h3>Upload Middleware (<code>multer</code>)</h3>
+            <p>Express middleware that parses incoming <code>multipart/form-data</code> streams, enforces size/type rules, saves files to disk or memory, and attaches <code>req.file</code> / <code>req.files</code> plus text fields on <code>req.body</code>.</p>
+          </article>
+          <article class="term-card">
+            <h3>Magic Bytes (File Signature)</h3>
+            <p>The first few specific bytes inside a file's binary header (for example, <code>%PDF-</code> or <code>25 50 44 46</code> for PDF, or <code>89 50 4E 47</code> for PNG) that identify its true format regardless of its filename.</p>
+          </article>
+          <article class="term-card">
+            <h3>Path Traversal</h3>
+            <p>An attack where a user sends a crafted filename like <code>../../server.js</code> hoping the server writes files outside the intended uploads folder and overwrites system or app files.</p>
+          </article>
+          <article class="term-card">
+            <h3>Temporary Staging</h3>
+            <p>Writing an incoming upload into an isolated temp directory first so virus/content checks can inspect it before moving it to permanent storage—or deleting it immediately if invalid.</p>
+          </article>
+          <article class="term-card">
+            <h3>Object Storage Service</h3>
+            <p>Dedicated cloud storage (such as Amazon S3, Cloudflare R2, or Google Cloud Storage) designed to store files durably outside ephemeral app servers and serve them via CDNs or signed URLs.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="theory">
+        <h2>Detailed Theory and Explanations</h2>
+
+        <h3>1. How File Uploads Work Over HTTP (<code>multipart/form-data</code>)</h3>
+        <p>
+          When a browser submits a file using <code>&lt;input type="file"&gt;</code> inside a form or via JavaScript <code>new FormData()</code>, it sets the header <code>Content-Type: multipart/form-data; boundary=----WebKitFormBoundary...</code>. Each field (text or binary file) is wrapped inside boundary markers along with a <code>Content-Disposition</code> header and a browser-guessed <code>Content-Type</code>.
+        </p>
+        <p>
+          Express's built-in <code>express.json()</code> only understands <code>application/json</code> text and completely ignores <code>multipart/form-data</code>. That is why you need dedicated multipart streaming middleware like <code>multer</code> (built on <code>busboy</code>) to parse chunks incrementally without freezing the Node.js event loop.
+        </p>
+
+        <h3>2. Temporary Storage, Local Disk, and Memory Buffers</h3>
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Storage Strategy</th>
+                <th>How It Works</th>
+                <th>Best Use Case &amp; Trade-Off</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Local Disk (<code>diskStorage</code>)</strong></td>
+                <td>Streams incoming chunks directly into a folder on the server's hard drive.</td>
+                <td>Low RAM usage; great for single-server apps or temporary staging before magic-byte inspection or cloud upload.</td>
+              </tr>
+              <tr>
+                <td><strong>Memory Buffer (<code>memoryStorage</code>)</strong></td>
+                <td>Holds the entire uploaded file as a <code>Buffer</code> inside Node.js RAM (<code>req.file.buffer</code>).</td>
+                <td>Fast for tiny files (e.g., under 2 MB) sent straight to image resizing or S3—but dangerous if large files or concurrent uploads exhaust RAM!</td>
+              </tr>
+              <tr>
+                <td><strong>Cloud Object Storage</strong></td>
+                <td>Backend (or browser via presigned URL) stores files in S3 / R2 / GCS instead of app servers.</td>
+                <td>Essential for production horizontal scaling and ephemeral hosts (Render/Heroku/containers) whose local files vanish on redeploy.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>3. File Size Limits, Type Validation, and Content Checking</h3>
+        <p>Never allow unlimited uploads. Always configure explicit caps inside <code>multer({ limits: { fileSize: ..., files: ... } })</code> so oversized streams abort early before filling your disk or RAM.</p>
+        <p>
+          Equally important: <strong>never trust <code>file.originalname</code> or <code>file.mimetype</code> by themselves!</strong> Any attacker using <code>curl</code> can rename an executable script <code>malware.exe</code> to <code>resume.pdf</code> and manually set <code>Content-Type: application/pdf</code>. Effective upload validation uses a three-step funnel:
+        </p>
+        <ol class="styled-list">
+          <li><strong>Pre-filter in <code>fileFilter</code>:</strong> Check extension and declared MIME type against a strict allow-list (never a deny-list) to reject obvious mismatches before writing bytes.</li>
+          <li><strong>Verify real content (Magic Bytes):</strong> After receiving the file buffer or temporary file, inspect the leading binary bytes (signature) on the server to confirm the bytes actually match a PDF, PNG, JPEG, or plain UTF-8 text file.</li>
+          <li><strong>Delete rejected files immediately:</strong> If magic-byte inspection fails after staging to a temp folder, unlink (delete) the temporary file in a <code>finally</code> or catch block so junk does not accumulate on disk.</li>
+        </ol>
+
+        <h3>4. Safe File Naming &amp; Preventing Unsafe Uploads</h3>
+        <p>
+          Never save an uploaded file using <code>req.file.originalname</code>. A user could submit <code>../../.env</code> (path traversal) or overwrite another user's <code>report.pdf</code>, or upload <code>payload.html</code> / <code>evil.svg</code> containing embedded JavaScript that executes (Stored XSS) if served directly from your website's origin!
+        </p>
+        <p>Follow these non-negotiable naming and serving rules:</p>
+        <ul class="styled-list">
+          <li>Generate a fresh random filename using <code>crypto.randomUUID()</code> plus a server-controlled extension derived from your verified allow-list (never directly from user input).</li>
+          <li>Store uploads in a private directory <strong>outside</strong> your public static web root, or serve downloadable documents with <code>Content-Disposition: attachment</code> and <code>X-Content-Type-Options: nosniff</code> so browsers download them safely instead of executing them inline.</li>
+          <li>Keep original user-friendly filenames only as sanitized metadata in MongoDB, never as the physical path on disk.</li>
+        </ul>
+
+        <h3>5. Upload Error Handling</h3>
+        <p>
+          When an upload violates a Multer limit, Multer passes a <code>MulterError</code> instance (with codes like <code>LIMIT_FILE_SIZE</code>, <code>LIMIT_FILE_COUNT</code>, or <code>LIMIT_UNEXPECTED_FILE</code>) into Express's <code>next(err)</code> error pipeline. Normalizing <code>MulterError</code> inside your centralized error handler lets your API return clean <code>400</code> or <code>413 Payload Too Large</code> JSON responses instead of ugly stack traces.
+        </p>
+      </section>
+
+      <section class="card-section" id="diagram">
+        <h2>Diagram: Controlled File-Upload Lifecycle</h2>
+        <p>Trace how a multipart upload moves safely through size checks, temp staging, magic-byte content inspection, and final storage:</p>
+        <div class="diagram-container" role="img" aria-label="Flowchart showing Browser FormData sending multipart/form-data to Express Multer Middleware, which checks fileSize limit and allow-listed extension/MIME, writes to a private temp directory with a UUID filename, runs server-side magic-byte signature verification, and either moves the verified file to permanent storage / saves metadata in MongoDB or deletes the temp file and returns 400/413 JSON error.">
+          <div class="flow-diagram">
+            <div class="flow-step flow-client">
+              <span class="flow-tag">1. Client Multipart Request</span>
+              <strong>Browser <code>FormData</code> / API Client &rarr; <code>POST /api/v1/uploads</code></strong>
+              <span>Streams binary bytes using <code>Content-Type: multipart/form-data</code></span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-app">
+              <span class="flow-tag">2. Multer Gatekeeper</span>
+              <strong>Size Cap (<code>2 MB</code>) + Allow-List Pre-Filter + Safe UUID Name</strong>
+              <span>Rejects oversized files (<code>413</code>) or invalid extensions before storing; writes to private <code>tmp/</code></span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-step flow-router">
+              <span class="flow-tag">3. Content Inspection (Magic Bytes)</span>
+              <strong>Read Leading File Header Bytes on Server</strong>
+              <span>Verifies actual binary signature (e.g., <code>%PDF-</code>, PNG, JPEG) matches declared type</span>
+            </div>
+            <div class="flow-arrow" aria-hidden="true">&#8595;</div>
+            <div class="flow-branch">
+              <div class="flow-step flow-controller">
+                <span class="flow-tag">Signature Valid</span>
+                <strong>Move to Private Storage / S3 + Save Metadata</strong>
+                <span>Moves file out of <code>tmp/</code>, records safe metadata, returns <code>201 Created</code></span>
+              </div>
+              <div class="flow-step flow-error">
+                <span class="flow-tag">Spoofed / Invalid Content</span>
+                <strong>Delete Temp File (<code>fs.unlink</code>) + <code>400</code> Error</strong>
+                <span>Cleans up disk immediately and returns safe JSON error</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card-section" id="tutorial">
+        <h2>Step-by-Step Tutorial: Safe Controlled File Upload Endpoint</h2>
+        <p>
+          Let us build a secure file-upload endpoint in Node.js and Express using <code>multer</code>, temporary staging, magic-byte verification, UUID filenames, and clean error handling. Test only with harmless sample files (such as a small sample <code>.pdf</code>, <code>.png</code>, or <code>.txt</code>).
+        </p>
+
+        <h3>Step 1: Install Multer and Prepare Directories</h3>
+        <p class="code-label">Terminal Commands</p>
+        <pre><code>npm install multer</code></pre>
+
+        <h3>Step 2: Create a Magic-Byte Content Inspector Utility (<code>src/utils/fileSignature.js</code>)</h3>
+        <p>This pure Node.js helper reads only the first 8 bytes of a staged file and verifies whether its binary signature truly matches PNG, JPEG, or PDF.</p>
+        <p class="code-label">Backend Source Code: <code>src/utils/fileSignature.js</code> (Runs on Node.js)</p>
+        <pre><code>import fs from 'node:fs/promises';
+
+const SIGNATURES = [
+  {
+    type: 'pdf',
+    mime: 'application/pdf',
+    ext: '.pdf',
+    matches: (buf) =&gt; buf.length &gt;= 4 && buf.subarray(0, 4).toString('ascii') === '%PDF'
+  },
+  {
+    type: 'png',
+    mime: 'image/png',
+    ext: '.png',
+    matches: (buf) =&gt;
+      buf.length &gt;= 8 &&
+      buf[0] === 0x89 &&
+      buf[1] === 0x50 &&
+      buf[2] === 0x4e &&
+      buf[3] === 0x47 &&
+      buf[4] === 0x0d &&
+      buf[5] === 0x0a &&
+      buf[6] === 0x1a &&
+      buf[7] === 0x0a
+  },
+  {
+    type: 'jpeg',
+    mime: 'image/jpeg',
+    ext: '.jpg',
+    matches: (buf) =&gt;
+      buf.length &gt;= 3 &&
+      buf[0] === 0xff &&
+      buf[1] === 0xd8 &&
+      buf[2] === 0xff
+  }
+];
+
+export const detectVerifiedFileType = async (filePath) => {
+  const handle = await fs.open(filePath, 'r');
+  try {
+    const buffer = Buffer.alloc(8);
+    const { bytesRead } = await handle.read(buffer, 0, 8, 0);
+    const slice = buffer.subarray(0, bytesRead);
+
+    for (const sig of SIGNATURES) {
+      if (sig.matches(slice)) {
+        return { mime: sig.mime, ext: sig.ext, type: sig.type };
+      }
+    }
+    return null;
+  } finally {
+    await handle.close();
+  }
+};</code></pre>
+
+        <h3>Step 3: Configure Multer Upload Middleware with Safe Staging &amp; Limits (<code>src/middleware/uploadMiddleware.js</code>)</h3>
+        <p>Notice that we resolve paths safely inside <code>storage/tmp</code>, never trust <code>originalname</code> on disk, and enforce strict <code>fileSize</code> and <code>files</code> caps.</p>
+        <p class="code-label">Backend Source Code: <code>src/middleware/uploadMiddleware.js</code> (Runs on Node.js)</p>
+        <pre><code>import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import multer from 'multer';
+
+export const TMP_UPLOAD_DIR = path.resolve(process.cwd(), 'storage', 'tmp');
+export const SAFE_UPLOAD_DIR = path.resolve(process.cwd(), 'storage', 'uploads');
+
+fs.mkdirSync(TMP_UPLOAD_DIR, { recursive: true });
+fs.mkdirSync(SAFE_UPLOAD_DIR, { recursive: true });
+
+const ALLOWED_MIME_TO_EXT = new Map([
+  ['application/pdf', '.pdf'],
+  ['image/png', '.png'],
+  ['image/jpeg', '.jpg']
+]);
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) =&gt; {
+    cb(null, TMP_UPLOAD_DIR);
+  },
+  filename: (req, file, cb) =&gt; {
+    const ext = ALLOWED_MIME_TO_EXT.get(file.mimetype) || '';
+    const safeName = `${crypto.randomUUID()}${ext}`;
+    cb(null, safeName);
+  }
+});
+
+const fileFilter = (req, file, cb) =&gt; {
+  if (!ALLOWED_MIME_TO_EXT.has(file.mimetype)) {
+    const err = new Error('Only PDF, PNG, and JPEG files are allowed.');
+    err.statusCode = 400;
+    return cb(err);
+  }
+  return cb(null, true);
+};
+
+export const uploadSingleDocument = multer({
+  storage,
+  fileFilter,
+  limits: {
+    fileSize: 2 * 1024 * 1024,
+    files: 1
+  }
+}).single('document');</code></pre>
+
+        <h3>Step 4: Build the Controller with Content Inspection, Cleanup &amp; Safe Download</h3>
+        <p class="code-label">Backend Source Code: <code>src/controllers/uploadController.js</code> (Runs on Node.js)</p>
+        <pre><code>import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import { detectVerifiedFileType } from '../utils/fileSignature.js';
+import { SAFE_UPLOAD_DIR } from '../middleware/uploadMiddleware.js';
+
+const safeUnlink = async (targetPath) => {
+  if (!targetPath) return;
+  try {
+    await fs.unlink(targetPath);
+  } catch (err) {
+    if (err.code !== 'ENOENT') {
+      console.error('Failed to clean temp file:', err.message);
+    }
+  }
+};
+
+export const handleDocumentUpload = async (req, res, next) => {
+  if (!req.file) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Please attach a file under the field name "document".'
+    });
+  }
+
+  const tempPath = req.file.path;
+
+  try {
+    const verified = await detectVerifiedFileType(tempPath);
+
+    if (!verified || verified.mime !== req.file.mimetype) {
+      await safeUnlink(tempPath);
+      return res.status(400).json({
+        status: 'fail',
+        message: 'File content does not match a valid PDF, PNG, or JPEG signature.'
+      });
+    }
+
+    const storedFilename = `${crypto.randomUUID()}${verified.ext}`;
+    const finalPath = path.join(SAFE_UPLOAD_DIR, storedFilename);
+    await fs.rename(tempPath, finalPath);
+
+    return res.status(201).json({
+      status: 'success',
+      data: {
+        fileId: storedFilename,
+        originalName: path.basename(req.file.originalname).slice(0, 100),
+        verifiedMime: verified.mime,
+        sizeBytes: req.file.size
+      }
+    });
+  } catch (err) {
+    await safeUnlink(tempPath);
+    return next(err);
+  }
+};
+
+export const downloadDocument = async (req, res) => {
+  const { fileId } = req.params;
+
+  if (!/^[0-9a-f-]{36}\.(pdf|png|jpg)$/.test(fileId)) {
+    return res.status(400).json({ status: 'fail', message: 'Invalid file identifier.' });
+  }
+
+  const resolvedPath = path.resolve(SAFE_UPLOAD_DIR, fileId);
+  if (!resolvedPath.startsWith(SAFE_UPLOAD_DIR + path.sep)) {
+    return res.status(403).json({ status: 'fail', message: 'Access denied.' });
+  }
+
+  try {
+    await fs.access(resolvedPath);
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    return res.download(resolvedPath, fileId);
+  } catch {
+    return res.status(404).json({ status: 'fail', message: 'File not found.' });
+  }
+};</code></pre>
+
+        <h3>Step 5: Mount Routes and Normalize <code>MulterError</code> in <code>src/app.js</code></h3>
+        <p class="code-label">Backend Source Code: <code>src/app.js</code> (Runs on Node.js)</p>
+        <pre><code>import express from 'express';
+import multer from 'multer';
+import { uploadSingleDocument } from './middleware/uploadMiddleware.js';
+import { handleDocumentUpload, downloadDocument } from './controllers/uploadController.js';
+
+const app = express();
+app.disable('x-powered-by');
+
+app.post('/api/v1/uploads', uploadSingleDocument, handleDocumentUpload);
+app.get('/api/v1/uploads/:fileId', downloadDocument);
+
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    const statusCode = err.code === 'LIMIT_FILE_SIZE' ? 413 : 400;
+    const message =
+      err.code === 'LIMIT_FILE_SIZE'
+        ? 'Uploaded file exceeds the 2 MB limit.'
+        : `Upload error: ${err.message}`;
+
+    return res.status(statusCode).json({
+      status: 'fail',
+      errorCode: err.code,
+      message
+    });
+  }
+
+  return res.status(err.statusCode || 500).json({
+    status: err.statusCode && err.statusCode &lt; 500 ? 'fail' : 'error',
+    message: err.message || 'Upload processing failed.'
+  });
+});
+
+app.listen(5000, () => {
+  console.log('Upload server listening on port 5000');
+});</code></pre>
+
+        <h3>Step 6: Browser-Side Upload vs. Terminal <code>curl</code> Upload Test</h3>
+        <p>Remember: browser JavaScript creates a <code>FormData</code> object and lets the browser set the multipart boundary header automatically (never manually set <code>Content-Type: multipart/form-data</code> in <code>fetch</code> headers!).</p>
+        <p class="code-label">Browser-Side JavaScript Example (Runs in Browser)</p>
+        <pre><code>async function uploadSampleFile(fileInputElement) {
+  const file = fileInputElement.files[0];
+  const formData = new FormData();
+  formData.append('document', file);
+
+  const response = await fetch('http://localhost:5000/api/v1/uploads', {
+    method: 'POST',
+    body: formData
+  });
+
+  const result = await response.json();
+  console.log(result);
+}</code></pre>
+
+        <p class="code-label">Terminal Test Command with a Harmless Sample File (<code>curl</code>)</p>
+        <pre><code>curl -X POST http://localhost:5000/api/v1/uploads \
+  -F "document=@./sample-brochure.pdf"</code></pre>
+      </section>
+
+      <section class="card-section" id="use-cases">
+        <h2>Real-World Use Cases</h2>
+        <div class="two-col-grid">
+          <article class="info-box">
+            <h3>1. Job Portal Resume Uploads</h3>
+            <p>A careers portal limits applicants to 2 MB PDF resumes, checks the <code>%PDF</code> binary signature on the server, renames files to UUIDs, and serves them with <code>Content-Disposition: attachment</code> to HR reviewers.</p>
+          </article>
+          <article class="info-box">
+            <h3>2. Student Assignment Submissions</h3>
+            <p>Universities enforce strict file count limits, record ownership and submission timestamps in MongoDB, and store files in S3-compatible object storage so multiple backend instances can access them.</p>
+          </article>
+          <article class="info-box">
+            <h3>3. Support Ticket Diagnostic Attachments</h3>
+            <p>Helpdesk APIs inspect PNG/JPEG/log attachments in a temporary staging folder before pushing safe uploads to private cloud buckets and issuing short-lived signed download URLs.</p>
+          </article>
+          <article class="info-box">
+            <h3>4. Direct-to-Cloud Presigned Uploads</h3>
+            <p>For very large videos (100 MB+), Express generates a short-lived presigned S3/R2 upload URL so the browser streams bytes straight to cloud storage without tying up Node.js bandwidth or memory.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="mistakes-security">
+        <h2>Common Mistakes, Security Notes, and Best Practices</h2>
+        <div class="two-col-grid">
+          <article class="warning-box">
+            <h3>Common File-Upload Mistakes</h3>
+            <ul class="styled-list">
+              <li><strong>Manually setting <code>Content-Type: multipart/form-data</code> in browser <code>fetch()</code>:</strong> Doing so omits the required <code>boundary=...</code> string and breaks server parsing! Let the browser set the header automatically when passing <code>FormData</code>.</li>
+              <li><strong>Using <code>req.file.originalname</code> as the disk filename:</strong> Risks path traversal (<code>../../</code>), overwriting existing user files, and special-character filesystem errors.</li>
+              <li><strong>Using <code>memoryStorage()</code> for large files:</strong> Ten users uploading 50 MB files concurrently consumes 500 MB of Node.js RAM and crashes the process.</li>
+              <li><strong>Leaving orphaned files in <code>tmp/</code>:</strong> Forgetting to unlink staged files when validation or database writes fail slowly fills up server disk space.</li>
+              <li><strong>Relying on local disk in ephemeral containers:</strong> Cloud platforms like Render/Fly/Heroku wipe container disks on every deploy—use persistent volumes or cloud object storage in production.</li>
+            </ul>
+          </article>
+          <article class="security-box">
+            <h3>Security &amp; Best-Practice Notes</h3>
+            <ul class="styled-list">
+              <li><strong>Verify magic bytes, not just extensions:</strong> Check actual binary header signatures on the server to detect spoofed files.</li>
+              <li><strong>Avoid serving untrusted HTML or SVG inline:</strong> SVG files can embed <code>&lt;script&gt;</code> tags! Serve user uploads as attachments (<code>res.download</code>), from a separate asset domain, or sanitize/re-encode images (covered on Day 10).</li>
+              <li><strong>Prevent path traversal on downloads:</strong> Validate file IDs strictly with regex and verify <code>resolvedPath.startsWith(SAFE_UPLOAD_DIR + path.sep)</code>.</li>
+              <li><strong>Store uploads outside public static directories:</strong> Keep raw user files out of <code>public/</code> so authentication and ownership checks run before every download.</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="exercises">
+        <h2>Hands-On Exercises</h2>
+        <ol class="styled-list">
+          <li><strong>Spoofed Extension Test:</strong> Create a harmless plain text file containing <code>hello world</code>, rename it to <code>fake.pdf</code>, and upload it to <code>/api/v1/uploads</code>. Verify your magic-byte check rejects it with <code>400</code> and leaves <code>storage/tmp</code> empty.</li>
+          <li><strong>Oversized File Test:</strong> Upload a harmless sample file larger than 2 MB and confirm your error handler catches <code>MulterError</code> (<code>LIMIT_FILE_SIZE</code>) and returns <code>413</code> JSON.</li>
+          <li><strong>Browser FormData Integration:</strong> Build a minimal local HTML page with an <code>&lt;input type="file"&gt;</code> and <code>fetch()</code> (with Day 8 CORS enabled) to upload a sample PNG and display the returned <code>fileId</code>.</li>
+          <li><strong>Safe Download Verification:</strong> Call <code>GET /api/v1/uploads/../../package.json</code> and confirm your regex + path-prefix guard rejects it cleanly.</li>
+        </ol>
+      </section>
+
+      <section class="card-section" id="mini-project">
+        <h2>Day 9 Mini Project: Controlled Assignment Submission Upload API</h2>
+        <p>
+          Build a controlled assignment-submission endpoint in Express + MongoDB where authenticated students can upload harmless sample PDF or PNG files safely.
+        </p>
+        <h3>Project Requirements</h3>
+        <ul class="styled-list">
+          <li>Configure <code>multer</code> with <code>diskStorage</code> into a private <code>storage/tmp/</code> directory, enforcing a <code>3 MB</code> size cap and <code>files: 1</code> limit.</li>
+          <li>Allow only PDF and PNG files in <code>fileFilter</code>, then verify real magic bytes (<code>%PDF</code> or PNG header) using Node's <code>fs.open</code> before moving the file to <code>storage/submissions/</code> under a new UUID filename.</li>
+          <li>Always delete the temporary file if validation or database persistence fails.</li>
+          <li>Save submission metadata (<code>ownerId</code>, <code>storedFilename</code>, <code>sanitizedOriginalName</code>, <code>mimeType</code>, <code>sizeBytes</code>) in a Mongoose <code>Submission</code> model.</li>
+          <li>Add a protected download route <code>GET /api/v1/submissions/:id/download</code> that enforces ownership authorization, sets <code>X-Content-Type-Options: nosniff</code>, and streams the file via <code>res.download()</code>.</li>
+        </ul>
+      </section>
+
+      <section class="card-section" id="quiz-section">
+        <h2>Day 9 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+
+        <form id="day9QuizForm" class="quiz-form" novalidate>
+          <fieldset class="quiz-question" data-question="q1">
+            <legend>1. Which HTTP encoding format is used to send binary files alongside text fields in standard HTML forms and <code>FormData</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> <code>application/json</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> <code>multipart/form-data</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> <code>text/css</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> <code>application/xml</code></label>
+            <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q2">
+            <legend>2. Why can't <code>express.json()</code> handle file uploads by itself?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Because <code>express.json()</code> only parses <code>application/json</code> payloads and does not parse <code>multipart/form-data</code> binary streams</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Because Express forbids all <code>POST</code> requests with files</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Because browsers always send files over <code>GET</code> URLs</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> Because Node.js cannot read binary buffers</label>
+            <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q3">
+            <legend>3. Why is trusting <code>file.mimetype</code> and the filename extension (like <code>.pdf</code>) insufficient for upload security?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Because attackers can rename any file to <code>.pdf</code> and spoof the declared <code>Content-Type</code> header in a raw HTTP request</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Because PDF files do not have extensions</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Because Multer deletes <code>file.mimetype</code> automatically</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> Because browsers remove file extensions before upload</label>
+            <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q4">
+            <legend>4. How does checking "magic bytes" improve upload validation?</legend>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> It compresses images by 90%</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> It inspects the actual leading binary header bytes inside the file to confirm its true format matches the allowed type</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> It bypasses CORS preflights</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> It encrypts the user's password</label>
+            <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q5">
+            <legend>5. What security vulnerability can occur if your server saves uploaded files directly using <code>req.file.originalname</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Path traversal (e.g., <code>../../app.js</code>), filename collisions overwriting other users' files, and unsafe filesystem characters</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Automatic database indexing</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> Faster response times</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> Strict origin isolation</label>
+            <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q6">
+            <legend>6. What happens if a browser <code>fetch()</code> call sends a <code>FormData</code> body AND manually sets <code>headers: { 'Content-Type': 'multipart/form-data' }</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Uploads become twice as fast</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> It strips the required multipart <code>boundary=...</code> parameter, causing the server parser to fail</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> Multer converts the file into JSON automatically</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> The browser skips size limits</label>
+            <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q7">
+            <legend>7. What is the main risk of using Multer's <code>memoryStorage()</code> for large user uploads in production?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> Concurrent large uploads hold entire file buffers in RAM and can quickly crash Node.js with out-of-memory errors</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> <code>memoryStorage()</code> cannot read PDF files</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> It disables HTTPS</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> It forces users to upload from Safari only</label>
+            <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q8">
+            <legend>8. Which <code>MulterError</code> code is emitted when an uploaded file exceeds the configured <code>limits.fileSize</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> <code>LIMIT_FIELD_NAME</code></label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> <code>LIMIT_FILE_SIZE</code></label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> <code>ENOENT</code></label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> <code>CAST_ERROR</code></label>
+            <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q9">
+            <legend>9. Why is storing user uploads exclusively on a local container disk problematic for scalable cloud deployments?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Cloud app container disks are often ephemeral (wiped on redeploy/restart) and not shared across multiple server instances</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Local disks cannot store binary PNG files</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Node.js <code>fs</code> does not work on Linux servers</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> Express deletes the <code>uploads/</code> folder every 10 minutes</label>
+            <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
+          </fieldset>
+
+          <fieldset class="quiz-question" data-question="q10">
+            <legend>10. Why should uploaded user files (especially SVGs or unknown formats) never be served inline from your main web app origin without sanitization?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Because inline HTML or SVG files can contain embedded JavaScript that executes in a visitor's browser (Stored XSS)</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Because browsers cannot display SVG files</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Because it slows down <code>npm install</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> Because MongoDB rejects UUID filenames</label>
+            <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
+          </fieldset>
+
+          <div class="quiz-actions">
+            <button type="submit" class="btn btn-primary" id="submitQuizBtn">Submit Quiz</button>
+            <button type="button" class="btn btn-secondary" id="retryQuizBtn">Retry Quiz</button>
+          </div>
+
+          <div class="quiz-result" id="quizResult" aria-live="polite" hidden></div>
+        </form>
+      </section>
+
+      <section class="card-section" id="short-answers">
+        <h2>Short-Answer Questions</h2>
+        <p>Think through each answer carefully before opening the explanation.</p>
+        <div class="qa-list">
+          <details class="qa-item">
+            <summary>1. Why does <code>multipart/form-data</code> work better than Base64-encoded JSON for uploading larger files?</summary>
+            <p>Base64 encoding expands binary file sizes by roughly 33% and forces <code>express.json()</code> to buffer and parse huge strings in memory. <code>multipart/form-data</code> streams raw binary bytes incrementally with minimal overhead.</p>
+          </details>
+          <details class="qa-item">
+            <summary>2. Explain the two-stage validation approach combining Multer's <code>fileFilter</code> and magic-byte inspection.</summary>
+            <p><code>fileFilter</code> checks the declared MIME type/extension early to reject blatantly invalid uploads before writing to disk. Then magic-byte inspection reads the actual leading binary bytes of the uploaded file to confirm the real file content wasn't spoofed.</p>
+          </details>
+          <details class="qa-item">
+            <summary>3. Why should temporary staged files always be unlinked inside catch/error paths?</summary>
+            <p>If an upload fails content verification or database persistence after being written to <code>storage/tmp/</code>, leaving it behind leaks disk space over time and keeps unverified files on your server.</p>
+          </details>
+          <details class="qa-item">
+            <summary>4. How do UUID filenames protect against both path traversal and overwrite bugs?</summary>
+            <p>Generating a fresh server-side <code>crypto.randomUUID()</code> + verified extension completely ignores user-supplied path segments (like <code>../../</code>) and guarantees two users uploading files named <code>resume.pdf</code> never overwrite each other.</p>
+          </details>
+          <details class="qa-item">
+            <summary>5. When should a team move from local disk uploads to cloud object storage like S3 or Cloudflare R2?</summary>
+            <p>As soon as the application deploys to ephemeral containers, runs multiple backend instances behind a load balancer, or serves high-traffic media that benefits from CDN distribution and durable external backups.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="card-section" id="challenges">
+        <h2>Practical &amp; Coding Challenges</h2>
+        <div class="challenge-list">
+          <article class="challenge-card">
+            <h3>Challenge 1: Identify &amp; Fix 4 Dangerous Upload Flaws</h3>
+            <p>Review the snippet below, identify all 4 security/reliability bugs, and write a safe replacement:</p>
+            <pre><code>const upload = multer({
+  storage: multer.diskStorage({
+    destination: './public/uploads',
+    filename: (req, file, cb) => cb(null, file.originalname)
+  })
+});
+
+app.post('/upload', upload.single('file'), (req, res) => {
+  res.json({ url: `/uploads/${req.file.originalname}` });
+});</code></pre>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 2: Multi-File Upload Endpoint with Total Cleanup</h3>
+            <p>Configure a route using <code>upload.array('attachments', 3)</code> (max 1 MB each) that verifies magic bytes on every uploaded file. If the 2nd or 3rd file fails magic-byte inspection, delete <strong>all</strong> temporary files from that request before returning <code>400 Bad Request</code>.</p>
+          </article>
+
+          <article class="challenge-card">
+            <h3>Challenge 3: Extend Magic-Byte Detection for WebP Images</h3>
+            <p>Research and add a signature check in <code>detectVerifiedFileType</code> for WebP images (bytes 0–3 equal ASCII <code>"RIFF"</code> and bytes 8–11 equal ASCII <code>"WEBP"</code> by reading 12 bytes instead of 8).</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="card-section" id="summary">
+        <h2>Day 9 Revision Summary</h2>
+        <ul class="styled-list">
+          <li>File uploads travel over HTTP as <code>multipart/form-data</code> and require streaming middleware like <code>multer</code>.</li>
+          <li>Always set explicit <code>limits</code> (<code>fileSize</code>, <code>files</code>) and handle <code>MulterError</code> cleanly in centralized error middleware.</li>
+          <li>Never trust <code>originalname</code> or declared MIME headers alone—generate UUID filenames and verify real file signatures (magic bytes).</li>
+          <li>Clean up staged temp files on rejection, store uploads outside public web roots, and serve downloads with <code>nosniff</code> / <code>Content-Disposition</code>.</li>
+          <li>For multi-server or ephemeral cloud deployments, migrate storage to dedicated cloud object storage (S3, R2, GCS).</li>
+        </ul>
+      </section>
+
+      <section class="card-section visual-aid-section" id="lesson-visual">
+        <h2>Day 9 Visual Architecture Reference</h2>
+        <p>Visual summary diagram for Day 9: Multipart file upload lifecycle, size/type limits, magic-byte inspection, and safe storage.</p>
+        <div class="lesson-image-frame" id="lessonImageFrame">
+          <img src="image.webp" alt="Diagram illustrating HTTP multipart file upload lifecycle with Multer validation, magic-byte checking, and safe storage" class="lesson-image" id="lessonImage">
+          <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
+            <div class="fallback-icon" aria-hidden="true">&#128202;</div>
+            <p class="fallback-title">Day 9 Visual Reference (<code>image.webp</code>)</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 9/</code> folder to display the custom illustration here.</p>
+          </div>
+        </div>
+      </section>
+
+      <nav class="day-pagination" aria-label="Day navigation">
+        <a href="../Day 8/index.html" class="btn btn-secondary nav-prev">
+          &larr; Previous Day: CORS
+        </a>
+        <a href="../Day 10/index.html" class="btn btn-primary nav-next">
+          Next Day: Image Handling &rarr;
+        </a>
+      </nav>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div class="footer-brand">
+        <div class="footer-brand-head">
+          <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
+          <strong>Arslan Weblab</strong>
+        </div>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+      </div>
+      <div class="footer-links">
+        <h3>Course Navigation</h3>
+        <ul>
+          <li><a href="../index.html">Course Homepage</a></li>
+          <li><a href="../Day 8/index.html">Day 8: CORS</a></li>
+          <li><a href="../Day 9/index.html">Day 9: File Uploads</a></li>
+          <li><a href="../Day 10/index.html">Day 10: Image Handling</a></li>
+          <li><a href="../Day 16/index.html">Day 16: Final Revision &amp; Assessment</a></li>
+        </ul>
+      </div>
+      <div class="footer-links">
+        <h3>External Links</h3>
+        <ul>
+          <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+          <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container">
+        <p>Phase 5: Advanced Backend Development &bull; Arslan Weblab</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
