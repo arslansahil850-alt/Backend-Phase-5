@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
-    <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,7 +71,12 @@
         </div>
         <h1>Day 10: Image Handling</h1>
         <p class="lead-intro">
-          Saving raw smartphone photos straight onto your server and displaying 5 MB originals inside small 200px profile cards wastes mobile bandwidth, slows down pages, and can even leak private GPS coordinates embedded in camera EXIF metadata. Production backends validate image headers, resize and compress images into modern formats like WebP, generate clean thumbnails, strip sensitive metadata, and serve optimized assets reliably. Today you will build a complete server-side image-processing pipeline using Node.js, Express, Multer, and <code>sharp</code>.
+          Saving raw smartphone photos straight onto your server and displaying 5 MB originals inside small 200px
+          profile cards wastes mobile bandwidth, slows down pages, and can even leak private GPS coordinates embedded in
+          camera EXIF metadata. Production backends validate image headers, resize and compress images into modern
+          formats like WebP, generate clean thumbnails, strip sensitive metadata, and serve optimized assets reliably.
+          Today you will build a complete server-side image-processing pipeline using Node.js, Express, Multer, and
+          <code>sharp</code>.
         </p>
       </section>
 
@@ -76,11 +84,15 @@
         <h2>Learning Objectives</h2>
         <p>By the end of Day 10, you will be able to:</p>
         <ul class="styled-list">
-          <li>Compare common web image formats (JPEG, PNG, WebP, AVIF, and SVG) and choose the right format for each use case.</li>
+          <li>Compare common web image formats (JPEG, PNG, WebP, AVIF, and SVG) and choose the right format for each use
+            case.</li>
           <li>Inspect image metadata and dimensions safely while protecting against decompression-bomb attacks.</li>
-          <li>Explain why EXIF metadata stripping and auto-rotation (<code>.rotate()</code>) matter for privacy and display correctness.</li>
-          <li>Resize, crop, compress, and convert uploaded images into WebP main assets and square thumbnails using <code>sharp</code>.</li>
-          <li>Store relative image paths in MongoDB and build clean public URLs across local and cloud storage setups.</li>
+          <li>Explain why EXIF metadata stripping and auto-rotation (<code>.rotate()</code>) matter for privacy and
+            display correctness.</li>
+          <li>Resize, crop, compress, and convert uploaded images into WebP main assets and square thumbnails using
+            <code>sharp</code>.</li>
+          <li>Store relative image paths in MongoDB and build clean public URLs across local and cloud storage setups.
+          </li>
           <li>Handle corrupted image failures cleanly by rolling back partial files.</li>
         </ul>
       </section>
@@ -89,8 +101,10 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 10, make sure you understand:</p>
         <ul class="styled-list">
-          <li><strong>Day 9 Concepts:</strong> <code>multipart/form-data</code> uploads with <code>multer</code>, size limits, and UUID filenames.</li>
-          <li><strong>Node.js Async/Await &amp; Buffers:</strong> Handling binary <code>Buffer</code> data and <code>fs/promises</code> file operations on the server.</li>
+          <li><strong>Day 9 Concepts:</strong> <code>multipart/form-data</code> uploads with <code>multer</code>, size
+            limits, and UUID filenames.</li>
+          <li><strong>Node.js Async/Await &amp; Buffers:</strong> Handling binary <code>Buffer</code> data and
+            <code>fs/promises</code> file operations on the server.</li>
         </ul>
       </section>
 
@@ -99,27 +113,34 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>EXIF Metadata</h3>
-            <p>Hidden data embedded inside photos by cameras and phones—often containing device model, orientation flags, timestamps, and exact GPS latitude/longitude coordinates.</p>
+            <p>Hidden data embedded inside photos by cameras and phones—often containing device model, orientation
+              flags, timestamps, and exact GPS latitude/longitude coordinates.</p>
           </article>
           <article class="term-card">
             <h3><code>sharp</code></h3>
-            <p>A high-performance Node.js image-processing library powered by C++ <code>libvips</code> that decodes, resizes, rotates, compresses, and re-encodes images with minimal RAM.</p>
+            <p>A high-performance Node.js image-processing library powered by C++ <code>libvips</code> that decodes,
+              resizes, rotates, compresses, and re-encodes images with minimal RAM.</p>
           </article>
           <article class="term-card">
             <h3>Thumbnail Generation</h3>
-            <p>Producing smaller, standardized image variants (e.g., <code>300x300</code> square avatars or grid cards) alongside a larger main image so browsers never download oversized files.</p>
+            <p>Producing smaller, standardized image variants (e.g., <code>300x300</code> square avatars or grid cards)
+              alongside a larger main image so browsers never download oversized files.</p>
           </article>
           <article class="term-card">
             <h3>Decompression Bomb (Pixel Bomb)</h3>
-            <p>A tiny compressed image file (for example, 100 KB) whose header claims massive dimensions like <code>60000 x 60000</code> pixels, causing naive decoders to allocate gigabytes of RAM and crash.</p>
+            <p>A tiny compressed image file (for example, 100 KB) whose header claims massive dimensions like
+              <code>60000 x 60000</code> pixels, causing naive decoders to allocate gigabytes of RAM and crash.</p>
           </article>
           <article class="term-card">
             <h3>Lossy vs. Lossless Compression</h3>
-            <p><strong>Lossy</strong> discards subtle visual details to dramatically shrink photos (JPEG, lossy WebP); <strong>Lossless</strong> preserves every pixel identically (PNG, lossless WebP) for sharp UI/diagrams.</p>
+            <p><strong>Lossy</strong> discards subtle visual details to dramatically shrink photos (JPEG, lossy WebP);
+              <strong>Lossless</strong> preserves every pixel identically (PNG, lossless WebP) for sharp UI/diagrams.
+            </p>
           </article>
           <article class="term-card">
             <h3>Relative Storage Key</h3>
-            <p>Storing a relative identifier such as <code>products/abc-123-main.webp</code> in MongoDB instead of a hardcoded <code>http://localhost:5000/...</code> URL, keeping domain/CDN migrations effortless.</p>
+            <p>Storing a relative identifier such as <code>products/abc-123-main.webp</code> in MongoDB instead of a
+              hardcoded <code>http://localhost:5000/...</code> URL, keeping domain/CDN migrations effortless.</p>
           </article>
         </div>
       </section>
@@ -161,7 +182,8 @@
               <tr>
                 <td><strong>SVG</strong></td>
                 <td>Infinitely scalable XML vector graphics.</td>
-                <td><strong>High XSS risk</strong> for untrusted user uploads because SVG is XML and can contain <code>&lt;script&gt;</code> tags! Avoid accepting user-uploaded SVGs without strict sanitization.</td>
+                <td><strong>High XSS risk</strong> for untrusted user uploads because SVG is XML and can contain
+                  <code>&lt;script&gt;</code> tags! Avoid accepting user-uploaded SVGs without strict sanitization.</td>
               </tr>
             </tbody>
           </table>
@@ -169,28 +191,49 @@
 
         <h3>2. Image Metadata, Dimensions, and Security</h3>
         <p>
-          Inspecting an uploaded image's metadata on the server lets you verify its real pixel format, width, and height before resizing. However, two critical security and privacy rules apply:
+          Inspecting an uploaded image's metadata on the server lets you verify its real pixel format, width, and height
+          before resizing. However, two critical security and privacy rules apply:
         </p>
         <ul class="styled-list">
-          <li><strong>Strip EXIF privacy data:</strong> Smartphone photos commonly embed exact home GPS coordinates! Re-encoding with <code>sharp</code> strips EXIF metadata by default (as long as you do not call <code>.withMetadata()</code>), protecting user privacy.</li>
-          <li><strong>Apply EXIF orientation before stripping:</strong> Many phones store sideways pixels and rely on an EXIF orientation tag to tell viewers to rotate 90 degrees. Calling <code>sharp(buffer).rotate()</code> with no arguments automatically rotates pixels upright <em>before</em> stripping EXIF tags!</li>
-          <li><strong>Guard against pixel bombs:</strong> Configure <code>limitInputPixels</code> (and check <code>metadata.width</code> / <code>metadata.height</code>) so a 200 KB malicious PNG claiming 50,000&times;50,000 pixels is rejected immediately before decoding consumes gigabytes of memory.</li>
+          <li><strong>Strip EXIF privacy data:</strong> Smartphone photos commonly embed exact home GPS coordinates!
+            Re-encoding with <code>sharp</code> strips EXIF metadata by default (as long as you do not call
+            <code>.withMetadata()</code>), protecting user privacy.</li>
+          <li><strong>Apply EXIF orientation before stripping:</strong> Many phones store sideways pixels and rely on an
+            EXIF orientation tag to tell viewers to rotate 90 degrees. Calling <code>sharp(buffer).rotate()</code> with
+            no arguments automatically rotates pixels upright <em>before</em> stripping EXIF tags!</li>
+          <li><strong>Guard against pixel bombs:</strong> Configure <code>limitInputPixels</code> (and check
+            <code>metadata.width</code> / <code>metadata.height</code>) so a 200 KB malicious PNG claiming
+            50,000&times;50,000 pixels is rejected immediately before decoding consumes gigabytes of memory.</li>
         </ul>
 
         <h3>3. Resizing, Compression, and Thumbnail Generation</h3>
-        <p>When preparing uploaded sample images for an application, generate predictable variants tailored to where they appear in the UI:</p>
+        <p>When preparing uploaded sample images for an application, generate predictable variants tailored to where
+          they appear in the UI:</p>
         <ul class="styled-list">
-          <li><strong>Main display variant:</strong> Resize with <code>{ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true }</code>. This scales huge 4000px camera photos down to fit within 1200px while preserving aspect ratio and never stretching tiny images larger.</li>
-          <li><strong>Square thumbnail variant:</strong> Resize with <code>{ width: 320, height: 320, fit: 'cover', position: 'centre' }</code> so cards and avatars always fill uniform square containers cleanly.</li>
-          <li><strong>Compression quality:</strong> Encoding to <code>.webp({ quality: 82 })</code> for main images and <code>.webp({ quality: 78 })</code> for thumbnails cuts multi-megabyte uploads down to ~30–120 KB with crisp visual clarity.</li>
+          <li><strong>Main display variant:</strong> Resize with
+            <code>{ width: 1200, height: 1200, fit: 'inside', withoutEnlargement: true }</code>. This scales huge 4000px
+            camera photos down to fit within 1200px while preserving aspect ratio and never stretching tiny images
+            larger.</li>
+          <li><strong>Square thumbnail variant:</strong> Resize with
+            <code>{ width: 320, height: 320, fit: 'cover', position: 'centre' }</code> so cards and avatars always fill
+            uniform square containers cleanly.</li>
+          <li><strong>Compression quality:</strong> Encoding to <code>.webp({ quality: 82 })</code> for main images and
+            <code>.webp({ quality: 78 })</code> for thumbnails cuts multi-megabyte uploads down to ~30–120 KB with crisp
+            visual clarity.</li>
         </ul>
         <p>
-          Bonus security benefit: <strong>re-encoding</strong> an uploaded image through <code>sharp</code> decodes raw pixels and writes a brand-new clean WebP file, automatically neutralizing any hidden trailing payload or malformed metadata appended to the original upload!
+          Bonus security benefit: <strong>re-encoding</strong> an uploaded image through <code>sharp</code> decodes raw
+          pixels and writes a brand-new clean WebP file, automatically neutralizing any hidden trailing payload or
+          malformed metadata appended to the original upload!
         </p>
 
         <h3>4. Storage Paths, Public URLs &amp; Local vs. Cloud Storage</h3>
         <p>
-          Never save full hardcoded URLs like <code>http://localhost:5000/uploads/img.webp</code> in MongoDB. When you deploy to production at <code>https://api.myapp.com</code> or move assets to a CDN, every database record would point to broken localhost links! Instead, store relative storage keys (like <code>avatars/9f1c-thumb.webp</code>) in MongoDB and build full URLs dynamically using a configured <code>PUBLIC_ASSET_BASE_URL</code> or CDN helper.
+          Never save full hardcoded URLs like <code>http://localhost:5000/uploads/img.webp</code> in MongoDB. When you
+          deploy to production at <code>https://api.myapp.com</code> or move assets to a CDN, every database record
+          would point to broken localhost links! Instead, store relative storage keys (like
+          <code>avatars/9f1c-thumb.webp</code>) in MongoDB and build full URLs dynamically using a configured
+          <code>PUBLIC_ASSET_BASE_URL</code> or CDN helper.
         </p>
         <div class="table-wrap">
           <table class="data-table">
@@ -223,31 +266,39 @@
 
         <h3>5. Handling Image-Processing Failures</h3>
         <p>
-          What happens if a user uploads a corrupted file with a <code>.jpg</code> extension, or the disk runs out of space right after writing the main image while generating the thumbnail? Wrap multi-variant generation in <code>try/catch</code> and delete any partially written output files if any step throws, returning a clean <code>400</code> error for invalid/corrupted images.
+          What happens if a user uploads a corrupted file with a <code>.jpg</code> extension, or the disk runs out of
+          space right after writing the main image while generating the thumbnail? Wrap multi-variant generation in
+          <code>try/catch</code> and delete any partially written output files if any step throws, returning a clean
+          <code>400</code> error for invalid/corrupted images.
         </p>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Server-Side Image Handling &amp; Optimization Workflow</h2>
-        <p>Notice how raw uploads enter memory safely under a strict size cap, get validated and re-encoded into clean WebP variants, and store only relative keys in MongoDB:</p>
-        <div class="diagram-container" role="img" aria-label="Flowchart showing an uploaded sample image passing through Multer memoryStorage (4 MB limit + MIME filter), sharp metadata & pixel-bomb verification, EXIF auto-rotation + metadata stripping, parallel generation of a 1200px WebP main image and 320x320 WebP thumbnail, atomic rollback cleanup on error, and saving relative storage keys in MongoDB.">
+        <p>Notice how raw uploads enter memory safely under a strict size cap, get validated and re-encoded into clean
+          WebP variants, and store only relative keys in MongoDB:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Flowchart showing an uploaded sample image passing through Multer memoryStorage (4 MB limit + MIME filter), sharp metadata & pixel-bomb verification, EXIF auto-rotation + metadata stripping, parallel generation of a 1200px WebP main image and 320x320 WebP thumbnail, atomic rollback cleanup on error, and saving relative storage keys in MongoDB.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">1. Upload Gate</span>
               <strong><code>multer.memoryStorage()</code> (Max <code>4 MB</code>, JPEG/PNG/WebP only)</strong>
-              <span>Holds small raw buffer temporarily for inspection without writing unverified files to public folders</span>
+              <span>Holds small raw buffer temporarily for inspection without writing unverified files to public
+                folders</span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-step flow-app">
               <span class="flow-tag">2. Inspect &amp; Guard</span>
               <strong><code>sharp(buffer, { limitInputPixels }).metadata()</code></strong>
-              <span>Confirms valid image format (<code>jpeg</code>/<code>png</code>/<code>webp</code>) and safe width/height bounds</span>
+              <span>Confirms valid image format (<code>jpeg</code>/<code>png</code>/<code>webp</code>) and safe
+                width/height bounds</span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-step flow-router">
               <span class="flow-tag">3. Transform &amp; Sanitize</span>
               <strong><code>.rotate()</code> (Auto-orient &amp; Strip EXIF) &rarr; Re-encode WebP</strong>
-              <span>Produces <code>uuid-main.webp</code> (max 1200px) &amp; <code>uuid-thumb.webp</code> (320&times;320 cover)</span>
+              <span>Produces <code>uuid-main.webp</code> (max 1200px) &amp; <code>uuid-thumb.webp</code> (320&times;320
+                cover)</span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-branch">
@@ -269,7 +320,8 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial: Validating &amp; Optimizing Uploaded Images</h2>
         <p>
-          Let us build a complete image-handling workflow using Node.js, Express, <code>multer</code>, and <code>sharp</code>. Test using small, harmless sample images only.
+          Let us build a complete image-handling workflow using Node.js, Express, <code>multer</code>, and
+          <code>sharp</code>. Test using small, harmless sample images only.
         </p>
 
         <h3>Step 1: Install <code>sharp</code> and <code>multer</code></h3>
@@ -282,7 +334,8 @@ NODE_ENV=development
 PUBLIC_BASE_URL=http://localhost:5000</code></pre>
 
         <h3>Step 2: Configure Memory-Capped Image Upload Middleware (<code>src/middleware/imageUpload.js</code>)</h3>
-        <p>Because we cap uploads strictly at <code>4 MB</code> and <code>1 file</code>, holding the small buffer in memory briefly for <code>sharp</code> processing is fast and avoids extra temp-file disk I/O.</p>
+        <p>Because we cap uploads strictly at <code>4 MB</code> and <code>1 file</code>, holding the small buffer in
+          memory briefly for <code>sharp</code> processing is fast and avoids extra temp-file disk I/O.</p>
         <p class="code-label">Backend Source Code: <code>src/middleware/imageUpload.js</code> (Runs on Node.js)</p>
         <pre><code>import multer from 'multer';
 
@@ -304,9 +357,12 @@ export const uploadSingleImage = multer({
   }
 }).single('image');</code></pre>
 
-        <h3>Step 3: Build the Image Validation &amp; Optimization Service (<code>src/services/imageService.js</code>)</h3>
+        <h3>Step 3: Build the Image Validation &amp; Optimization Service (<code>src/services/imageService.js</code>)
+        </h3>
         <p>
-          This service validates actual decoded format and dimensions, guards against pixel bombs, rotates based on EXIF orientation while stripping private EXIF metadata, writes both WebP variants, and rolls back cleanly if anything fails.
+          This service validates actual decoded format and dimensions, guards against pixel bombs, rotates based on EXIF
+          orientation while stripping private EXIF metadata, writes both WebP variants, and rolls back cleanly if
+          anything fails.
         </p>
         <p class="code-label">Backend Source Code: <code>src/services/imageService.js</code> (Runs on Node.js)</p>
         <pre><code>import fs from 'node:fs/promises';
@@ -415,7 +471,9 @@ export const processAndSaveImage = async (buffer, folderName = 'gallery') => {
 };</code></pre>
 
         <h3>Step 4: Build the Controller &amp; Safe Static Asset Serving</h3>
-        <p>Notice how we store relative keys and build URLs dynamically, and configure <code>helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } })</code> only if a frontend on another origin needs to render these public <code>&lt;img&gt;</code> tags.</p>
+        <p>Notice how we store relative keys and build URLs dynamically, and configure
+          <code>helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } })</code> only if a frontend on another
+          origin needs to render these public <code>&lt;img&gt;</code> tags.</p>
         <p class="code-label">Backend Source Code: <code>src/controllers/imageController.js</code> (Runs on Node.js)</p>
         <pre><code>import { processAndSaveImage } from '../services/imageService.js';
 
@@ -540,19 +598,25 @@ app.listen(PORT, () => {
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. E-Commerce Product Galleries</h3>
-            <p>Merchants upload high-resolution studio PNGs; the backend automatically produces fast <code>320x320</code> WebP thumbnails for category grids and <code>1200px</code> WebP images for product detail zoom views.</p>
+            <p>Merchants upload high-resolution studio PNGs; the backend automatically produces fast
+              <code>320x320</code> WebP thumbnails for category grids and <code>1200px</code> WebP images for product
+              detail zoom views.</p>
           </article>
           <article class="info-box">
             <h3>2. User Profile Avatars</h3>
-            <p>Re-encoding user avatars with <code>.rotate()</code> fixes upside-down smartphone selfies while stripping private EXIF camera/GPS coordinates before other users view the profile.</p>
+            <p>Re-encoding user avatars with <code>.rotate()</code> fixes upside-down smartphone selfies while stripping
+              private EXIF camera/GPS coordinates before other users view the profile.</p>
           </article>
           <article class="info-box">
             <h3>3. Real-Estate &amp; Classified Listings</h3>
-            <p>Saving ~90% bandwidth per photo by converting 3 MB JPEGs into ~100 KB WebP images dramatically improves mobile load times and lowers cloud egress bills.</p>
+            <p>Saving ~90% bandwidth per photo by converting 3 MB JPEGs into ~100 KB WebP images dramatically improves
+              mobile load times and lowers cloud egress bills.</p>
           </article>
           <article class="info-box">
             <h3>4. Immutable CDN Caching</h3>
-            <p>Because every processed image receives a unique UUID filename, setting <code>Cache-Control: public, max-age=31536000, immutable</code> lets browsers cache assets for a full year without stale-cache headaches.</p>
+            <p>Because every processed image receives a unique UUID filename, setting
+              <code>Cache-Control: public, max-age=31536000, immutable</code> lets browsers cache assets for a full year
+              without stale-cache headaches.</p>
           </article>
         </div>
       </section>
@@ -563,20 +627,29 @@ app.listen(PORT, () => {
           <article class="warning-box">
             <h3>Common Image-Handling Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Serving raw unoptimized uploads directly:</strong> Shipping twenty 4 MB smartphone photos on a single catalog page forces mobile users to download 80 MB!</li>
-              <li><strong>Calling <code>.withMetadata()</code> blindly:</strong> Preserves EXIF GPS coordinates and serial numbers inside user-uploaded photos, creating privacy leaks.</li>
-              <li><strong>Forgetting <code>.rotate()</code> before stripping EXIF:</strong> Causes portrait phone photos to render rotated 90 degrees sideways after EXIF orientation tags are removed.</li>
-              <li><strong>Saving full <code>http://localhost:5000/...</code> URLs in MongoDB:</strong> Breaks every image link as soon as the API moves to a real domain or CDN. Store relative storage keys!</li>
-              <li><strong>Omitting <code>withoutEnlargement: true</code>:</strong> Stretching a small 150px icon up to 1200px wastes disk space and blurs the image.</li>
+              <li><strong>Serving raw unoptimized uploads directly:</strong> Shipping twenty 4 MB smartphone photos on a
+                single catalog page forces mobile users to download 80 MB!</li>
+              <li><strong>Calling <code>.withMetadata()</code> blindly:</strong> Preserves EXIF GPS coordinates and
+                serial numbers inside user-uploaded photos, creating privacy leaks.</li>
+              <li><strong>Forgetting <code>.rotate()</code> before stripping EXIF:</strong> Causes portrait phone photos
+                to render rotated 90 degrees sideways after EXIF orientation tags are removed.</li>
+              <li><strong>Saving full <code>http://localhost:5000/...</code> URLs in MongoDB:</strong> Breaks every
+                image link as soon as the API moves to a real domain or CDN. Store relative storage keys!</li>
+              <li><strong>Omitting <code>withoutEnlargement: true</code>:</strong> Stretching a small 150px icon up to
+                1200px wastes disk space and blurs the image.</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Re-encode untrusted images:</strong> Running uploads through <code>sharp</code> produces fresh pixel-reconstructed files, stripping hidden polyglot payloads and EXIF scripts.</li>
-              <li><strong>Protect against image bombs:</strong> Always set <code>limitInputPixels</code> and maximum width/height checks so tiny compressed headers cannot trigger huge RAM allocations.</li>
-              <li><strong>Be cautious with SVG uploads:</strong> Treat SVG as executable code (XML + JS) rather than a normal raster image. Convert or strictly sanitize SVGs before ever serving them inline.</li>
-              <li><strong>Clean up old files on replacement:</strong> When a user uploads a new avatar, delete the previous avatar's main and thumbnail files so orphaned images do not pile up.</li>
+              <li><strong>Re-encode untrusted images:</strong> Running uploads through <code>sharp</code> produces fresh
+                pixel-reconstructed files, stripping hidden polyglot payloads and EXIF scripts.</li>
+              <li><strong>Protect against image bombs:</strong> Always set <code>limitInputPixels</code> and maximum
+                width/height checks so tiny compressed headers cannot trigger huge RAM allocations.</li>
+              <li><strong>Be cautious with SVG uploads:</strong> Treat SVG as executable code (XML + JS) rather than a
+                normal raster image. Convert or strictly sanitize SVGs before ever serving them inline.</li>
+              <li><strong>Clean up old files on replacement:</strong> When a user uploads a new avatar, delete the
+                previous avatar's main and thumbnail files so orphaned images do not pile up.</li>
             </ul>
           </article>
         </div>
@@ -585,120 +658,178 @@ app.listen(PORT, () => {
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Compare Compression Ratios:</strong> Upload a harmless 1–2 MB sample JPEG or PNG through the tutorial endpoint and compare <code>uploadedBytes</code> vs. <code>optimizedMainBytes</code> vs. <code>thumbnailBytes</code>.</li>
-          <li><strong>Test Corrupted Image Handling:</strong> Rename a plain text file to <code>broken.jpg</code> and upload it to <code>/api/v1/images</code>. Confirm <code>sharp</code> rejects it with <code>400</code> and writes zero files into <code>storage/images/</code>.</li>
-          <li><strong>Test <code>withoutEnlargement: true</code>:</strong> Upload a tiny <code>100x100</code> sample PNG and confirm the generated <code>-main.webp</code> stays <code>100x100</code> instead of upscaling to <code>1200x1200</code>.</li>
-          <li><strong>Add Aspect-Ratio &amp; Dimension Metadata Response:</strong> Return the final processed <code>mainInfo.width</code> and <code>mainInfo.height</code> inside the JSON response alongside the URLs.</li>
+          <li><strong>Compare Compression Ratios:</strong> Upload a harmless 1–2 MB sample JPEG or PNG through the
+            tutorial endpoint and compare <code>uploadedBytes</code> vs. <code>optimizedMainBytes</code> vs.
+            <code>thumbnailBytes</code>.</li>
+          <li><strong>Test Corrupted Image Handling:</strong> Rename a plain text file to <code>broken.jpg</code> and
+            upload it to <code>/api/v1/images</code>. Confirm <code>sharp</code> rejects it with <code>400</code> and
+            writes zero files into <code>storage/images/</code>.</li>
+          <li><strong>Test <code>withoutEnlargement: true</code>:</strong> Upload a tiny <code>100x100</code> sample PNG
+            and confirm the generated <code>-main.webp</code> stays <code>100x100</code> instead of upscaling to
+            <code>1200x1200</code>.</li>
+          <li><strong>Add Aspect-Ratio &amp; Dimension Metadata Response:</strong> Return the final processed
+            <code>mainInfo.width</code> and <code>mainInfo.height</code> inside the JSON response alongside the URLs.
+          </li>
         </ol>
       </section>
 
       <section class="card-section" id="mini-project">
         <h2>Day 10 Mini Project: User Avatar &amp; Cover Image Pipeline</h2>
         <p>
-          Build a reusable image-handling workflow for user profile avatars using Express, Multer, <code>sharp</code>, and MongoDB.
+          Build a reusable image-handling workflow for user profile avatars using Express, Multer, <code>sharp</code>,
+          and MongoDB.
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Accept only JPEG, PNG, and WebP uploads capped at <code>3 MB</code> via <code>multer.memoryStorage()</code>.</li>
-          <li>Verify image metadata and enforce safe dimension/pixel limits (<code>limitInputPixels</code>) before processing.</li>
-          <li>Auto-orient with <code>.rotate()</code>, strip EXIF privacy metadata, and output two square WebP variants: <code>avatar-lg.webp</code> (<code>512x512</code>, <code>fit: 'cover'</code>) and <code>avatar-sm.webp</code> (<code>128x128</code>, <code>fit: 'cover'</code>).</li>
-          <li>Store only relative storage keys inside the user's MongoDB document and construct public URLs dynamically in the response presenter.</li>
-          <li>When a user uploads a replacement avatar, delete the previous avatar's old files safely after the new ones succeed; if any processing step fails, roll back partial files cleanly.</li>
+          <li>Accept only JPEG, PNG, and WebP uploads capped at <code>3 MB</code> via
+            <code>multer.memoryStorage()</code>.</li>
+          <li>Verify image metadata and enforce safe dimension/pixel limits (<code>limitInputPixels</code>) before
+            processing.</li>
+          <li>Auto-orient with <code>.rotate()</code>, strip EXIF privacy metadata, and output two square WebP variants:
+            <code>avatar-lg.webp</code> (<code>512x512</code>, <code>fit: 'cover'</code>) and
+            <code>avatar-sm.webp</code> (<code>128x128</code>, <code>fit: 'cover'</code>).</li>
+          <li>Store only relative storage keys inside the user's MongoDB document and construct public URLs dynamically
+            in the response presenter.</li>
+          <li>When a user uploads a replacement avatar, delete the previous avatar's old files safely after the new ones
+            succeed; if any processing step fails, roll back partial files cleanly.</li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 10 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and
+          explanations.</p>
 
         <form id="day10QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
             <legend>1. Why is stripping EXIF metadata from user-uploaded photos important for privacy?</legend>
-            <label class="quiz-option"><input type="radio" name="q1" value="a"> EXIF metadata can contain sensitive private details like exact GPS location coordinates and camera serial numbers</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> EXIF metadata turns WebP files into JavaScript files</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="c"> Browsers refuse to render images unless EXIF is deleted</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="d"> Removing EXIF increases file sizes by 50%</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> EXIF metadata can contain sensitive
+              private details like exact GPS location coordinates and camera serial numbers</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> EXIF metadata turns WebP files into
+              JavaScript files</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Browsers refuse to render images unless
+              EXIF is deleted</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> Removing EXIF increases file sizes by
+              50%</label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
-            <legend>2. What happens if you strip EXIF metadata from a smartphone photo WITHOUT calling <code>sharp(buffer).rotate()</code> first?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> The image automatically doubles in resolution</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> Portrait photos that relied on an EXIF orientation tag may appear rotated sideways or upside down</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> The image cannot be converted to WebP</label>
+            <legend>2. What happens if you strip EXIF metadata from a smartphone photo WITHOUT calling
+              <code>sharp(buffer).rotate()</code> first?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> The image automatically doubles in
+              resolution</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Portrait photos that relied on an EXIF
+              orientation tag may appear rotated sideways or upside down</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> The image cannot be converted to
+              WebP</label>
             <label class="quiz-option"><input type="radio" name="q2" value="d"> Multer rejects the file as empty</label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
             <legend>3. What is a "decompression bomb" (pixel bomb) attack in image handling?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> Uploading a small compressed file whose header claims huge pixel dimensions (like 60,000&times;60,000) to exhaust server RAM during decoding</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> Sending an image over <code>GET</code> instead of <code>POST</code></label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> Compressing a JPEG to 80% WebP quality</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="d"> Generating square thumbnails with <code>fit: 'cover'</code></label>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Uploading a small compressed file whose
+              header claims huge pixel dimensions (like 60,000&times;60,000) to exhaust server RAM during
+              decoding</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Sending an image over <code>GET</code>
+              instead of <code>POST</code></label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Compressing a JPEG to 80% WebP
+              quality</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> Generating square thumbnails with
+              <code>fit: 'cover'</code></label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
-            <legend>4. Which <code>sharp</code> resize option ensures a small 200px image is NOT stretched larger when targeting a 1200px max width?</legend>
+            <legend>4. Which <code>sharp</code> resize option ensures a small 200px image is NOT stretched larger when
+              targeting a 1200px max width?</legend>
             <label class="quiz-option"><input type="radio" name="q4" value="a"> <code>fit: 'fill'</code></label>
-            <label class="quiz-option"><input type="radio" name="q4" value="b"> <code>withoutEnlargement: true</code></label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b">
+              <code>withoutEnlargement: true</code></label>
             <label class="quiz-option"><input type="radio" name="q4" value="c"> <code>withMetadata: true</code></label>
             <label class="quiz-option"><input type="radio" name="q4" value="d"> <code>animated: true</code></label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
-            <legend>5. Why is WebP widely preferred over raw JPEG and PNG for processed user photo uploads on modern web apps?</legend>
-            <label class="quiz-option"><input type="radio" name="q5" value="a"> WebP achieves significantly smaller file sizes at comparable visual quality and supports transparency</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> WebP is the only format MongoDB can store references to</label>
+            <legend>5. Why is WebP widely preferred over raw JPEG and PNG for processed user photo uploads on modern web
+              apps?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> WebP achieves significantly smaller file
+              sizes at comparable visual quality and supports transparency</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> WebP is the only format MongoDB can
+              store references to</label>
             <label class="quiz-option"><input type="radio" name="q5" value="c"> WebP files cannot be resized</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="d"> Browsers skip CORS on WebP images</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> Browsers skip CORS on WebP
+              images</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. Why is storing relative storage keys (e.g., <code>samples/uuid-main.webp</code>) in MongoDB better than storing <code>http://localhost:5000/...</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q6" value="a"> Relative keys allow changing domains, staging hosts, or CDN URLs in configuration without rewriting every database document</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="b"> MongoDB rejects strings containing <code>http://</code></label>
-            <label class="quiz-option"><input type="radio" name="q6" value="c"> Relative keys automatically compress images</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="d"> It eliminates the need for <code>express.static</code></label>
+            <legend>6. Why is storing relative storage keys (e.g., <code>samples/uuid-main.webp</code>) in MongoDB
+              better than storing <code>http://localhost:5000/...</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Relative keys allow changing domains,
+              staging hosts, or CDN URLs in configuration without rewriting every database document</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> MongoDB rejects strings containing
+              <code>http://</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> Relative keys automatically compress
+              images</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> It eliminates the need for
+              <code>express.static</code></label>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. Why do untrusted user-uploaded SVG files pose a special security risk compared to PNG/WebP?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> SVG files are XML documents that can embed executable <code>&lt;script&gt;</code> tags, leading to Stored XSS if served inline</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> SVG files are always larger than 100 MB</label>
+            <legend>7. Why do untrusted user-uploaded SVG files pose a special security risk compared to PNG/WebP?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> SVG files are XML documents that can
+              embed executable <code>&lt;script&gt;</code> tags, leading to Stored XSS if served inline</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> SVG files are always larger than 100
+              MB</label>
             <label class="quiz-option"><input type="radio" name="q7" value="c"> SVG files cannot display colors</label>
             <label class="quiz-option"><input type="radio" name="q7" value="d"> Express cannot serve XML files</label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
-            <legend>8. How does re-encoding an uploaded image through <code>sharp</code> improve security beyond resizing?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> Decoding pixels and writing a fresh WebP file strips hidden trailing payloads, malformed headers, and embedded scripts</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> It hashes the user's password automatically</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> It disables rate limiting for that user</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="d"> It turns all <code>POST</code> requests into <code>GET</code></label>
+            <legend>8. How does re-encoding an uploaded image through <code>sharp</code> improve security beyond
+              resizing?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Decoding pixels and writing a fresh WebP
+              file strips hidden trailing payloads, malformed headers, and embedded scripts</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> It hashes the user's password
+              automatically</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> It disables rate limiting for that
+              user</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> It turns all <code>POST</code> requests
+              into <code>GET</code></label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. Why can we safely set <code>maxAge: '365d', immutable: true</code> on processed image files named with fresh UUIDs?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> Because each updated upload receives a brand-new unique URL, so cached files never go stale</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because browsers delete UUID files after 1 second</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> Because <code>immutable: true</code> disables browser caching</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="d"> Because MongoDB refreshes browser caches automatically</label>
+            <legend>9. Why can we safely set <code>maxAge: '365d', immutable: true</code> on processed image files named
+              with fresh UUIDs?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Because each updated upload receives a
+              brand-new unique URL, so cached files never go stale</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because browsers delete UUID files after
+              1 second</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Because <code>immutable: true</code>
+              disables browser caching</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> Because MongoDB refreshes browser caches
+              automatically</label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. If generating a thumbnail fails after the main image was already written to disk, what should the service do?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> Leave the main file on disk and return <code>200 OK</code></label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> Clean up (unlink) any partially written files in the <code>catch</code> block and throw an error so no orphan files remain</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> Delete the entire <code>storage/images</code> directory</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="d"> Save the raw corrupted buffer into MongoDB</label>
+            <legend>10. If generating a thumbnail fails after the main image was already written to disk, what should
+              the service do?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Leave the main file on disk and return
+              <code>200 OK</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Clean up (unlink) any partially written
+              files in the <code>catch</code> block and throw an error so no orphan files remain</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Delete the entire
+              <code>storage/images</code> directory</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> Save the raw corrupted buffer into
+              MongoDB</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
 
@@ -716,24 +847,36 @@ app.listen(PORT, () => {
         <p>Think through each answer carefully before opening the explanation.</p>
         <div class="qa-list">
           <details class="qa-item">
-            <summary>1. Why should backend servers generate thumbnails instead of shrinking 4000px images solely with CSS <code>width: 200px</code>?</summary>
-            <p>CSS only changes visual display size after the browser has already downloaded the full multi-megabyte file. Generating server-side thumbnails cuts download size by 90%+ and dramatically speeds up page rendering.</p>
+            <summary>1. Why should backend servers generate thumbnails instead of shrinking 4000px images solely with
+              CSS <code>width: 200px</code>?</summary>
+            <p>CSS only changes visual display size after the browser has already downloaded the full multi-megabyte
+              file. Generating server-side thumbnails cuts download size by 90%+ and dramatically speeds up page
+              rendering.</p>
           </details>
           <details class="qa-item">
-            <summary>2. Explain the order of operations when calling <code>sharp(buffer).rotate().resize(...).webp(...)</code>.</summary>
-            <p><code>.rotate()</code> reads EXIF orientation tags and physically rotates the pixels upright before metadata is stripped during encoding, ensuring portrait photos display upright while GPS/camera EXIF details are removed.</p>
+            <summary>2. Explain the order of operations when calling
+              <code>sharp(buffer).rotate().resize(...).webp(...)</code>.</summary>
+            <p><code>.rotate()</code> reads EXIF orientation tags and physically rotates the pixels upright before
+              metadata is stripped during encoding, ensuring portrait photos display upright while GPS/camera EXIF
+              details are removed.</p>
           </details>
           <details class="qa-item">
             <summary>3. What is the purpose of <code>limitInputPixels</code> in <code>sharp</code>?</summary>
-            <p>It prevents decompression-bomb (pixel-bomb) attacks where a small compressed file declares extreme dimensions (e.g., 50,000&times;50,000 pixels) that would consume gigabytes of RAM if decoded.</p>
+            <p>It prevents decompression-bomb (pixel-bomb) attacks where a small compressed file declares extreme
+              dimensions (e.g., 50,000&times;50,000 pixels) that would consume gigabytes of RAM if decoded.</p>
           </details>
           <details class="qa-item">
-            <summary>4. Compare local image storage and cloud object storage + CDN for a growing web application.</summary>
-            <p>Local storage is easy for single-server prototypes but fails when deploying to ephemeral containers or multiple servers and consumes Node.js bandwidth. Cloud object storage + CDN provides durable shared storage and fast global edge caching.</p>
+            <summary>4. Compare local image storage and cloud object storage + CDN for a growing web application.
+            </summary>
+            <p>Local storage is easy for single-server prototypes but fails when deploying to ephemeral containers or
+              multiple servers and consumes Node.js bandwidth. Cloud object storage + CDN provides durable shared
+              storage and fast global edge caching.</p>
           </details>
           <details class="qa-item">
             <summary>5. Why is storing relative image keys in MongoDB preferable to storing full domain URLs?</summary>
-            <p>Relative keys decouple database records from a specific server hostname or CDN provider. Moving from <code>localhost</code> to production or a new CDN domain only requires updating one environment variable.</p>
+            <p>Relative keys decouple database records from a specific server hostname or CDN provider. Moving from
+              <code>localhost</code> to production or a new CDN domain only requires updating one environment variable.
+            </p>
           </details>
         </div>
       </section>
@@ -755,12 +898,15 @@ await Product.create({ imageUrl: `http://localhost:5000/uploads/${filename}` });
 
           <article class="challenge-card">
             <h3>Challenge 2: Add Minimum Dimension Validation</h3>
-            <p>Update <code>processAndSaveImage</code> so that any uploaded image smaller than <code>200x200</code> pixels is rejected with a clear <code>400</code> error before resizing or writing files to disk.</p>
+            <p>Update <code>processAndSaveImage</code> so that any uploaded image smaller than <code>200x200</code>
+              pixels is rejected with a clear <code>400</code> error before resizing or writing files to disk.</p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Clean Up Replaced User Avatars</h3>
-            <p>Write a helper <code>deleteImageVariants(oldMainKey, oldThumbKey)</code> that safely resolves paths inside <code>IMAGE_STORAGE_DIR</code> (verifying no path traversal) and unlinks both old files only after the new avatar files and MongoDB update succeed.</p>
+            <p>Write a helper <code>deleteImageVariants(oldMainKey, oldThumbKey)</code> that safely resolves paths
+              inside <code>IMAGE_STORAGE_DIR</code> (verifying no path traversal) and unlinks both old files only after
+              the new avatar files and MongoDB update succeed.</p>
           </article>
         </div>
       </section>
@@ -768,23 +914,31 @@ await Product.create({ imageUrl: `http://localhost:5000/uploads/${filename}` });
       <section class="card-section" id="summary">
         <h2>Day 10 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Choose image formats intentionally (WebP/AVIF for optimized web delivery, PNG for crisp lossless graphics, avoid untrusted raw SVGs).</li>
+          <li>Choose image formats intentionally (WebP/AVIF for optimized web delivery, PNG for crisp lossless graphics,
+            avoid untrusted raw SVGs).</li>
           <li>Validate image metadata and guard against pixel-bomb dimensions with <code>limitInputPixels</code>.</li>
-          <li>Call <code>.rotate()</code> before re-encoding with <code>sharp</code> to preserve orientation while stripping private EXIF GPS/camera data.</li>
-          <li>Generate dedicated optimized main and thumbnail variants, roll back partial files on failure, and store relative keys in MongoDB.</li>
-          <li>Use UUID filenames with immutable cache headers locally during development, and migrate to cloud object storage + CDN in production.</li>
+          <li>Call <code>.rotate()</code> before re-encoding with <code>sharp</code> to preserve orientation while
+            stripping private EXIF GPS/camera data.</li>
+          <li>Generate dedicated optimized main and thumbnail variants, roll back partial files on failure, and store
+            relative keys in MongoDB.</li>
+          <li>Use UUID filenames with immutable cache headers locally during development, and migrate to cloud object
+            storage + CDN in production.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 10 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 10: Server-side image validation, EXIF stripping, WebP optimization, and thumbnail generation.</p>
+        <p>Visual summary diagram for Day 10: Server-side image validation, EXIF stripping, WebP optimization, and
+          thumbnail generation.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating server-side image processing workflow with validation, EXIF stripping, resizing, and WebP thumbnail generation" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating server-side image processing workflow with validation, EXIF stripping, resizing, and WebP thumbnail generation"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 10 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 10/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 10/</code> folder
+              to display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -803,11 +957,12 @@ await Product.create({ imageUrl: `http://localhost:5000/uploads/${filename}` });
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -823,7 +978,8 @@ await Product.create({ imageUrl: `http://localhost:5000/uploads/${filename}` });
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -838,4 +994,5 @@ await Product.create({ imageUrl: `http://localhost:5000/uploads/${filename}` });
 
   <script src="script.js"></script>
 </body>
+
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
-   <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,7 +71,11 @@
         </div>
         <h1>Day 2: Advanced Middleware</h1>
         <p class="lead-intro">
-          Middleware is the backbone of every Express.js application. Instead of duplicating logging, input validation, authentication, and permission checks inside dozens of controllers, Express lets you compose small, single-purpose middleware functions into a clean pipeline. Today you will master how the middleware chain executes, how <code>next()</code> and <code>next(error)</code> steer control flow, and how to build reusable middleware modules.
+          Middleware is the backbone of every Express.js application. Instead of duplicating logging, input validation,
+          authentication, and permission checks inside dozens of controllers, Express lets you compose small,
+          single-purpose middleware functions into a clean pipeline. Today you will master how the middleware chain
+          executes, how <code>next()</code> and <code>next(error)</code> steer control flow, and how to build reusable
+          middleware modules.
         </p>
       </section>
 
@@ -79,9 +86,11 @@
           <li>Define middleware and trace how Express executes a middleware chain top-to-bottom.</li>
           <li>Distinguish between built-in, third-party, and custom Express middleware.</li>
           <li>Apply middleware at the application level, router level, and individual route level.</li>
-          <li>Control request flow accurately using <code>next()</code>, <code>next('route')</code>, <code>next(error)</code>, and response termination.</li>
+          <li>Control request flow accurately using <code>next()</code>, <code>next('route')</code>,
+            <code>next(error)</code>, and response termination.</li>
           <li>Build custom request logging middleware that measures response duration accurately.</li>
-          <li>Implement authentication (verifying identity) and authorization (verifying permissions) middleware cleanly.</li>
+          <li>Implement authentication (verifying identity) and authorization (verifying permissions) middleware
+            cleanly.</li>
           <li>Create reusable validation middleware factories using higher-order functions.</li>
           <li>Organize middleware centrally and avoid common ordering and hanging-request mistakes.</li>
         </ul>
@@ -91,9 +100,12 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 2, ensure you are comfortable with:</p>
         <ul class="styled-list">
-          <li><strong>Day 1 Express Fundamentals:</strong> Creating an Express <code>app</code>, mounting <code>express.Router()</code>, and inspecting <code>req</code> and <code>res</code>.</li>
-          <li><strong>Server-Side Execution:</strong> Understanding that Express middleware runs inside Node.js on the server before a controller sends an HTTP response back to a browser or API client.</li>
-          <li><strong>JavaScript Functions &amp; Closures:</strong> Writing higher-order functions (a function that returns a middleware function <code>(req, res, next) =&gt; {}</code>).</li>
+          <li><strong>Day 1 Express Fundamentals:</strong> Creating an Express <code>app</code>, mounting
+            <code>express.Router()</code>, and inspecting <code>req</code> and <code>res</code>.</li>
+          <li><strong>Server-Side Execution:</strong> Understanding that Express middleware runs inside Node.js on the
+            server before a controller sends an HTTP response back to a browser or API client.</li>
+          <li><strong>JavaScript Functions &amp; Closures:</strong> Writing higher-order functions (a function that
+            returns a middleware function <code>(req, res, next) =&gt; {}</code>).</li>
         </ul>
       </section>
 
@@ -102,27 +114,36 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Middleware Function</h3>
-            <p>A function with signature <code>(req, res, next)</code> that has access to the request object, response object, and the next function in the application's request-response cycle.</p>
+            <p>A function with signature <code>(req, res, next)</code> that has access to the request object, response
+              object, and the next function in the application's request-response cycle.</p>
           </article>
           <article class="term-card">
             <h3>Middleware Chain (Pipeline)</h3>
-            <p>The ordered sequence of middleware and route handlers that an incoming request traverses until a response is sent or an error occurs.</p>
+            <p>The ordered sequence of middleware and route handlers that an incoming request traverses until a response
+              is sent or an error occurs.</p>
           </article>
           <article class="term-card">
             <h3><code>next()</code></h3>
-            <p>A callback provided by Express that passes control from the current middleware to the next matching middleware or route handler in the stack.</p>
+            <p>A callback provided by Express that passes control from the current middleware to the next matching
+              middleware or route handler in the stack.</p>
           </article>
           <article class="term-card">
             <h3><code>next(error)</code></h3>
-            <p>Calling <code>next</code> with any non-empty argument (except <code>'route'</code> or <code>'router'</code>) tells Express to skip all normal middleware and jump directly to error-handling middleware.</p>
+            <p>Calling <code>next</code> with any non-empty argument (except <code>'route'</code> or
+              <code>'router'</code>) tells Express to skip all normal middleware and jump directly to error-handling
+              middleware.</p>
           </article>
           <article class="term-card">
             <h3>Authentication vs. Authorization</h3>
-            <p><strong>Authentication</strong> verifies <em>who</em> the user is (e.g., validating a token or API key). <strong>Authorization</strong> checks <em>what</em> that authenticated user is permitted to do (e.g., admin role check).</p>
+            <p><strong>Authentication</strong> verifies <em>who</em> the user is (e.g., validating a token or API key).
+              <strong>Authorization</strong> checks <em>what</em> that authenticated user is permitted to do (e.g.,
+              admin role check).</p>
           </article>
           <article class="term-card">
             <h3>Middleware Factory</h3>
-            <p>A configurable function such as <code>restrictTo('admin', 'editor')</code> or <code>validateBody(schema)</code> that accepts arguments and returns a tailored <code>(req, res, next)</code> middleware.</p>
+            <p>A configurable function such as <code>restrictTo('admin', 'editor')</code> or
+              <code>validateBody(schema)</code> that accepts arguments and returns a tailored
+              <code>(req, res, next)</code> middleware.</p>
           </article>
         </div>
       </section>
@@ -132,12 +153,17 @@
 
         <h3>1. What Middleware Is and How the Chain Works</h3>
         <p>
-          Every time an HTTP request enters an Express server, Express checks its internal array of registered layers in exact registration order. Each layer holds a path pattern, an optional HTTP method, and a handler function. Middleware layers sit in front of—or alongside—your route controllers. Each middleware can perform one or more of four actions:
+          Every time an HTTP request enters an Express server, Express checks its internal array of registered layers in
+          exact registration order. Each layer holds a path pattern, an optional HTTP method, and a handler function.
+          Middleware layers sit in front of—or alongside—your route controllers. Each middleware can perform one or more
+          of four actions:
         </p>
         <ul class="styled-list">
           <li>Execute any server-side code (such as logging, timing, or checking headers).</li>
-          <li>Modify or enrich <code>req</code> and <code>res</code> (for example, attaching <code>req.user</code> or setting a <code>X-Request-Id</code> header).</li>
-          <li>End the request-response cycle immediately by sending a response (such as <code>res.status(401).json(...)</code>).</li>
+          <li>Modify or enrich <code>req</code> and <code>res</code> (for example, attaching <code>req.user</code> or
+            setting a <code>X-Request-Id</code> header).</li>
+          <li>End the request-response cycle immediately by sending a response (such as
+            <code>res.status(401).json(...)</code>).</li>
           <li>Call <code>next()</code> to pass control to the next layer in the chain.</li>
         </ul>
 
@@ -160,12 +186,15 @@
               <tr>
                 <td><strong>Third-Party Middleware</strong></td>
                 <td><code>helmet</code>, <code>cors</code>, <code>morgan</code>, <code>compression</code></td>
-                <td>Community-maintained packages installed via npm for security headers, CORS policies, HTTP logging, and gzip compression.</td>
+                <td>Community-maintained packages installed via npm for security headers, CORS policies, HTTP logging,
+                  and gzip compression.</td>
               </tr>
               <tr>
                 <td><strong>Custom Middleware</strong></td>
-                <td><code>requestLogger</code>, <code>requireAuth</code>, <code>restrictTo</code>, <code>validateResource</code></td>
-                <td>Written specifically for your application's logging format, auth rules, and request validation needs.</td>
+                <td><code>requestLogger</code>, <code>requireAuth</code>, <code>restrictTo</code>,
+                  <code>validateResource</code></td>
+                <td>Written specifically for your application's logging format, auth rules, and request validation
+                  needs.</td>
               </tr>
             </tbody>
           </table>
@@ -176,46 +205,83 @@
           Middleware can be attached at three scopes depending on how broadly it should run:
         </p>
         <ul class="styled-list">
-          <li><strong>Application-Level (<code>app.use(...)</code>):</strong> Runs for every incoming request across the entire app (or every request matching a top-level prefix like <code>/api</code>). Ideal for body parsers, request IDs, and global loggers.</li>
-          <li><strong>Router-Level (<code>router.use(...)</code>):</strong> Bound to a specific <code>express.Router()</code> instance. Ideal when every route in <code>adminRoutes.js</code> requires authentication and admin role checks, while public routes in <code>publicRoutes.js</code> do not.</li>
-          <li><strong>Route-Level (inline array or argument):</strong> Passed directly to a single endpoint, such as <code>router.post('/', requireAuth, validateCourse, createCourse)</code>. Express executes them left-to-right before running <code>createCourse</code>.</li>
+          <li><strong>Application-Level (<code>app.use(...)</code>):</strong> Runs for every incoming request across the
+            entire app (or every request matching a top-level prefix like <code>/api</code>). Ideal for body parsers,
+            request IDs, and global loggers.</li>
+          <li><strong>Router-Level (<code>router.use(...)</code>):</strong> Bound to a specific
+            <code>express.Router()</code> instance. Ideal when every route in <code>adminRoutes.js</code> requires
+            authentication and admin role checks, while public routes in <code>publicRoutes.js</code> do not.</li>
+          <li><strong>Route-Level (inline array or argument):</strong> Passed directly to a single endpoint, such as
+            <code>router.post('/', requireAuth, validateCourse, createCourse)</code>. Express executes them
+            left-to-right before running <code>createCourse</code>.</li>
         </ul>
 
         <h3>4. Middleware Execution Order</h3>
         <p>
-          Order is critical in Express. Middleware registered <strong>before</strong> a route executes before that route's controller. Middleware registered <strong>after</strong> a route only executes if the earlier route called <code>next()</code> without terminating the response.
+          Order is critical in Express. Middleware registered <strong>before</strong> a route executes before that
+          route's controller. Middleware registered <strong>after</strong> a route only executes if the earlier route
+          called <code>next()</code> without terminating the response.
         </p>
         <p>
-          For example, if you register <code>app.use('/api/v1/orders', orderRouter)</code> <em>above</em> <code>app.use(express.json())</code>, then <code>req.body</code> will be <code>undefined</code> inside all order routes because the parser ran too late! Similarly, a 404 catch-all middleware must always be registered <em>after</em> all valid routers, and a 4-argument error middleware <code>(err, req, res, next)</code> must sit at the very bottom.
+          For example, if you register <code>app.use('/api/v1/orders', orderRouter)</code> <em>above</em>
+          <code>app.use(express.json())</code>, then <code>req.body</code> will be <code>undefined</code> inside all
+          order routes because the parser ran too late! Similarly, a 404 catch-all middleware must always be registered
+          <em>after</em> all valid routers, and a 4-argument error middleware <code>(err, req, res, next)</code> must
+          sit at the very bottom.
         </p>
 
         <h3>5. <code>next()</code>, <code>next(error)</code>, and Response Termination</h3>
         <p>Knowing the exact behavior of <code>next</code> prevents subtle control-flow bugs:</p>
         <ul class="styled-list">
-          <li><strong>Calling <code>next()</code>:</strong> Moves normally to the next matching middleware or route handler. Note that code written <em>after</em> <code>next()</code> in the same function still runs once downstream synchronous steps return, so use <code>return next();</code> if you do not want trailing lines to execute.</li>
-          <li><strong>Terminating early:</strong> Calling <code>return res.status(403).json({ message: 'Forbidden' })</code> stops the chain immediately. Downstream middleware and the final controller never run for that request.</li>
-          <li><strong>Calling <code>next(error)</code>:</strong> Immediately bypasses all remaining normal middleware and route handlers and jumps straight to the next 4-parameter error-handling middleware <code>(err, req, res, next)</code>.</li>
-          <li><strong>Calling <code>next('route')</code>:</strong> Works only inside route-level handlers (like <code>router.get('/items', fn1, fn2)</code>) to skip the remaining handlers on the current route and jump to the next matching route.</li>
+          <li><strong>Calling <code>next()</code>:</strong> Moves normally to the next matching middleware or route
+            handler. Note that code written <em>after</em> <code>next()</code> in the same function still runs once
+            downstream synchronous steps return, so use <code>return next();</code> if you do not want trailing lines to
+            execute.</li>
+          <li><strong>Terminating early:</strong> Calling
+            <code>return res.status(403).json({ message: 'Forbidden' })</code> stops the chain immediately. Downstream
+            middleware and the final controller never run for that request.</li>
+          <li><strong>Calling <code>next(error)</code>:</strong> Immediately bypasses all remaining normal middleware
+            and route handlers and jumps straight to the next 4-parameter error-handling middleware
+            <code>(err, req, res, next)</code>.</li>
+          <li><strong>Calling <code>next('route')</code>:</strong> Works only inside route-level handlers (like
+            <code>router.get('/items', fn1, fn2)</code>) to skip the remaining handlers on the current route and jump to
+            the next matching route.</li>
         </ul>
 
         <h3>6. Request Logging, Auth, and Validation Middleware Concepts</h3>
         <ul class="styled-list">
-          <li><strong>Request Logging Middleware:</strong> Records the HTTP method, URL, status code, and elapsed duration in milliseconds. Because the status code is only final after the controller responds, attach a listener to <code>res.on('finish', ...)</code> using <code>process.hrtime.bigint()</code> for accurate timing.</li>
-          <li><strong>Authentication Middleware:</strong> Inspects credentials (such as a <code>Bearer</code> token or API key in the <code>Authorization</code> header). If missing or invalid, terminates with <code>401 Unauthorized</code>; if valid, attaches the decoded user identity to <code>req.user</code> and calls <code>next()</code>.</li>
-          <li><strong>Authorization Middleware:</strong> Runs <em>after</em> authentication, inspects <code>req.user.role</code> against allowed roles, and terminates with <code>403 Forbidden</code> if the user lacks permission.</li>
-          <li><strong>Validation Middleware:</strong> Checks <code>req.body</code>, <code>req.params</code>, or <code>req.query</code> against explicit rules before the controller runs, keeping controllers clean and focused solely on business actions.</li>
+          <li><strong>Request Logging Middleware:</strong> Records the HTTP method, URL, status code, and elapsed
+            duration in milliseconds. Because the status code is only final after the controller responds, attach a
+            listener to <code>res.on('finish', ...)</code> using <code>process.hrtime.bigint()</code> for accurate
+            timing.</li>
+          <li><strong>Authentication Middleware:</strong> Inspects credentials (such as a <code>Bearer</code> token or
+            API key in the <code>Authorization</code> header). If missing or invalid, terminates with
+            <code>401 Unauthorized</code>; if valid, attaches the decoded user identity to <code>req.user</code> and
+            calls <code>next()</code>.</li>
+          <li><strong>Authorization Middleware:</strong> Runs <em>after</em> authentication, inspects
+            <code>req.user.role</code> against allowed roles, and terminates with <code>403 Forbidden</code> if the user
+            lacks permission.</li>
+          <li><strong>Validation Middleware:</strong> Checks <code>req.body</code>, <code>req.params</code>, or
+            <code>req.query</code> against explicit rules before the controller runs, keeping controllers clean and
+            focused solely on business actions.</li>
         </ul>
 
         <h3>7. Centralized Middleware Organization</h3>
         <p>
-          As your API grows, scatter-shot inline callbacks become hard to maintain. Store custom middleware in a dedicated <code>middleware/</code> directory (for example, <code>middleware/requestLogger.js</code>, <code>middleware/authMiddleware.js</code>, <code>middleware/validateMiddleware.js</code>) and optionally export common stacks through a central index or reusable array so routes remain declarative and self-documenting.
+          As your API grows, scatter-shot inline callbacks become hard to maintain. Store custom middleware in a
+          dedicated <code>middleware/</code> directory (for example, <code>middleware/requestLogger.js</code>,
+          <code>middleware/authMiddleware.js</code>, <code>middleware/validateMiddleware.js</code>) and optionally
+          export common stacks through a central index or reusable array so routes remain declarative and
+          self-documenting.
         </p>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Middleware Execution Pipeline &amp; Control Flow</h2>
-        <p>Notice how every request flows sequentially through global, router-level, and route-level middleware, and how errors bypass normal steps straight to the centralized error handler:</p>
-        <div class="diagram-container" role="img" aria-label="Diagram showing an HTTP request entering Express, moving through Request ID and Logger middleware, JSON parser, Auth middleware (branching to 401 on failure), Role and Validation middleware (branching to 403 or 400 on failure), reaching the final Controller, or jumping via next(error) to the 4-argument Error Handler.">
+        <p>Notice how every request flows sequentially through global, router-level, and route-level middleware, and how
+          errors bypass normal steps straight to the centralized error handler:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Diagram showing an HTTP request entering Express, moving through Request ID and Logger middleware, JSON parser, Auth middleware (branching to 401 on failure), Role and Validation middleware (branching to 403 or 400 on failure), reaching the final Controller, or jumping via next(error) to the 4-argument Error Handler.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">Step 1 &bull; Global App Middleware</span>
@@ -261,7 +327,9 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial &amp; Practical Backend Code</h2>
         <p>
-          Let us build a clean, reusable middleware suite in Node.js and Express.js covering custom request logging, authentication/authorization demonstrations, and declarative request validation. All files below run on <strong>Node.js (server-side)</strong>.
+          Let us build a clean, reusable middleware suite in Node.js and Express.js covering custom request logging,
+          authentication/authorization demonstrations, and declarative request validation. All files below run on
+          <strong>Node.js (server-side)</strong>.
         </p>
 
         <h3>Step 1: Project Setup</h3>
@@ -270,7 +338,8 @@
 cd middleware-demo-api
 npm init -y
 npm install express dotenv</code></pre>
-        <p>Add <code>"type": "module"</code> to <code>package.json</code> and create a sample <code>.env</code> file using safe placeholder tokens.</p>
+        <p>Add <code>"type": "module"</code> to <code>package.json</code> and create a sample <code>.env</code> file
+          using safe placeholder tokens.</p>
 
         <p class="code-label">Configuration File: <code>.env</code></p>
         <pre><code>PORT=5000
@@ -279,7 +348,8 @@ DEMO_ADMIN_KEY=sample-admin-key-change-in-prod
 DEMO_USER_KEY=sample-user-key-change-in-prod</code></pre>
 
         <h3>Step 2: Create Custom Request Logger Middleware</h3>
-        <p>This middleware assigns a unique request ID to every request and logs method, path, status code, and exact duration once the response finishes.</p>
+        <p>This middleware assigns a unique request ID to every request and logs method, path, status code, and exact
+          duration once the response finishes.</p>
         <p class="code-label">Backend Source Code: <code>middleware/requestLogger.js</code></p>
         <pre><code>import crypto from 'node:crypto';
 
@@ -302,7 +372,9 @@ export const requestLogger = (req, res, next) => {
 };</code></pre>
 
         <h3>Step 3: Create Authentication &amp; Authorization Middleware</h3>
-        <p>Notice the clean separation: <code>requireAuth</code> identifies the caller and attaches <code>req.user</code>, while <code>restrictTo(...roles)</code> is a middleware factory enforcing role permissions.</p>
+        <p>Notice the clean separation: <code>requireAuth</code> identifies the caller and attaches
+          <code>req.user</code>, while <code>restrictTo(...roles)</code> is a middleware factory enforcing role
+          permissions.</p>
         <p class="code-label">Backend Source Code: <code>middleware/authMiddleware.js</code></p>
         <pre><code>export const requireAuth = (req, res, next) => {
   const authHeader = req.get('authorization');
@@ -355,7 +427,8 @@ export const restrictTo = (...allowedRoles) => {
 };</code></pre>
 
         <h3>Step 4: Create Reusable Validation Middleware</h3>
-        <p>Instead of repeating validation code inside controllers, we build a configurable validation middleware factory that checks required fields and types.</p>
+        <p>Instead of repeating validation code inside controllers, we build a configurable validation middleware
+          factory that checks required fields and types.</p>
         <p class="code-label">Backend Source Code: <code>middleware/validateMiddleware.js</code></p>
         <pre><code>export const validateAnnouncementBody = (req, res, next) => {
   const { title, priority, content } = req.body;
@@ -558,19 +631,25 @@ app.listen(PORT, () => {
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. Correlation IDs Across Microservices</h3>
-            <p>Attaching a unique <code>X-Request-Id</code> header in global logging middleware lets engineering teams trace a single failing customer request across API logs, background workers, and database queries.</p>
+            <p>Attaching a unique <code>X-Request-Id</code> header in global logging middleware lets engineering teams
+              trace a single failing customer request across API logs, background workers, and database queries.</p>
           </article>
           <article class="info-box">
             <h3>2. Multi-Tenant Workspace Guarding</h3>
-            <p>A router-level middleware checks <code>req.params.workspaceId</code> and verifies that <code>req.user</code> belongs to that workspace before allowing any task, file, or billing controller to execute.</p>
+            <p>A router-level middleware checks <code>req.params.workspaceId</code> and verifies that
+              <code>req.user</code> belongs to that workspace before allowing any task, file, or billing controller to
+              execute.</p>
           </article>
           <article class="info-box">
             <h3>3. Schema-Driven Payload Validation</h3>
-            <p>Teams pair reusable validation middleware (custom or libraries like Zod/Joi) with routes so controllers only ever receive sanitized, correctly typed data.</p>
+            <p>Teams pair reusable validation middleware (custom or libraries like Zod/Joi) with routes so controllers
+              only ever receive sanitized, correctly typed data.</p>
           </article>
           <article class="info-box">
             <h3>4. Feature Flags &amp; Maintenance Mode</h3>
-            <p>A single top-level middleware can check an environment flag or maintenance setting and return <code>503 Service Unavailable</code> with a <code>Retry-After</code> header during upgrades without editing individual routes.</p>
+            <p>A single top-level middleware can check an environment flag or maintenance setting and return
+              <code>503 Service Unavailable</code> with a <code>Retry-After</code> header during upgrades without
+              editing individual routes.</p>
           </article>
         </div>
       </section>
@@ -581,20 +660,37 @@ app.listen(PORT, () => {
           <article class="warning-box">
             <h3>Common Middleware Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Forgetting <code>next()</code> and forgetting to respond:</strong> If a middleware neither calls <code>next()</code> nor calls <code>res.json()/res.send()</code>, the client request hangs indefinitely.</li>
-              <li><strong>Calling <code>next()</code> after sending a response:</strong> Writing <code>res.status(401).json(...)</code> and still calling <code>next()</code> causes the controller to run and crash with <code>ERR_HTTP_HEADERS_SENT</code>.</li>
-              <li><strong>Wrong registration order:</strong> Mounting routes before <code>express.json()</code> or mounting <code>restrictTo('admin')</code> before <code>requireAuth</code> breaks body parsing and role checks.</li>
-              <li><strong>Mutating <code>req.body</code> without validation:</strong> Passing unvalidated client properties directly into database updates allows mass-assignment bugs (such as a user sending <code>{ role: "admin" }</code>).</li>
-              <li><strong>Omitting the 4th parameter on error middleware:</strong> Express identifies error handlers strictly by counting <code>fn.length === 4</code>: <code>(err, req, res, next)</code>. Dropping <code>next</code> turns it into normal middleware!</li>
+              <li><strong>Forgetting <code>next()</code> and forgetting to respond:</strong> If a middleware neither
+                calls <code>next()</code> nor calls <code>res.json()/res.send()</code>, the client request hangs
+                indefinitely.</li>
+              <li><strong>Calling <code>next()</code> after sending a response:</strong> Writing
+                <code>res.status(401).json(...)</code> and still calling <code>next()</code> causes the controller to
+                run and crash with <code>ERR_HTTP_HEADERS_SENT</code>.</li>
+              <li><strong>Wrong registration order:</strong> Mounting routes before <code>express.json()</code> or
+                mounting <code>restrictTo('admin')</code> before <code>requireAuth</code> breaks body parsing and role
+                checks.</li>
+              <li><strong>Mutating <code>req.body</code> without validation:</strong> Passing unvalidated client
+                properties directly into database updates allows mass-assignment bugs (such as a user sending
+                <code>{ role: "admin" }</code>).</li>
+              <li><strong>Omitting the 4th parameter on error middleware:</strong> Express identifies error handlers
+                strictly by counting <code>fn.length === 4</code>: <code>(err, req, res, next)</code>. Dropping
+                <code>next</code> turns it into normal middleware!</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Never log sensitive headers or passwords:</strong> Logging middleware should log method, path, status, and request ID—never raw <code>Authorization</code> tokens or <code>req.body.password</code>.</li>
-              <li><strong>Fail closed by default:</strong> Auth middleware should explicitly deny access unless a valid credential is confirmed.</li>
-              <li><strong>Use <code>401</code> vs. <code>403</code> accurately:</strong> Return <code>401 Unauthorized</code> when credentials are missing or invalid, and <code>403 Forbidden</code> when the user is authenticated but lacks the required role.</li>
-              <li><strong>Copy only validated fields:</strong> Build a clean object (like <code>req.validatedAnnouncement</code>) instead of spreading raw <code>req.body</code> straight into storage.</li>
+              <li><strong>Never log sensitive headers or passwords:</strong> Logging middleware should log method, path,
+                status, and request ID—never raw <code>Authorization</code> tokens or <code>req.body.password</code>.
+              </li>
+              <li><strong>Fail closed by default:</strong> Auth middleware should explicitly deny access unless a valid
+                credential is confirmed.</li>
+              <li><strong>Use <code>401</code> vs. <code>403</code> accurately:</strong> Return
+                <code>401 Unauthorized</code> when credentials are missing or invalid, and <code>403 Forbidden</code>
+                when the user is authenticated but lacks the required role.</li>
+              <li><strong>Copy only validated fields:</strong> Build a clean object (like
+                <code>req.validatedAnnouncement</code>) instead of spreading raw <code>req.body</code> straight into
+                storage.</li>
             </ul>
           </article>
         </div>
@@ -603,31 +699,50 @@ app.listen(PORT, () => {
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Execution Order Tracer:</strong> Register three tiny middleware functions (<code>stepA</code>, <code>stepB</code>, <code>stepC</code>) that log <code>"Before next"</code>, call <code>next()</code>, and log <code>"After next"</code>. Observe the console order to see how the call stack unwinds.</li>
-          <li><strong>API Maintenance Middleware:</strong> Write a custom middleware <code>maintenanceGuard</code> that checks <code>process.env.MAINTENANCE_MODE === 'true'</code> and returns <code>503</code> JSON for all endpoints except <code>/api/v1/public-status</code>.</li>
-          <li><strong>Query Sanitizer Middleware:</strong> Create a middleware <code>trimQueryStrings</code> that iterates over keys in <code>req.query</code> and trims leading/trailing whitespace from string values before passing control via <code>next()</code>.</li>
-          <li><strong>Header Requirement Middleware Factory:</strong> Build <code>requireHeader(headerName)</code> that returns a middleware verifying a given custom header exists on incoming requests, returning <code>400 Bad Request</code> if missing.</li>
+          <li><strong>Execution Order Tracer:</strong> Register three tiny middleware functions (<code>stepA</code>,
+            <code>stepB</code>, <code>stepC</code>) that log <code>"Before next"</code>, call <code>next()</code>, and
+            log <code>"After next"</code>. Observe the console order to see how the call stack unwinds.</li>
+          <li><strong>API Maintenance Middleware:</strong> Write a custom middleware <code>maintenanceGuard</code> that
+            checks <code>process.env.MAINTENANCE_MODE === 'true'</code> and returns <code>503</code> JSON for all
+            endpoints except <code>/api/v1/public-status</code>.</li>
+          <li><strong>Query Sanitizer Middleware:</strong> Create a middleware <code>trimQueryStrings</code> that
+            iterates over keys in <code>req.query</code> and trims leading/trailing whitespace from string values before
+            passing control via <code>next()</code>.</li>
+          <li><strong>Header Requirement Middleware Factory:</strong> Build <code>requireHeader(headerName)</code> that
+            returns a middleware verifying a given custom header exists on incoming requests, returning
+            <code>400 Bad Request</code> if missing.</li>
         </ol>
       </section>
 
       <section class="card-section" id="mini-project">
         <h2>Day 2 Mini Project: Protected Support-Ticket Middleware Pipeline</h2>
         <p>
-          Build a modular support-ticket API where all cross-cutting concerns are cleanly handled in reusable middleware rather than inside controllers.
+          Build a modular support-ticket API where all cross-cutting concerns are cleanly handled in reusable middleware
+          rather than inside controllers.
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Create a <code>middleware/</code> folder with separate files for request logging, authentication (<code>requireAuth</code>), role-based authorization (<code>restrictTo</code>), and payload validation (<code>validateTicketBody</code>).</li>
-          <li>Every request must receive an <code>X-Request-Id</code> response header and log its status code and response time in milliseconds upon completion.</li>
-          <li>Mount a router at <code>/api/v1/tickets</code> protected at the router level by <code>requireAuth</code>.</li>
-          <li>Support <code>GET /api/v1/tickets</code> (accessible to both <code>member</code> and <code>agent</code> roles), <code>POST /api/v1/tickets</code> (validated for <code>subject</code>, <code>category</code>, and <code>urgency</code>), and <code>DELETE /api/v1/tickets/:id</code> (restricted strictly to the <code>agent</code> role plus numeric <code>:id</code> validation).</li>
-          <li>Demonstrate with <code>curl</code> or Postman: an unauthenticated request returning <code>401</code>, a <code>member</code> attempting <code>DELETE</code> returning <code>403</code>, an invalid <code>POST</code> returning <code>400</code>, and a valid request succeeding with <code>201</code>.</li>
+          <li>Create a <code>middleware/</code> folder with separate files for request logging, authentication
+            (<code>requireAuth</code>), role-based authorization (<code>restrictTo</code>), and payload validation
+            (<code>validateTicketBody</code>).</li>
+          <li>Every request must receive an <code>X-Request-Id</code> response header and log its status code and
+            response time in milliseconds upon completion.</li>
+          <li>Mount a router at <code>/api/v1/tickets</code> protected at the router level by <code>requireAuth</code>.
+          </li>
+          <li>Support <code>GET /api/v1/tickets</code> (accessible to both <code>member</code> and <code>agent</code>
+            roles), <code>POST /api/v1/tickets</code> (validated for <code>subject</code>, <code>category</code>, and
+            <code>urgency</code>), and <code>DELETE /api/v1/tickets/:id</code> (restricted strictly to the
+            <code>agent</code> role plus numeric <code>:id</code> validation).</li>
+          <li>Demonstrate with <code>curl</code> or Postman: an unauthenticated request returning <code>401</code>, a
+            <code>member</code> attempting <code>DELETE</code> returning <code>403</code>, an invalid <code>POST</code>
+            returning <code>400</code>, and a valid request succeeding with <code>201</code>.</li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 2 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to check your answers and read the explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to check your answers and read the
+          explanations.</p>
 
         <form id="day2QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
@@ -635,30 +750,40 @@ app.listen(PORT, () => {
             <label class="quiz-option"><input type="radio" name="q1" value="a"> <code>(err, req, res)</code></label>
             <label class="quiz-option"><input type="radio" name="q1" value="b"> <code>(req, res, next)</code></label>
             <label class="quiz-option"><input type="radio" name="q1" value="c"> <code>(app, router, next)</code></label>
-            <label class="quiz-option"><input type="radio" name="q1" value="d"> <code>(request, body, status)</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d">
+              <code>(request, body, status)</code></label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
             <legend>2. What happens when a middleware neither sends a response nor calls <code>next()</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> Express automatically moves to the next route after 10 milliseconds</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> Express sends a <code>200 OK</code> empty response automatically</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> The incoming client request hangs indefinitely until it times out</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="d"> Node.js immediately restarts the server</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Express automatically moves to the next
+              route after 10 milliseconds</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Express sends a <code>200 OK</code>
+              empty response automatically</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> The incoming client request hangs
+              indefinitely until it times out</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> Node.js immediately restarts the
+              server</label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
             <legend>3. What does calling <code>next(err)</code> inside a middleware cause Express to do?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> Continue to the immediately following normal route handler</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> Skip all remaining normal middleware/routes and jump to error-handling middleware</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> Retry the current middleware three times</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="d"> Convert the error object into a <code>200 OK</code> JSON response automatically</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Continue to the immediately following
+              normal route handler</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Skip all remaining normal
+              middleware/routes and jump to error-handling middleware</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Retry the current middleware three
+              times</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> Convert the error object into a
+              <code>200 OK</code> JSON response automatically</label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
-            <legend>4. Which HTTP status code should authorization middleware return when a user IS logged in, but lacks the required admin role?</legend>
+            <legend>4. Which HTTP status code should authorization middleware return when a user IS logged in, but lacks
+              the required admin role?</legend>
             <label class="quiz-option"><input type="radio" name="q4" value="a"> <code>400 Bad Request</code></label>
             <label class="quiz-option"><input type="radio" name="q4" value="b"> <code>401 Unauthorized</code></label>
             <label class="quiz-option"><input type="radio" name="q4" value="c"> <code>403 Forbidden</code></label>
@@ -667,56 +792,84 @@ app.listen(PORT, () => {
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
-            <legend>5. If you place <code>app.use('/api/v1/users', userRouter)</code> BEFORE <code>app.use(express.json())</code>, what happens on <code>POST /api/v1/users</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q5" value="a"> <code>req.body</code> will be <code>undefined</code> inside <code>userRouter</code></label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> Express automatically reorders <code>express.json()</code> to the top</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="c"> <code>req.body</code> is placed inside <code>req.params</code></label>
+            <legend>5. If you place <code>app.use('/api/v1/users', userRouter)</code> BEFORE
+              <code>app.use(express.json())</code>, what happens on <code>POST /api/v1/users</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> <code>req.body</code> will be
+              <code>undefined</code> inside <code>userRouter</code></label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Express automatically reorders
+              <code>express.json()</code> to the top</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> <code>req.body</code> is placed inside
+              <code>req.params</code></label>
             <label class="quiz-option"><input type="radio" name="q5" value="d"> The server refuses to start</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. How does Express recognize a function as an error-handling middleware rather than normal middleware?</legend>
-            <label class="quiz-option"><input type="radio" name="q6" value="a"> By naming the function <code>errorHandler</code></label>
-            <label class="quiz-option"><input type="radio" name="q6" value="b"> By defining exactly four parameters: <code>(err, req, res, next)</code></label>
-            <label class="quiz-option"><input type="radio" name="q6" value="c"> By mounting it with <code>app.error(...)</code></label>
+            <legend>6. How does Express recognize a function as an error-handling middleware rather than normal
+              middleware?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> By naming the function
+              <code>errorHandler</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> By defining exactly four parameters:
+              <code>(err, req, res, next)</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> By mounting it with
+              <code>app.error(...)</code></label>
             <label class="quiz-option"><input type="radio" name="q6" value="d"> By returning a rejected Promise</label>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. Why does request logging middleware listen to <code>res.on('finish', ...)</code> to log status codes and duration?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> Because <code>res.statusCode</code> and total execution time are only final after the controller sends the response</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> Because <code>console.log</code> cannot run inside <code>app.use()</code> directly</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="c"> Because <code>res.on('finish')</code> runs in the client's browser</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="d"> Because it prevents <code>express.json()</code> from running</label>
+            <legend>7. Why does request logging middleware listen to <code>res.on('finish', ...)</code> to log status
+              codes and duration?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> Because <code>res.statusCode</code> and
+              total execution time are only final after the controller sends the response</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Because <code>console.log</code> cannot
+              run inside <code>app.use()</code> directly</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> Because <code>res.on('finish')</code>
+              runs in the client's browser</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> Because it prevents
+              <code>express.json()</code> from running</label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
-            <legend>8. What is the advantage of a middleware factory like <code>restrictTo('admin', 'editor')</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> It lets you pass configuration arguments and generate reusable tailored middleware functions</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> It bypasses all authentication requirements</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> It eliminates the need for HTTP status codes</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="d"> It forces all routes to accept only <code>GET</code> requests</label>
+            <legend>8. What is the advantage of a middleware factory like <code>restrictTo('admin', 'editor')</code>?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> It lets you pass configuration arguments
+              and generate reusable tailored middleware functions</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> It bypasses all authentication
+              requirements</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> It eliminates the need for HTTP status
+              codes</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> It forces all routes to accept only
+              <code>GET</code> requests</label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. Which scope is best when you want authentication to protect all endpoints in <code>billingRoutes.js</code>, without affecting public routes in <code>catalogRoutes.js</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> Global application-level <code>app.use(requireAuth)</code> placed at the very top of <code>app.js</code></label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> Router-level <code>router.use(requireAuth)</code> inside <code>billingRoutes.js</code></label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> Putting <code>requireAuth</code> inside the 404 fallback handler</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="d"> Running <code>requireAuth</code> inside browser HTML</label>
+            <legend>9. Which scope is best when you want authentication to protect all endpoints in
+              <code>billingRoutes.js</code>, without affecting public routes in <code>catalogRoutes.js</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Global application-level
+              <code>app.use(requireAuth)</code> placed at the very top of <code>app.js</code></label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Router-level
+              <code>router.use(requireAuth)</code> inside <code>billingRoutes.js</code></label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Putting <code>requireAuth</code> inside
+              the 404 fallback handler</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> Running <code>requireAuth</code> inside
+              browser HTML</label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. Why should validation middleware construct a clean object of allowed fields (e.g., <code>req.validatedBody</code>) instead of trusting raw <code>req.body</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> Because Express deletes <code>req.body</code> before controllers execute</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> To prevent unexpected or malicious extra properties (mass assignment) from reaching controllers or databases</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> Because JSON objects cannot contain more than two keys</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="d"> To automatically encrypt the response with TLS</label>
+            <legend>10. Why should validation middleware construct a clean object of allowed fields (e.g.,
+              <code>req.validatedBody</code>) instead of trusting raw <code>req.body</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Because Express deletes
+              <code>req.body</code> before controllers execute</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> To prevent unexpected or malicious
+              extra properties (mass assignment) from reaching controllers or databases</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Because JSON objects cannot contain
+              more than two keys</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> To automatically encrypt the response
+              with TLS</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
 
@@ -735,23 +888,37 @@ app.listen(PORT, () => {
         <div class="qa-list">
           <details class="qa-item">
             <summary>1. Explain the difference between authentication middleware and authorization middleware.</summary>
-            <p>Authentication middleware verifies who is making the request (for example, checking a Bearer token and setting <code>req.user</code>; returning <code>401</code> if invalid). Authorization middleware runs afterward to verify whether <code>req.user</code> has the required role or ownership permissions for that action (returning <code>403</code> if denied).</p>
+            <p>Authentication middleware verifies who is making the request (for example, checking a Bearer token and
+              setting <code>req.user</code>; returning <code>401</code> if invalid). Authorization middleware runs
+              afterward to verify whether <code>req.user</code> has the required role or ownership permissions for that
+              action (returning <code>403</code> if denied).</p>
           </details>
           <details class="qa-item">
-            <summary>2. Why is <code>return res.status(401).json(...)</code> safer than writing <code>res.status(401).json(...)</code> without <code>return</code>?</summary>
-            <p>Without <code>return</code>, JavaScript continues executing subsequent statements in the middleware, which might call <code>next()</code> or send another response and trigger an <code>ERR_HTTP_HEADERS_SENT</code> crash.</p>
+            <summary>2. Why is <code>return res.status(401).json(...)</code> safer than writing
+              <code>res.status(401).json(...)</code> without <code>return</code>?</summary>
+            <p>Without <code>return</code>, JavaScript continues executing subsequent statements in the middleware,
+              which might call <code>next()</code> or send another response and trigger an
+              <code>ERR_HTTP_HEADERS_SENT</code> crash.</p>
           </details>
           <details class="qa-item">
-            <summary>3. What is the difference between calling <code>next()</code> and calling <code>next(err)</code>?</summary>
-            <p><code>next()</code> passes control to the next normal middleware or route handler in order. Calling <code>next(err)</code> with an Error or truthy argument tells Express to bypass all normal middleware and routes and jump straight to the next 4-argument error-handling middleware.</p>
+            <summary>3. What is the difference between calling <code>next()</code> and calling <code>next(err)</code>?
+            </summary>
+            <p><code>next()</code> passes control to the next normal middleware or route handler in order. Calling
+              <code>next(err)</code> with an Error or truthy argument tells Express to bypass all normal middleware and
+              routes and jump straight to the next 4-argument error-handling middleware.</p>
           </details>
           <details class="qa-item">
-            <summary>4. Why must <code>app.use(express.json())</code> be registered before route handlers that read <code>req.body</code>?</summary>
-            <p>Express runs middleware strictly in registration order. If a route runs before <code>express.json()</code>, the incoming JSON stream has not been parsed yet, leaving <code>req.body</code> as <code>undefined</code>.</p>
+            <summary>4. Why must <code>app.use(express.json())</code> be registered before route handlers that read
+              <code>req.body</code>?</summary>
+            <p>Express runs middleware strictly in registration order. If a route runs before
+              <code>express.json()</code>, the incoming JSON stream has not been parsed yet, leaving
+              <code>req.body</code> as <code>undefined</code>.</p>
           </details>
           <details class="qa-item">
-            <summary>5. What security risk arises if request logging middleware blindly executes <code>console.log(req.headers, req.body)</code>?</summary>
-            <p>Logs would expose sensitive credentials such as <code>Authorization</code> tokens, cookies, API keys, and plaintext user passwords into log files or third-party log aggregators.</p>
+            <summary>5. What security risk arises if request logging middleware blindly executes
+              <code>console.log(req.headers, req.body)</code>?</summary>
+            <p>Logs would expose sensitive credentials such as <code>Authorization</code> tokens, cookies, API keys, and
+              plaintext user passwords into log files or third-party log aggregators.</p>
           </details>
         </div>
       </section>
@@ -777,12 +944,17 @@ function checkApiKey(req, res, next) {
 
           <article class="challenge-card">
             <h3>Challenge 2: Build a Dynamic Required-Fields Middleware Factory</h3>
-            <p>Write a reusable middleware factory <code>requireFields(...fields)</code> that accepts any list of required body field names (e.g., <code>requireFields('email', 'subject', 'message')</code>). If any field is missing, empty string, or whitespace-only, return <code>400 Bad Request</code> listing the missing field names; otherwise call <code>next()</code>.</p>
+            <p>Write a reusable middleware factory <code>requireFields(...fields)</code> that accepts any list of
+              required body field names (e.g., <code>requireFields('email', 'subject', 'message')</code>). If any field
+              is missing, empty string, or whitespace-only, return <code>400 Bad Request</code> listing the missing
+              field names; otherwise call <code>next()</code>.</p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Implement Slow-Request Warning Middleware</h3>
-            <p>Extend the <code>requestLogger</code> middleware so that whenever a request takes longer than <code>500</code> milliseconds to complete, it logs a warning using <code>console.warn</code> prefixed with <code>[SLOW REQUEST]</code> alongside the request ID, method, URL, and duration.</p>
+            <p>Extend the <code>requestLogger</code> middleware so that whenever a request takes longer than
+              <code>500</code> milliseconds to complete, it logs a warning using <code>console.warn</code> prefixed with
+              <code>[SLOW REQUEST]</code> alongside the request ID, method, URL, and duration.</p>
           </article>
         </div>
       </section>
@@ -790,23 +962,33 @@ function checkApiKey(req, res, next) {
       <section class="card-section" id="summary">
         <h2>Day 2 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Middleware functions receive <code>(req, res, next)</code> and execute strictly in registration order.</li>
-          <li>Express supports built-in middleware (<code>express.json()</code>), third-party middleware, and custom middleware mounted globally, per-router, or per-route.</li>
-          <li>Every middleware must either terminate the request (<code>res.json(...)</code>) or forward control (<code>next()</code> or <code>next(err)</code>)—never leave a request hanging and never call <code>next()</code> after sending a response.</li>
-          <li>Use middleware factories like <code>restrictTo(...roles)</code> and <code>validateNumericParam('id')</code> to keep routes expressive and DRY.</li>
-          <li>Separate authentication (<code>401</code>) from authorization (<code>403</code>), avoid logging secrets, and centralize reusable middleware inside a <code>middleware/</code> directory.</li>
+          <li>Middleware functions receive <code>(req, res, next)</code> and execute strictly in registration order.
+          </li>
+          <li>Express supports built-in middleware (<code>express.json()</code>), third-party middleware, and custom
+            middleware mounted globally, per-router, or per-route.</li>
+          <li>Every middleware must either terminate the request (<code>res.json(...)</code>) or forward control
+            (<code>next()</code> or <code>next(err)</code>)—never leave a request hanging and never call
+            <code>next()</code> after sending a response.</li>
+          <li>Use middleware factories like <code>restrictTo(...roles)</code> and
+            <code>validateNumericParam('id')</code> to keep routes expressive and DRY.</li>
+          <li>Separate authentication (<code>401</code>) from authorization (<code>403</code>), avoid logging secrets,
+            and centralize reusable middleware inside a <code>middleware/</code> directory.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 2 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 2: Express middleware pipeline, authentication/authorization gates, validation, and error forwarding.</p>
+        <p>Visual summary diagram for Day 2: Express middleware pipeline, authentication/authorization gates,
+          validation, and error forwarding.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating Express.js middleware execution order, next() flow, auth checks, and error routing" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating Express.js middleware execution order, next() flow, auth checks, and error routing"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 2 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 2/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 2/</code> folder to
+              display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -825,11 +1007,12 @@ function checkApiKey(req, res, next) {
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -845,7 +1028,8 @@ function checkApiKey(req, res, next) {
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -860,4 +1044,5 @@ function checkApiKey(req, res, next) {
 
   <script src="script.js"></script>
 </body>
+
 </html>

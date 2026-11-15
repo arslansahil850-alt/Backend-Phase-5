@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
-  <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,7 +71,12 @@
         </div>
         <h1>Day 11: Nodemailer</h1>
         <p class="lead-intro">
-          Transactional emails power vital backend features: contact-form inquiries, account verification links, password resets, and order receipts. However, sending email securely from Node.js involves much more than calling <code>sendMail()</code>. Hardcoded SMTP passwords get leaked, unvalidated contact forms become spam relays, unescaped user text injects malicious HTML into admin inboxes, and slow mail servers can stall HTTP requests. Today you will learn how SMTP and Nodemailer work, how to build reusable HTML + plain-text email templates safely, and how to wire a rate-limited contact-form workflow.
+          Transactional emails power vital backend features: contact-form inquiries, account verification links,
+          password resets, and order receipts. However, sending email securely from Node.js involves much more than
+          calling <code>sendMail()</code>. Hardcoded SMTP passwords get leaked, unvalidated contact forms become spam
+          relays, unescaped user text injects malicious HTML into admin inboxes, and slow mail servers can stall HTTP
+          requests. Today you will learn how SMTP and Nodemailer work, how to build reusable HTML + plain-text email
+          templates safely, and how to wire a rate-limited contact-form workflow.
         </p>
       </section>
 
@@ -78,10 +86,14 @@
         <ul class="styled-list">
           <li>Explain what Nodemailer does and how Node.js connects to mail servers over SMTP.</li>
           <li>Configure Nodemailer transports cleanly using environment variables (never hardcoded credentials).</li>
-          <li>Choose appropriate SMTP ports and encryption settings (<code>587</code> STARTTLS vs. <code>465</code> SMTPS) and test safely with sandbox mailers like Ethereal or Mailtrap.</li>
-          <li>Build reusable email template helpers that output both <code>text</code> and escaped <code>html</code> bodies.</li>
-          <li>Design a secure contact-form workflow using verified <code>from</code> addresses paired with <code>replyTo</code>, input validation, HTML escaping, and rate limiting.</li>
-          <li>Understand verification and notification email flows, delivery timeouts, and spam-prevention practices.</li>
+          <li>Choose appropriate SMTP ports and encryption settings (<code>587</code> STARTTLS vs. <code>465</code>
+            SMTPS) and test safely with sandbox mailers like Ethereal or Mailtrap.</li>
+          <li>Build reusable email template helpers that output both <code>text</code> and escaped <code>html</code>
+            bodies.</li>
+          <li>Design a secure contact-form workflow using verified <code>from</code> addresses paired with
+            <code>replyTo</code>, input validation, HTML escaping, and rate limiting.</li>
+          <li>Understand verification and notification email flows, delivery timeouts, and spam-prevention practices.
+          </li>
         </ul>
       </section>
 
@@ -89,8 +101,11 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 11, make sure you understand:</p>
         <ul class="styled-list">
-          <li><strong>Days 4–7 Concepts:</strong> Environment variables in <code>.env</code>, centralized error handling, input sanitization, and rate limiting on sensitive endpoints.</li>
-          <li><strong>Client vs. Server Separation:</strong> Browser JavaScript submits a contact form via <code>fetch()</code> to Express; Nodemailer runs exclusively on Node.js on the server because SMTP credentials must never exist in browser code.</li>
+          <li><strong>Days 4–7 Concepts:</strong> Environment variables in <code>.env</code>, centralized error
+            handling, input sanitization, and rate limiting on sensitive endpoints.</li>
+          <li><strong>Client vs. Server Separation:</strong> Browser JavaScript submits a contact form via
+            <code>fetch()</code> to Express; Nodemailer runs exclusively on Node.js on the server because SMTP
+            credentials must never exist in browser code.</li>
         </ul>
       </section>
 
@@ -99,27 +114,33 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Nodemailer</h3>
-            <p>The standard Node.js library for composing and sending emails from a backend server through SMTP servers or transactional mail APIs.</p>
+            <p>The standard Node.js library for composing and sending emails from a backend server through SMTP servers
+              or transactional mail APIs.</p>
           </article>
           <article class="term-card">
             <h3>SMTP</h3>
-            <p><strong>Simple Mail Transfer Protocol</strong>—the standard internet protocol used to submit and relay outbound email messages between servers.</p>
+            <p><strong>Simple Mail Transfer Protocol</strong>—the standard internet protocol used to submit and relay
+              outbound email messages between servers.</p>
           </article>
           <article class="term-card">
             <h3>Transporter</h3>
-            <p>A reusable Nodemailer object created via <code>nodemailer.createTransport(...)</code> that holds your SMTP host, port, TLS settings, and authentication credentials.</p>
+            <p>A reusable Nodemailer object created via <code>nodemailer.createTransport(...)</code> that holds your
+              SMTP host, port, TLS settings, and authentication credentials.</p>
           </article>
           <article class="term-card">
             <h3><code>from</code> vs. <code>replyTo</code></h3>
-            <p><code>from</code> must be your own verified domain sender address (for SPF/DKIM alignment); <code>replyTo</code> holds the visitor's email so clicking "Reply" in your inbox responds to them.</p>
+            <p><code>from</code> must be your own verified domain sender address (for SPF/DKIM alignment);
+              <code>replyTo</code> holds the visitor's email so clicking "Reply" in your inbox responds to them.</p>
           </article>
           <article class="term-card">
             <h3>HTML Escaping</h3>
-            <p>Converting characters like <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, and <code>&quot;</code> into safe HTML entities before interpolating user text into HTML email templates.</p>
+            <p>Converting characters like <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, and
+              <code>&quot;</code> into safe HTML entities before interpolating user text into HTML email templates.</p>
           </article>
           <article class="term-card">
             <h3>Transactional Email</h3>
-            <p>Automated one-to-one emails triggered by user actions—such as email verification, password resets, contact messages, or invoice confirmations.</p>
+            <p>Automated one-to-one emails triggered by user actions—such as email verification, password resets,
+              contact messages, or invoice confirmations.</p>
           </article>
         </div>
       </section>
@@ -129,7 +150,10 @@
 
         <h3>1. What Nodemailer Does &amp; SMTP Basics</h3>
         <p>
-          Browsers cannot speak SMTP directly, and you should never expose mail credentials on the frontend. On Node.js, <strong>Nodemailer</strong> opens a secure network connection to an SMTP provider (such as Resend SMTP, SendGrid, Postmark, Amazon SES, or a local/sandbox test server like Ethereal or Mailtrap), authenticates with your server's credentials, and transmits MIME-formatted email messages.
+          Browsers cannot speak SMTP directly, and you should never expose mail credentials on the frontend. On Node.js,
+          <strong>Nodemailer</strong> opens a secure network connection to an SMTP provider (such as Resend SMTP,
+          SendGrid, Postmark, Amazon SES, or a local/sandbox test server like Ethereal or Mailtrap), authenticates with
+          your server's credentials, and transmits MIME-formatted email messages.
         </p>
         <div class="table-wrap">
           <table class="data-table">
@@ -166,43 +190,71 @@
 
         <h3>2. Environment Variables for Email Credentials</h3>
         <p>
-          Never hardcode SMTP usernames, app passwords, or API tokens in your source code. Always load <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>, and <code>EMAIL_FROM</code> from environment variables via <code>.env</code>. During local development, use a fake inbox service like <strong>Ethereal Email</strong> or <strong>Mailtrap</strong> so test emails are captured safely in a web dashboard instead of spamming real people.
+          Never hardcode SMTP usernames, app passwords, or API tokens in your source code. Always load
+          <code>SMTP_HOST</code>, <code>SMTP_PORT</code>, <code>SMTP_USER</code>, <code>SMTP_PASS</code>, and
+          <code>EMAIL_FROM</code> from environment variables via <code>.env</code>. During local development, use a fake
+          inbox service like <strong>Ethereal Email</strong> or <strong>Mailtrap</strong> so test emails are captured
+          safely in a web dashboard instead of spamming real people.
         </p>
 
         <h3>3. Sending Plain-Text and HTML Emails</h3>
         <p>
-          Always include <strong>both</strong> <code>text</code> and <code>html</code> properties in every <code>sendMail()</code> payload. Why?
+          Always include <strong>both</strong> <code>text</code> and <code>html</code> properties in every
+          <code>sendMail()</code> payload. Why?
         </p>
         <ul class="styled-list">
-          <li>Spam filters (like Gmail and Outlook) score HTML-only emails with no plain-text fallback higher as potential spam.</li>
-          <li>Screen readers, smartwatches, and text-only email clients rely on the <code>text</code> version for accessibility.</li>
+          <li>Spam filters (like Gmail and Outlook) score HTML-only emails with no plain-text fallback higher as
+            potential spam.</li>
+          <li>Screen readers, smartwatches, and text-only email clients rely on the <code>text</code> version for
+            accessibility.</li>
         </ul>
 
         <h3>4. Reusable Email Templates &amp; Preventing HTML Injection</h3>
         <p>
-          Keep email layouts in a dedicated <code>src/templates/emailTemplates.js</code> module rather than writing giant HTML strings inside controllers. Most importantly: <strong>always escape every piece of user-submitted input</strong> (<code>name</code>, <code>subject</code>, <code>message</code>) before placing it inside an HTML template! Without escaping, an attacker typing <code>&lt;a href="https://phishing.example"&gt;Click here to reset password&lt;/a&gt;</code> inside a contact form can inject convincing phishing links into your support team's inbox.
+          Keep email layouts in a dedicated <code>src/templates/emailTemplates.js</code> module rather than writing
+          giant HTML strings inside controllers. Most importantly: <strong>always escape every piece of user-submitted
+            input</strong> (<code>name</code>, <code>subject</code>, <code>message</code>) before placing it inside an
+          HTML template! Without escaping, an attacker typing
+          <code>&lt;a href="https://phishing.example"&gt;Click here to reset password&lt;/a&gt;</code> inside a contact
+          form can inject convincing phishing links into your support team's inbox.
         </p>
 
         <h3>5. Contact-Form Workflow vs. Verification &amp; Notification Emails</h3>
         <ul class="styled-list">
-          <li><strong>Contact-Form Workflow:</strong> A visitor submits name, email, subject, and message. Express validates lengths, strips newline characters from subject/header fields (preventing header injection), applies strict rate limiting, sets <code>from</code> to your own verified <code>EMAIL_FROM</code> address, sets <code>replyTo</code> to the visitor's validated email, and delivers the formatted email to <code>CONTACT_RECEIVER_EMAIL</code>.</li>
-          <li><strong>Verification &amp; Notification Workflows:</strong> When a user registers or requests a password reset, the backend generates a high-entropy random token (<code>crypto.randomBytes(32).toString('hex')</code>), stores a SHA-256 hash of that token with an expiration timestamp in MongoDB, and emails a link containing the raw token to the user's address. Never email plaintext passwords!</li>
+          <li><strong>Contact-Form Workflow:</strong> A visitor submits name, email, subject, and message. Express
+            validates lengths, strips newline characters from subject/header fields (preventing header injection),
+            applies strict rate limiting, sets <code>from</code> to your own verified <code>EMAIL_FROM</code> address,
+            sets <code>replyTo</code> to the visitor's validated email, and delivers the formatted email to
+            <code>CONTACT_RECEIVER_EMAIL</code>.</li>
+          <li><strong>Verification &amp; Notification Workflows:</strong> When a user registers or requests a password
+            reset, the backend generates a high-entropy random token
+            (<code>crypto.randomBytes(32).toString('hex')</code>), stores a SHA-256 hash of that token with an
+            expiration timestamp in MongoDB, and emails a link containing the raw token to the user's address. Never
+            email plaintext passwords!</li>
         </ul>
 
         <h3>6. Error Handling, Delivery Limitations &amp; Spam Abuse Prevention</h3>
-        <p>SMTP connections cross the public internet and can fail or stall due to bad credentials, firewall blocks, invalid recipient addresses, or temporary mail-server rate limits. Follow these production practices:</p>
+        <p>SMTP connections cross the public internet and can fail or stall due to bad credentials, firewall blocks,
+          invalid recipient addresses, or temporary mail-server rate limits. Follow these production practices:</p>
         <ul class="styled-list">
-          <li>Set explicit <code>connectionTimeout</code>, <code>greetingTimeout</code>, and <code>socketTimeout</code> values (e.g., 10 seconds) on your Nodemailer transporter so a hung mail server cannot tie up an Express request indefinitely.</li>
-          <li>Never expose raw SMTP errors (which may echo hostnames or usernames) to end users—log them privately on the server and return a clean <code>502</code> or <code>503</code> message.</li>
-          <li>Protect contact endpoints with Day 7 rate limiting (e.g., max 3–5 messages per hour per IP) so bots cannot abuse your form as a spam cannon.</li>
-          <li>Remember: in high-volume apps, controllers push email jobs onto an asynchronous background queue (covered conceptually in Day 15) rather than making users wait for SMTP delivery during signup.</li>
+          <li>Set explicit <code>connectionTimeout</code>, <code>greetingTimeout</code>, and <code>socketTimeout</code>
+            values (e.g., 10 seconds) on your Nodemailer transporter so a hung mail server cannot tie up an Express
+            request indefinitely.</li>
+          <li>Never expose raw SMTP errors (which may echo hostnames or usernames) to end users—log them privately on
+            the server and return a clean <code>502</code> or <code>503</code> message.</li>
+          <li>Protect contact endpoints with Day 7 rate limiting (e.g., max 3–5 messages per hour per IP) so bots cannot
+            abuse your form as a spam cannon.</li>
+          <li>Remember: in high-volume apps, controllers push email jobs onto an asynchronous background queue (covered
+            conceptually in Day 15) rather than making users wait for SMTP delivery during signup.</li>
         </ul>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Secure Contact-Form Email Delivery Workflow</h2>
-        <p>Notice how user input is validated, rate-limited, HTML-escaped, and sent using your verified <code>EMAIL_FROM</code> + visitor <code>replyTo</code>:</p>
-        <div class="diagram-container" role="img" aria-label="Flowchart showing Browser Contact Form sending POST JSON to Express, passing through Rate Limiter (e.g. 5/hr) and Input Validation/Header Sanitization, entering Email Template Builder (HTML-escaping user inputs and creating text + html variants), authenticating with Nodemailer SMTP Transporter via env variables, and branching between 200 OK confirmation and safe 503 error response on SMTP timeout/failure.">
+        <p>Notice how user input is validated, rate-limited, HTML-escaped, and sent using your verified
+          <code>EMAIL_FROM</code> + visitor <code>replyTo</code>:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Flowchart showing Browser Contact Form sending POST JSON to Express, passing through Rate Limiter (e.g. 5/hr) and Input Validation/Header Sanitization, entering Email Template Builder (HTML-escaping user inputs and creating text + html variants), authenticating with Nodemailer SMTP Transporter via env variables, and branching between 200 OK confirmation and safe 503 error response on SMTP timeout/failure.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">1. Browser Form Submit</span>
@@ -218,7 +270,8 @@
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-step flow-router">
               <span class="flow-tag">3. Template &amp; SMTP Transport</span>
-              <strong>Escape HTML + Build <code>text</code> &amp; <code>html</code> + <code>from</code> / <code>replyTo</code></strong>
+              <strong>Escape HTML + Build <code>text</code> &amp; <code>html</code> + <code>from</code> /
+                <code>replyTo</code></strong>
               <span>Uses <code>process.env.SMTP_*</code> credentials with 10s timeouts</span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
@@ -241,14 +294,16 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial: Secure Express + Nodemailer Contact Workflow</h2>
         <p>
-          Let us build a clean, reusable Nodemailer service and a rate-limited contact-form endpoint running on <strong>Node.js (server-side)</strong>. Never place real SMTP credentials in code or Git.
+          Let us build a clean, reusable Nodemailer service and a rate-limited contact-form endpoint running on
+          <strong>Node.js (server-side)</strong>. Never place real SMTP credentials in code or Git.
         </p>
 
         <h3>Step 1: Install <code>nodemailer</code> and Dependencies</h3>
         <p class="code-label">Terminal Commands</p>
         <pre><code>npm install express nodemailer express-rate-limit helmet dotenv</code></pre>
 
-        <p class="code-label">Configuration Template: <code>.env.example</code> (Use placeholder or sandbox Ethereal/Mailtrap credentials locally)</p>
+        <p class="code-label">Configuration Template: <code>.env.example</code> (Use placeholder or sandbox
+          Ethereal/Mailtrap credentials locally)</p>
         <pre><code>PORT=5000
 NODE_ENV=development
 SMTP_HOST=smtp.ethereal.email
@@ -258,8 +313,10 @@ SMTP_PASS=your-sandbox-password-placeholder
 EMAIL_FROM="Arslan Weblab Support" &lt;no-reply@example.com&gt;
 CONTACT_RECEIVER_EMAIL=inbox@example.com</code></pre>
 
-        <h3>Step 2: Create Reusable HTML Escaper &amp; Email Templates (<code>src/templates/emailTemplates.js</code>)</h3>
-        <p>Every dynamic user string is escaped before insertion into HTML, and every template returns both <code>subject</code>, <code>text</code>, and <code>html</code>.</p>
+        <h3>Step 2: Create Reusable HTML Escaper &amp; Email Templates (<code>src/templates/emailTemplates.js</code>)
+        </h3>
+        <p>Every dynamic user string is escaped before insertion into HTML, and every template returns both
+          <code>subject</code>, <code>text</code>, and <code>html</code>.</p>
         <p class="code-label">Backend Source Code: <code>src/templates/emailTemplates.js</code> (Runs on Node.js)</p>
         <pre><code>const escapeHtml = (value) => {
   return String(value)
@@ -323,8 +380,10 @@ export const buildNotificationTemplate = ({ recipientName, title, actionUrl }) =
   };
 };</code></pre>
 
-        <h3>Step 3: Create the Nodemailer Transporter &amp; Email Service (<code>src/services/emailService.js</code>)</h3>
-        <p>Notice how we load credentials from <code>process.env</code>, configure explicit timeouts, and convert SMTP failures into safe errors without leaking server details.</p>
+        <h3>Step 3: Create the Nodemailer Transporter &amp; Email Service (<code>src/services/emailService.js</code>)
+        </h3>
+        <p>Notice how we load credentials from <code>process.env</code>, configure explicit timeouts, and convert SMTP
+          failures into safe errors without leaking server details.</p>
         <p class="code-label">Backend Source Code: <code>src/services/emailService.js</code> (Runs on Node.js)</p>
         <pre><code>import nodemailer from 'nodemailer';
 import { buildContactEmailTemplate } from '../templates/emailTemplates.js';
@@ -391,8 +450,10 @@ export const sendContactMessage = async ({ name, email, subject, message }) => {
 };</code></pre>
 
         <h3>Step 4: Build Validation, Rate Limiter &amp; Contact Controller</h3>
-        <p>Notice how CR/LF characters (<code>\r</code>, <code>\n</code>) are stripped from <code>name</code>, <code>email</code>, and <code>subject</code> to prevent email header injection.</p>
-        <p class="code-label">Backend Source Code: <code>src/controllers/contactController.js</code> (Runs on Node.js)</p>
+        <p>Notice how CR/LF characters (<code>\r</code>, <code>\n</code>) are stripped from <code>name</code>,
+          <code>email</code>, and <code>subject</code> to prevent email header injection.</p>
+        <p class="code-label">Backend Source Code: <code>src/controllers/contactController.js</code> (Runs on Node.js)
+        </p>
         <pre><code>import { sendContactMessage } from '../services/emailService.js';
 
 const stripNewlines = (str) => String(str).replace(/[\r\n]+/g, ' ').trim();
@@ -491,19 +552,23 @@ app.listen(PORT, () => {
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. Portfolio &amp; SaaS Contact Forms</h3>
-            <p>Websites forward visitor inquiries to support teams without publishing personal email addresses in raw HTML or risking spam-bot floods thanks to rate limiting and honeypot checks.</p>
+            <p>Websites forward visitor inquiries to support teams without publishing personal email addresses in raw
+              HTML or risking spam-bot floods thanks to rate limiting and honeypot checks.</p>
           </article>
           <article class="info-box">
             <h3>2. Email Address Verification</h3>
-            <p>Upon signup, the backend stores a hashed random verification token with a 24-hour expiration in MongoDB and emails a single-use verification link via Nodemailer.</p>
+            <p>Upon signup, the backend stores a hashed random verification token with a 24-hour expiration in MongoDB
+              and emails a single-use verification link via Nodemailer.</p>
           </article>
           <article class="info-box">
             <h3>3. Password Reset Links</h3>
-            <p>Secure backends never email plaintext passwords or temporary passwords. Instead, they email a time-limited reset token (15 minutes) that lets the user choose a new password over HTTPS.</p>
+            <p>Secure backends never email plaintext passwords or temporary passwords. Instead, they email a
+              time-limited reset token (15 minutes) that lets the user choose a new password over HTTPS.</p>
           </article>
           <article class="info-box">
             <h3>4. Transactional Order &amp; Booking Alerts</h3>
-            <p>When a user reserves a workshop seat or completes an order, reusable templates render itemized HTML and plain-text confirmation receipts cleanly.</p>
+            <p>When a user reserves a workshop seat or completes an order, reusable templates render itemized HTML and
+              plain-text confirmation receipts cleanly.</p>
           </article>
         </div>
       </section>
@@ -514,20 +579,31 @@ app.listen(PORT, () => {
           <article class="warning-box">
             <h3>Common Nodemailer Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Hardcoding Gmail/SMTP passwords in JS files:</strong> Anyone viewing GitHub or client bundles steals your email account immediately. Always use <code>process.env</code>.</li>
-              <li><strong>Setting <code>from: req.body.email</code> on contact forms:</strong> Sending from a visitor's Gmail/Yahoo address using your server fails SPF/DKIM authentication and gets blocked as spoofed spam! Use your verified <code>EMAIL_FROM</code> and set <code>replyTo: visitorEmail</code>.</li>
-              <li><strong>Interpolating raw user text into HTML strings:</strong> Enables HTML/phishing injection inside admin emails. Always escape <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, quotes, and URLs.</li>
-              <li><strong>Omitting rate limits on email routes:</strong> Allows attackers to spam your inbox or burn through paid email provider quotas in minutes.</li>
-              <li><strong>No SMTP timeouts:</strong> If an external mail host hangs, requests stay open indefinitely unless timeouts are configured.</li>
+              <li><strong>Hardcoding Gmail/SMTP passwords in JS files:</strong> Anyone viewing GitHub or client bundles
+                steals your email account immediately. Always use <code>process.env</code>.</li>
+              <li><strong>Setting <code>from: req.body.email</code> on contact forms:</strong> Sending from a visitor's
+                Gmail/Yahoo address using your server fails SPF/DKIM authentication and gets blocked as spoofed spam!
+                Use your verified <code>EMAIL_FROM</code> and set <code>replyTo: visitorEmail</code>.</li>
+              <li><strong>Interpolating raw user text into HTML strings:</strong> Enables HTML/phishing injection inside
+                admin emails. Always escape <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, quotes, and URLs.
+              </li>
+              <li><strong>Omitting rate limits on email routes:</strong> Allows attackers to spam your inbox or burn
+                through paid email provider quotas in minutes.</li>
+              <li><strong>No SMTP timeouts:</strong> If an external mail host hangs, requests stay open indefinitely
+                unless timeouts are configured.</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Use sandbox SMTP in development:</strong> Use Ethereal or Mailtrap during testing so test emails never reach real users.</li>
-              <li><strong>Strip newlines from header fields:</strong> Clean <code>\r</code> and <code>\n</code> from <code>subject</code>, <code>name</code>, and <code>replyTo</code> fields to stop header injection.</li>
-              <li><strong>Verify DNS records in production:</strong> Configure SPF, DKIM, and DMARC records on your sending domain so legitimate notifications reach inboxes instead of Spam folders.</li>
-              <li><strong>Mask SMTP errors from clients:</strong> Log technical SMTP failures privately and show users a calm retry message.</li>
+              <li><strong>Use sandbox SMTP in development:</strong> Use Ethereal or Mailtrap during testing so test
+                emails never reach real users.</li>
+              <li><strong>Strip newlines from header fields:</strong> Clean <code>\r</code> and <code>\n</code> from
+                <code>subject</code>, <code>name</code>, and <code>replyTo</code> fields to stop header injection.</li>
+              <li><strong>Verify DNS records in production:</strong> Configure SPF, DKIM, and DMARC records on your
+                sending domain so legitimate notifications reach inboxes instead of Spam folders.</li>
+              <li><strong>Mask SMTP errors from clients:</strong> Log technical SMTP failures privately and show users a
+                calm retry message.</li>
             </ul>
           </article>
         </div>
@@ -536,118 +612,176 @@ app.listen(PORT, () => {
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Ethereal Sandbox Test:</strong> Generate a free temporary test account with <code>nodemailer.createTestAccount()</code> (or configure Ethereal values in <code>.env</code>), send a contact message, and open the returned <code>previewUrl</code> in your browser to inspect both the HTML and plain-text versions.</li>
-          <li><strong>HTML Injection Verification:</strong> Submit a contact message containing <code>&lt;script&gt;alert(1)&lt;/script&gt;&lt;b&gt;Bold&lt;/b&gt;</code> and verify the generated HTML renders literal escaped characters safely instead of bold tags.</li>
-          <li><strong>Honeypot Field Check:</strong> Send a request containing <code>"website": "https://spam.example"</code> and observe how the controller silently returns <code>200</code> without invoking Nodemailer.</li>
-          <li><strong>Rate-Limit Check:</strong> Send 6 requests within 1 minute to <code>POST /api/v1/contact</code> locally and confirm the 6th returns <code>429 Too Many Requests</code>.</li>
+          <li><strong>Ethereal Sandbox Test:</strong> Generate a free temporary test account with
+            <code>nodemailer.createTestAccount()</code> (or configure Ethereal values in <code>.env</code>), send a
+            contact message, and open the returned <code>previewUrl</code> in your browser to inspect both the HTML and
+            plain-text versions.</li>
+          <li><strong>HTML Injection Verification:</strong> Submit a contact message containing
+            <code>&lt;script&gt;alert(1)&lt;/script&gt;&lt;b&gt;Bold&lt;/b&gt;</code> and verify the generated HTML
+            renders literal escaped characters safely instead of bold tags.</li>
+          <li><strong>Honeypot Field Check:</strong> Send a request containing
+            <code>"website": "https://spam.example"</code> and observe how the controller silently returns
+            <code>200</code> without invoking Nodemailer.</li>
+          <li><strong>Rate-Limit Check:</strong> Send 6 requests within 1 minute to <code>POST /api/v1/contact</code>
+            locally and confirm the 6th returns <code>429 Too Many Requests</code>.</li>
         </ol>
       </section>
 
       <section class="card-section" id="mini-project">
         <h2>Day 11 Mini Project: Secure Contact &amp; Notification Email Workflow</h2>
         <p>
-          Build a complete Express + Nodemailer contact-form and notification module with reusable templates and strict security controls.
+          Build a complete Express + Nodemailer contact-form and notification module with reusable templates and strict
+          security controls.
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Configure Nodemailer exclusively through environment variables (<code>.env.example</code> provided with safe placeholders, <code>.env</code> gitignored) with 10-second timeouts.</li>
-          <li>Create <code>src/templates/emailTemplates.js</code> with an HTML-escaping helper and two templates: <code>buildContactEmailTemplate</code> and <code>buildWelcomeNotificationTemplate</code>, each returning both <code>text</code> and <code>html</code>.</li>
-          <li>Protect <code>POST /api/v1/contact</code> with strict rate limiting (max 5 requests per hour per IP), newline stripping on subject/email, length bounds, honeypot check, and <code>from</code> + <code>replyTo</code> separation.</li>
-          <li>Add a server startup check option calling <code>verifyEmailTransport()</code> safely without crashing if optional in dev, and return a safe <code>503</code> JSON error if SMTP delivery fails.</li>
+          <li>Configure Nodemailer exclusively through environment variables (<code>.env.example</code> provided with
+            safe placeholders, <code>.env</code> gitignored) with 10-second timeouts.</li>
+          <li>Create <code>src/templates/emailTemplates.js</code> with an HTML-escaping helper and two templates:
+            <code>buildContactEmailTemplate</code> and <code>buildWelcomeNotificationTemplate</code>, each returning
+            both <code>text</code> and <code>html</code>.</li>
+          <li>Protect <code>POST /api/v1/contact</code> with strict rate limiting (max 5 requests per hour per IP),
+            newline stripping on subject/email, length bounds, honeypot check, and <code>from</code> +
+            <code>replyTo</code> separation.</li>
+          <li>Add a server startup check option calling <code>verifyEmailTransport()</code> safely without crashing if
+            optional in dev, and return a safe <code>503</code> JSON error if SMTP delivery fails.</li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 11 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and
+          explanations.</p>
 
         <form id="day11QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
-            <legend>1. Why must Nodemailer and SMTP credentials run ONLY on the Node.js server and never in browser JavaScript?</legend>
-            <label class="quiz-option"><input type="radio" name="q1" value="a"> Browsers do not support SMTP connections, and embedding credentials in frontend code exposes them publicly to every visitor</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> Because Nodemailer only formats CSS</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="c"> Because browsers cannot make <code>POST</code> requests</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="d"> Because HTML emails require MongoDB inside Chrome</label>
+            <legend>1. Why must Nodemailer and SMTP credentials run ONLY on the Node.js server and never in browser
+              JavaScript?</legend>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> Browsers do not support SMTP
+              connections, and embedding credentials in frontend code exposes them publicly to every visitor</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> Because Nodemailer only formats
+              CSS</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Because browsers cannot make
+              <code>POST</code> requests</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> Because HTML emails require MongoDB
+              inside Chrome</label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
-            <legend>2. On a contact form endpoint, why should you set <code>from</code> to your own verified domain address and put the visitor's email in <code>replyTo</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> Sending from a visitor's address directly violates SPF/DKIM alignment and causes mail servers to reject or mark your email as spoofed spam</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> Because Nodemailer forbids more than 5 characters in <code>from</code></label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> Because <code>replyTo</code> encrypts the SMTP password</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="d"> Because <code>from</code> only accepts IP addresses</label>
+            <legend>2. On a contact form endpoint, why should you set <code>from</code> to your own verified domain
+              address and put the visitor's email in <code>replyTo</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Sending from a visitor's address
+              directly violates SPF/DKIM alignment and causes mail servers to reject or mark your email as spoofed
+              spam</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Because Nodemailer forbids more than 5
+              characters in <code>from</code></label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Because <code>replyTo</code> encrypts
+              the SMTP password</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> Because <code>from</code> only accepts
+              IP addresses</label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
-            <legend>3. Which Nodemailer <code>secure</code> setting corresponds to standard STARTTLS on SMTP port <code>587</code>?</legend>
+            <legend>3. Which Nodemailer <code>secure</code> setting corresponds to standard STARTTLS on SMTP port
+              <code>587</code>?</legend>
             <label class="quiz-option"><input type="radio" name="q3" value="a"> <code>secure: true</code></label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> <code>secure: false</code> (and optionally <code>requireTLS: true</code>; <code>secure: true</code> is for port <code>465</code>)</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> <code>secure: false</code> (and
+              optionally <code>requireTLS: true</code>; <code>secure: true</code> is for port <code>465</code>)</label>
             <label class="quiz-option"><input type="radio" name="q3" value="c"> <code>secure: 'none'</code></label>
             <label class="quiz-option"><input type="radio" name="q3" value="d"> <code>secure: 587</code></label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
-            <legend>4. Why is escaping HTML special characters (<code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, quotes) essential before placing contact-form text inside an HTML email?</legend>
-            <label class="quiz-option"><input type="radio" name="q4" value="a"> To prevent attackers from injecting malicious links, fake buttons, or misleading HTML content into the recipient's inbox</label>
+            <legend>4. Why is escaping HTML special characters (<code>&lt;</code>, <code>&gt;</code>,
+              <code>&amp;</code>, quotes) essential before placing contact-form text inside an HTML email?</legend>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> To prevent attackers from injecting
+              malicious links, fake buttons, or misleading HTML content into the recipient's inbox</label>
             <label class="quiz-option"><input type="radio" name="q4" value="b"> To increase the email file size</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="c"> Because SMTP cannot transmit spaces</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> Because SMTP cannot transmit
+              spaces</label>
             <label class="quiz-option"><input type="radio" name="q4" value="d"> To disable plain-text emails</label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
-            <legend>5. Why should every transactional email provide BOTH a <code>text</code> body and an <code>html</code> body?</legend>
-            <label class="quiz-option"><input type="radio" name="q5" value="a"> It improves accessibility for screen readers/plain clients and reduces the chance of spam-filter penalties</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> Nodemailer throws a syntax error if <code>text</code> is omitted</label>
+            <legend>5. Why should every transactional email provide BOTH a <code>text</code> body and an
+              <code>html</code> body?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> It improves accessibility for screen
+              readers/plain clients and reduces the chance of spam-filter penalties</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Nodemailer throws a syntax error if
+              <code>text</code> is omitted</label>
             <label class="quiz-option"><input type="radio" name="q5" value="c"> It bypasses SMTP authentication</label>
             <label class="quiz-option"><input type="radio" name="q5" value="d"> It doubles the rate limit quota</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. Why do we strip newline characters (<code>\r</code> and <code>\n</code>) from single-line fields like <code>subject</code> and <code>email</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q6" value="a"> To prevent email header injection attacks where extra headers like <code>Bcc:</code> are smuggled into the message</label>
+            <legend>6. Why do we strip newline characters (<code>\r</code> and <code>\n</code>) from single-line fields
+              like <code>subject</code> and <code>email</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> To prevent email header injection
+              attacks where extra headers like <code>Bcc:</code> are smuggled into the message</label>
             <label class="quiz-option"><input type="radio" name="q6" value="b"> To convert HTML into Markdown</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="c"> To make MongoDB queries case-insensitive</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> To make MongoDB queries
+              case-insensitive</label>
             <label class="quiz-option"><input type="radio" name="q6" value="d"> To enable CORS preflight caching</label>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. What is the safest way to test Nodemailer during local development without emailing real customers?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> Send test emails to random Gmail addresses</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> Use a sandbox SMTP catcher like Ethereal Email or Mailtrap configured via <code>.env</code></label>
-            <label class="quiz-option"><input type="radio" name="q7" value="c"> Hardcode a personal password into <code>emailService.js</code></label>
-            <label class="quiz-option"><input type="radio" name="q7" value="d"> Disable TLS encryption on production servers</label>
+            <legend>7. What is the safest way to test Nodemailer during local development without emailing real
+              customers?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> Send test emails to random Gmail
+              addresses</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Use a sandbox SMTP catcher like Ethereal
+              Email or Mailtrap configured via <code>.env</code></label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> Hardcode a personal password into
+              <code>emailService.js</code></label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> Disable TLS encryption on production
+              servers</label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
-            <legend>8. Why is rate limiting critical on <code>POST /api/v1/contact</code> and <code>POST /api/v1/auth/forgot-password</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> Without rate limiting, automated bots can flood your inbox, exhaust paid email quotas, and harm your domain's sender reputation</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> Because Express only allows 1 email per server restart without rate limiting</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> To remove the need for input validation</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="d"> To allow cross-origin requests without CORS</label>
+            <legend>8. Why is rate limiting critical on <code>POST /api/v1/contact</code> and
+              <code>POST /api/v1/auth/forgot-password</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Without rate limiting, automated bots
+              can flood your inbox, exhaust paid email quotas, and harm your domain's sender reputation</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> Because Express only allows 1 email per
+              server restart without rate limiting</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> To remove the need for input
+              validation</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> To allow cross-origin requests without
+              CORS</label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. What happens if an SMTP server becomes unresponsive and your Nodemailer transporter has NO timeout settings configured?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> Incoming Express requests can hang for minutes waiting on socket connections</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> The email automatically sends via SMS instead</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> Node.js immediately clears MongoDB</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="d"> The browser sends the email directly over port 25</label>
+            <legend>9. What happens if an SMTP server becomes unresponsive and your Nodemailer transporter has NO
+              timeout settings configured?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Incoming Express requests can hang for
+              minutes waiting on socket connections</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> The email automatically sends via SMS
+              instead</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Node.js immediately clears
+              MongoDB</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> The browser sends the email directly
+              over port 25</label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. When an SMTP error occurs while sending a contact message, what should the API return to the user?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> The raw SMTP error message containing <code>SMTP_HOST</code> and <code>SMTP_USER</code></label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> A safe generic <code>503</code> JSON message asking the user to try again later, while logging technical details privately on the server</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> <code>201 Created</code> with the contents of <code>.env</code></label>
+            <legend>10. When an SMTP error occurs while sending a contact message, what should the API return to the
+              user?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> The raw SMTP error message containing
+              <code>SMTP_HOST</code> and <code>SMTP_USER</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> A safe generic <code>503</code> JSON
+              message asking the user to try again later, while logging technical details privately on the
+              server</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> <code>201 Created</code> with the
+              contents of <code>.env</code></label>
             <label class="quiz-option"><input type="radio" name="q10" value="d"> The server's full stack trace</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
@@ -666,24 +800,36 @@ app.listen(PORT, () => {
         <p>Think through each answer carefully before opening the explanation.</p>
         <div class="qa-list">
           <details class="qa-item">
-            <summary>1. Why should <code>from</code> never be set directly to a visitor's submitted email address in a contact form?</summary>
-            <p>Your mail provider is not authorized to send email pretending to be <code>@gmail.com</code> or another visitor's domain (SPF/DKIM will fail), causing emails to bounce or land in spam. Always send <code>from</code> your verified address and set <code>replyTo</code> to the visitor's email.</p>
+            <summary>1. Why should <code>from</code> never be set directly to a visitor's submitted email address in a
+              contact form?</summary>
+            <p>Your mail provider is not authorized to send email pretending to be <code>@gmail.com</code> or another
+              visitor's domain (SPF/DKIM will fail), causing emails to bounce or land in spam. Always send
+              <code>from</code> your verified address and set <code>replyTo</code> to the visitor's email.</p>
           </details>
           <details class="qa-item">
             <summary>2. Explain how HTML escaping protects email recipients in a reusable template system.</summary>
-            <p>Escaping replaces characters like <code>&lt;</code>, <code>&gt;</code>, and <code>&quot;</code> with safe entities so user-supplied text renders strictly as plain text rather than injected links, images, or fake UI inside the email client.</p>
+            <p>Escaping replaces characters like <code>&lt;</code>, <code>&gt;</code>, and <code>&quot;</code> with safe
+              entities so user-supplied text renders strictly as plain text rather than injected links, images, or fake
+              UI inside the email client.</p>
           </details>
           <details class="qa-item">
             <summary>3. What is the difference between SMTP port 587 and port 465 in Nodemailer configuration?</summary>
-            <p>Port 587 uses STARTTLS (starting plain and upgrading to TLS, configured with <code>secure: false</code> and <code>requireTLS: true</code>). Port 465 uses implicit SMTPS encryption from the start (<code>secure: true</code>).</p>
+            <p>Port 587 uses STARTTLS (starting plain and upgrading to TLS, configured with <code>secure: false</code>
+              and <code>requireTLS: true</code>). Port 465 uses implicit SMTPS encryption from the start
+              (<code>secure: true</code>).</p>
           </details>
           <details class="qa-item">
             <summary>4. How does a hidden "honeypot" field help curb automated contact-form spam?</summary>
-            <p>A hidden field (such as <code>website</code>) stays empty for normal human users, while automated spam bots fill every field blindly. If the field is non-empty on the server, you silently discard the submission without triggering SMTP.</p>
+            <p>A hidden field (such as <code>website</code>) stays empty for normal human users, while automated spam
+              bots fill every field blindly. If the field is non-empty on the server, you silently discard the
+              submission without triggering SMTP.</p>
           </details>
           <details class="qa-item">
-            <summary>5. Why are password-reset emails sent with short-lived tokens instead of sending a new plaintext password?</summary>
-            <p>Email is not end-to-end encrypted in transit or storage across all mail servers. Sending a single-use expiring reset token lets the user securely set a fresh password directly over HTTPS without exposing passwords in an inbox.</p>
+            <summary>5. Why are password-reset emails sent with short-lived tokens instead of sending a new plaintext
+              password?</summary>
+            <p>Email is not end-to-end encrypted in transit or storage across all mail servers. Sending a single-use
+              expiring reset token lets the user securely set a fresh password directly over HTTPS without exposing
+              passwords in an inbox.</p>
           </details>
         </div>
       </section>
@@ -712,12 +858,16 @@ app.post('/contact', async (req, res) => {
 
           <article class="challenge-card">
             <h3>Challenge 2: Create an Email Verification Token &amp; Mailer Flow</h3>
-            <p>Write a service function <code>sendVerificationEmail({ user, originUrl })</code> that generates a 32-byte random hex token with <code>crypto.randomBytes</code>, computes its SHA-256 hash to store in the database, and emails a clean HTML + plain-text verification link using <code>buildNotificationTemplate</code>.</p>
+            <p>Write a service function <code>sendVerificationEmail({ user, originUrl })</code> that generates a 32-byte
+              random hex token with <code>crypto.randomBytes</code>, computes its SHA-256 hash to store in the database,
+              and emails a clean HTML + plain-text verification link using <code>buildNotificationTemplate</code>.</p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Graceful Timeout &amp; Fallback Logging</h3>
-            <p>Configure a Nodemailer transporter with 5-second connection/socket timeouts, simulate a failed connection (e.g., an invalid local port), and verify the endpoint catches the error cleanly, logs the failure privately, and returns a clean <code>503</code> JSON response.</p>
+            <p>Configure a Nodemailer transporter with 5-second connection/socket timeouts, simulate a failed connection
+              (e.g., an invalid local port), and verify the endpoint catches the error cleanly, logs the failure
+              privately, and returns a clean <code>503</code> JSON response.</p>
           </article>
         </div>
       </section>
@@ -725,22 +875,30 @@ app.post('/contact', async (req, res) => {
       <section class="card-section" id="summary">
         <h2>Day 11 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Nodemailer runs on Node.js on the server and submits emails over SMTP using environment-configured credentials—never hardcode secrets.</li>
-          <li>Use <code>secure: true</code> for port <code>465</code> and <code>secure: false</code> (+ <code>requireTLS: true</code>) for port <code>587</code>, testing locally with Ethereal or Mailtrap.</li>
-          <li>Always provide both <code>text</code> and escaped <code>html</code> templates, strip newlines from header fields, and use verified <code>from</code> + visitor <code>replyTo</code>.</li>
-          <li>Protect contact and email-triggering endpoints with strict rate limiting, validation, timeouts, and leak-free error handling.</li>
+          <li>Nodemailer runs on Node.js on the server and submits emails over SMTP using environment-configured
+            credentials—never hardcode secrets.</li>
+          <li>Use <code>secure: true</code> for port <code>465</code> and <code>secure: false</code> (+
+            <code>requireTLS: true</code>) for port <code>587</code>, testing locally with Ethereal or Mailtrap.</li>
+          <li>Always provide both <code>text</code> and escaped <code>html</code> templates, strip newlines from header
+            fields, and use verified <code>from</code> + visitor <code>replyTo</code>.</li>
+          <li>Protect contact and email-triggering endpoints with strict rate limiting, validation, timeouts, and
+            leak-free error handling.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 11 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 11: Express contact-form validation, rate limiting, template escaping, and Nodemailer SMTP delivery.</p>
+        <p>Visual summary diagram for Day 11: Express contact-form validation, rate limiting, template escaping, and
+          Nodemailer SMTP delivery.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating Express and Nodemailer email delivery workflow with env credentials, template escaping, and SMTP error handling" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating Express and Nodemailer email delivery workflow with env credentials, template escaping, and SMTP error handling"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 11 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 11/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 11/</code> folder
+              to display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -759,11 +917,12 @@ app.post('/contact', async (req, res) => {
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -779,7 +938,8 @@ app.post('/contact', async (req, res) => {
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -794,4 +954,5 @@ app.post('/contact', async (req, res) => {
 
   <script src="script.js"></script>
 </body>
+
 </html>

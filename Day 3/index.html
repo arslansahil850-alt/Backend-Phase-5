@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,17 +8,19 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
-   <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
 
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -69,7 +72,12 @@
         </div>
         <h1>Day 3: MVC Architecture</h1>
         <p class="lead-intro">
-          Writing an entire backend inside one or two route files might work for a tiny prototype, but as soon as database schemas, validation rules, business calculations, and response formatting grow, tangled code becomes fragile and painful to change. <strong>Model-View-Controller (MVC)</strong> is a battle-tested architectural pattern that divides your server application into clear layers with distinct responsibilities. Today you will learn how MVC works in Node.js, Express.js, and MongoDB, and how to refactor a messy route-based app into a clean MVC codebase.
+          Writing an entire backend inside one or two route files might work for a tiny prototype, but as soon as
+          database schemas, validation rules, business calculations, and response formatting grow, tangled code becomes
+          fragile and painful to change. <strong>Model-View-Controller (MVC)</strong> is a battle-tested architectural
+          pattern that divides your server application into clear layers with distinct responsibilities. Today you will
+          learn how MVC works in Node.js, Express.js, and MongoDB, and how to refactor a messy route-based app into a
+          clean MVC codebase.
         </p>
       </section>
 
@@ -77,8 +85,10 @@
         <h2>Learning Objectives</h2>
         <p>By the end of Day 3, you will be able to:</p>
         <ul class="styled-list">
-          <li>Explain what software architecture means and why architectural patterns matter for backend maintainability.</li>
-          <li>Define the exact responsibilities of the <strong>Model</strong>, <strong>View</strong>, and <strong>Controller</strong> layers.</li>
+          <li>Explain what software architecture means and why architectural patterns matter for backend
+            maintainability.</li>
+          <li>Define the exact responsibilities of the <strong>Model</strong>, <strong>View</strong>, and
+            <strong>Controller</strong> layers.</li>
           <li>Trace a client HTTP request step by step through routes, controllers, models, MongoDB, and responses.</li>
           <li>Apply the principle of <strong>Separation of Concerns (SoC)</strong> across backend modules.</li>
           <li>Explain how the View layer adapts between server-rendered HTML templates and JSON REST APIs.</li>
@@ -92,9 +102,13 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 3, make sure you understand:</p>
         <ul class="styled-list">
-          <li><strong>Days 1 &amp; 2 Concepts:</strong> Creating modular Express routers with <code>express.Router()</code>, writing controllers, and applying middleware.</li>
-          <li><strong>Basic MongoDB &amp; Mongoose Concepts:</strong> Documents, collections, schemas, and asynchronous database operations (<code>Model.find()</code>, <code>Model.create()</code>, <code>Model.findById()</code>).</li>
-          <li><strong>JavaScript Modules:</strong> Importing and exporting functions and classes across separate files using ES Modules.</li>
+          <li><strong>Days 1 &amp; 2 Concepts:</strong> Creating modular Express routers with
+            <code>express.Router()</code>, writing controllers, and applying middleware.</li>
+          <li><strong>Basic MongoDB &amp; Mongoose Concepts:</strong> Documents, collections, schemas, and asynchronous
+            database operations (<code>Model.find()</code>, <code>Model.create()</code>, <code>Model.findById()</code>).
+          </li>
+          <li><strong>JavaScript Modules:</strong> Importing and exporting functions and classes across separate files
+            using ES Modules.</li>
         </ul>
       </section>
 
@@ -103,27 +117,33 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Software Architecture</h3>
-            <p>The high-level structural blueprint of an application that defines how files, modules, and layers are divided and how they communicate with one another.</p>
+            <p>The high-level structural blueprint of an application that defines how files, modules, and layers are
+              divided and how they communicate with one another.</p>
           </article>
           <article class="term-card">
             <h3>Separation of Concerns (SoC)</h3>
-            <p>A design principle stating that each module should focus on one specific responsibility—such as routing, data rules, or formatting—so changes in one area do not break others.</p>
+            <p>A design principle stating that each module should focus on one specific responsibility—such as routing,
+              data rules, or formatting—so changes in one area do not break others.</p>
           </article>
           <article class="term-card">
             <h3>Model</h3>
-            <p>The data and domain-rule layer. In Node.js/MongoDB apps, Mongoose models define document structure, validation constraints, defaults, and database queries.</p>
+            <p>The data and domain-rule layer. In Node.js/MongoDB apps, Mongoose models define document structure,
+              validation constraints, defaults, and database queries.</p>
           </article>
           <article class="term-card">
             <h3>View (or Presenter / Response Layer)</h3>
-            <p>The presentation layer delivered to the client. In traditional web apps this is rendered HTML (e.g., EJS/Pug); in modern REST APIs, it is a structured JSON payload or response serializer.</p>
+            <p>The presentation layer delivered to the client. In traditional web apps this is rendered HTML (e.g.,
+              EJS/Pug); in modern REST APIs, it is a structured JSON payload or response serializer.</p>
           </article>
           <article class="term-card">
             <h3>Controller</h3>
-            <p>The coordinator layer that receives incoming HTTP inputs from routes, invokes Model methods or business logic, and selects the status code and View/JSON response to send back.</p>
+            <p>The coordinator layer that receives incoming HTTP inputs from routes, invokes Model methods or business
+              logic, and selects the status code and View/JSON response to send back.</p>
           </article>
           <article class="term-card">
             <h3>Coupling</h3>
-            <p>The degree to which one file depends directly on the internal implementation of another. MVC aims for <strong>loose coupling</strong> so layers can evolve independently.</p>
+            <p>The degree to which one file depends directly on the internal implementation of another. MVC aims for
+              <strong>loose coupling</strong> so layers can evolve independently.</p>
           </article>
         </div>
       </section>
@@ -133,10 +153,16 @@
 
         <h3>1. What Software Architecture Means and Why MVC Is Used</h3>
         <p>
-          Software architecture is not about fancy buzzwords—it is about managing complexity as your application grows from 3 routes to 80 routes. Without architecture, database queries, HTTP parsing, business rules, and error formatting get mixed inside the same callback function. When a bug happens or a teammate needs to add a new feature, nobody knows where to look safely.
+          Software architecture is not about fancy buzzwords—it is about managing complexity as your application grows
+          from 3 routes to 80 routes. Without architecture, database queries, HTTP parsing, business rules, and error
+          formatting get mixed inside the same callback function. When a bug happens or a teammate needs to add a new
+          feature, nobody knows where to look safely.
         </p>
         <p>
-          <strong>MVC (Model-View-Controller)</strong> solves this by establishing predictable boundaries. Every team member immediately knows where data schemas live (Models), where HTTP coordination lives (Controllers), and how outputs are shaped (Views or API response formatters), with Express Routers acting as the entry traffic directors.
+          <strong>MVC (Model-View-Controller)</strong> solves this by establishing predictable boundaries. Every team
+          member immediately knows where data schemas live (Models), where HTTP coordination lives (Controllers), and
+          how outputs are shaped (Views or API response formatters), with Express Routers acting as the entry traffic
+          directors.
         </p>
 
         <h3>2. Responsibilities of Model, View, and Controller</h3>
@@ -160,7 +186,8 @@
               <tr>
                 <td><strong>Controller</strong></td>
                 <td>Request orchestration and application flow</td>
-                <td>Reading <code>req.params/query/body</code>, calling Models/business logic, calling <code>next(err)</code>, returning responses</td>
+                <td>Reading <code>req.params/query/body</code>, calling Models/business logic, calling
+                  <code>next(err)</code>, returning responses</td>
                 <td>Raw Mongoose schema definitions or repetitive low-level response templates</td>
               </tr>
               <tr>
@@ -175,21 +202,37 @@
 
         <h3>3. How a Request Moves Through an MVC Application</h3>
         <p>
-          Consider a browser-side frontend calling <code>fetch('http://localhost:5000/api/v1/tasks', { method: 'POST', ... })</code>. On the <strong>Node.js server</strong>:
+          Consider a browser-side frontend calling
+          <code>fetch('http://localhost:5000/api/v1/tasks', { method: 'POST', ... })</code>. On the <strong>Node.js
+            server</strong>:
         </p>
         <ol class="styled-list">
-          <li><strong>Router Entry:</strong> Express receives the HTTP request, runs global middleware (like <code>express.json()</code>), and matches <code>POST /api/v1/tasks</code> inside <code>routes/taskRoutes.js</code>.</li>
-          <li><strong>Controller Handling:</strong> The router invokes <code>taskController.createTask(req, res, next)</code>. The controller extracts validated inputs from <code>req.body</code>.</li>
-          <li><strong>Model Interaction:</strong> The controller calls <code>Task.create(...)</code> on the Mongoose Model. The Model enforces schema rules (required fields, enums, min/max bounds) and writes the document to MongoDB.</li>
-          <li><strong>View / Response Formation:</strong> MongoDB returns the saved document to the Model, which resolves back to the Controller. The Controller formats the safe public fields (via a response view helper or JSON envelope) and sends <code>201 Created</code> back to the browser.</li>
+          <li><strong>Router Entry:</strong> Express receives the HTTP request, runs global middleware (like
+            <code>express.json()</code>), and matches <code>POST /api/v1/tasks</code> inside
+            <code>routes/taskRoutes.js</code>.</li>
+          <li><strong>Controller Handling:</strong> The router invokes
+            <code>taskController.createTask(req, res, next)</code>. The controller extracts validated inputs from
+            <code>req.body</code>.</li>
+          <li><strong>Model Interaction:</strong> The controller calls <code>Task.create(...)</code> on the Mongoose
+            Model. The Model enforces schema rules (required fields, enums, min/max bounds) and writes the document to
+            MongoDB.</li>
+          <li><strong>View / Response Formation:</strong> MongoDB returns the saved document to the Model, which
+            resolves back to the Controller. The Controller formats the safe public fields (via a response view helper
+            or JSON envelope) and sends <code>201 Created</code> back to the browser.</li>
         </ol>
 
         <h3>4. Views in Modern REST APIs vs. Server-Side Rendered Apps</h3>
         <p>
-          Learners often ask: <em>"If I am building a JSON REST API for a React or Vanilla JS frontend, where is the View in MVC?"</em>
+          Learners often ask: <em>"If I am building a JSON REST API for a React or Vanilla JS frontend, where is the
+            View in MVC?"</em>
         </p>
         <p>
-          In classic server-rendered MVC (for example, Express with EJS templates), the server generates complete HTML pages in a <code>views/</code> folder and sends HTML using <code>res.render('tasks', { tasks })</code>. In modern decoupled architectures, the browser-side frontend handles HTML/CSS rendering, while the backend's <strong>View layer</strong> is represented by <strong>JSON response formatters / serializers (DTOs)</strong> that strip internal database fields (such as <code>__v</code> or password hashes) and present clean, consistent JSON payloads to clients.
+          In classic server-rendered MVC (for example, Express with EJS templates), the server generates complete HTML
+          pages in a <code>views/</code> folder and sends HTML using <code>res.render('tasks', { tasks })</code>. In
+          modern decoupled architectures, the browser-side frontend handles HTML/CSS rendering, while the backend's
+          <strong>View layer</strong> is represented by <strong>JSON response formatters / serializers (DTOs)</strong>
+          that strip internal database fields (such as <code>__v</code> or password hashes) and present clean,
+          consistent JSON payloads to clients.
         </p>
 
         <h3>5. MVC vs. a Simple Route-Based Application</h3>
@@ -206,7 +249,8 @@
               <tr>
                 <td><strong>File Organization</strong></td>
                 <td>Routes, DB calls, and responses live together inside <code>app.js</code> or route files.</td>
-                <td>Separated into <code>models/</code>, <code>controllers/</code>, <code>routes/</code>, and <code>views/</code> (or serializers).</td>
+                <td>Separated into <code>models/</code>, <code>controllers/</code>, <code>routes/</code>, and
+                  <code>views/</code> (or serializers).</td>
               </tr>
               <tr>
                 <td><strong>Testability</strong></td>
@@ -229,17 +273,25 @@
 
         <h3>6. Common MVC Design Mistakes</h3>
         <ul class="styled-list">
-          <li><strong>"Fat Controllers, Anemic Models":</strong> Stuffing every validation rule, calculation, and multi-step MongoDB query directly into controller functions instead of placing domain rules on Models (or dedicated services).</li>
-          <li><strong>Passing <code>req</code> or <code>res</code> into Models:</strong> A Model must remain completely unaware of HTTP. Never write <code>Task.createFromRequest(req, res)</code> inside a Model—if you later call that Model from a CLI script or background job, <code>req</code> and <code>res</code> will not exist!</li>
-          <li><strong>Leaking Raw Database Objects:</strong> Returning entire Mongoose documents blindly can expose internal flags, private fields, or sensitive metadata. Always shape output deliberately.</li>
-          <li><strong>Mixing Browser Logic with Server MVC:</strong> Remember that browser JavaScript handles DOM events and <code>fetch()</code> calls, whereas Express MVC files run strictly on the Node.js server.</li>
+          <li><strong>"Fat Controllers, Anemic Models":</strong> Stuffing every validation rule, calculation, and
+            multi-step MongoDB query directly into controller functions instead of placing domain rules on Models (or
+            dedicated services).</li>
+          <li><strong>Passing <code>req</code> or <code>res</code> into Models:</strong> A Model must remain completely
+            unaware of HTTP. Never write <code>Task.createFromRequest(req, res)</code> inside a Model—if you later call
+            that Model from a CLI script or background job, <code>req</code> and <code>res</code> will not exist!</li>
+          <li><strong>Leaking Raw Database Objects:</strong> Returning entire Mongoose documents blindly can expose
+            internal flags, private fields, or sensitive metadata. Always shape output deliberately.</li>
+          <li><strong>Mixing Browser Logic with Server MVC:</strong> Remember that browser JavaScript handles DOM events
+            and <code>fetch()</code> calls, whereas Express MVC files run strictly on the Node.js server.</li>
         </ul>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: MVC Request &amp; Data Flow in Express + MongoDB</h2>
-        <p>Observe how HTTP details stop at the Controller, while database details stay encapsulated inside the Model:</p>
-        <div class="diagram-container" role="img" aria-label="Flowchart illustrating a client sending an HTTP request to Express Router, which routes to the Controller. The Controller communicates with the Mongoose Model, which queries MongoDB. The Model returns data to the Controller, which formats the JSON View/Response and sends it back to the Client.">
+        <p>Observe how HTTP details stop at the Controller, while database details stay encapsulated inside the Model:
+        </p>
+        <div class="diagram-container" role="img"
+          aria-label="Flowchart illustrating a client sending an HTTP request to Express Router, which routes to the Controller. The Controller communicates with the Mongoose Model, which queries MongoDB. The Model returns data to the Controller, which formats the JSON View/Response and sends it back to the Client.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">1. Client Request</span>
@@ -278,11 +330,13 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Refactoring Tutorial: Route-Based to MVC</h2>
         <p>
-          Let us look at a small route-based Express + Mongoose snippet that mixes routing, schema logic, and response shaping together, and refactor it step by step into a clean MVC structure.
+          Let us look at a small route-based Express + Mongoose snippet that mixes routing, schema logic, and response
+          shaping together, and refactor it step by step into a clean MVC structure.
         </p>
 
         <h3>Before: Messy Route-Based Application (Anti-Pattern)</h3>
-        <p>Everything is crammed into a single <code>server.js</code> file—hard to test, hard to reuse, and cluttered as soon as more routes are added.</p>
+        <p>Everything is crammed into a single <code>server.js</code> file—hard to test, hard to reuse, and cluttered as
+          soon as more routes are added.</p>
         <p class="code-label">Before Refactoring: Monolithic <code>server.js</code></p>
         <pre><code>import express from 'express';
 import mongoose from 'mongoose';
@@ -324,7 +378,8 @@ mongoose.connect(process.env.MONGO_URI).then(() => {
 });</code></pre>
 
         <h3>After: Clean MVC Structure</h3>
-        <p>First, install the dependencies inside a new folder and configure <code>.env</code> with a safe sample MongoDB connection string.</p>
+        <p>First, install the dependencies inside a new folder and configure <code>.env</code> with a safe sample
+          MongoDB connection string.</p>
         <p class="code-label">Terminal Commands</p>
         <pre><code>mkdir mvc-task-api
 cd mvc-task-api
@@ -337,7 +392,8 @@ NODE_ENV=development
 MONGO_URI=mongodb://127.0.0.1:27017/phase5_mvc_demo</code></pre>
 
         <h3>Step 1: Create the Model (<code>models/Task.js</code>)</h3>
-        <p>The Model owns schema validation, indexes, timestamps, and reusable domain query helpers. Notice there are zero references to <code>req</code> or <code>res</code>.</p>
+        <p>The Model owns schema validation, indexes, timestamps, and reusable domain query helpers. Notice there are
+          zero references to <code>req</code> or <code>res</code>.</p>
         <p class="code-label">Backend Source Code: <code>models/Task.js</code></p>
         <pre><code>import mongoose from 'mongoose';
 
@@ -380,7 +436,8 @@ const Task = mongoose.model('Task', taskSchema);
 export default Task;</code></pre>
 
         <h3>Step 2: Create the View / JSON Response Presenter (<code>views/taskView.js</code>)</h3>
-        <p>In a REST API, the View layer ensures consistent JSON formatting and hides internal database fields like <code>__v</code>.</p>
+        <p>In a REST API, the View layer ensures consistent JSON formatting and hides internal database fields like
+          <code>__v</code>.</p>
         <p class="code-label">Backend Source Code: <code>views/taskView.js</code></p>
         <pre><code>export const formatTask = (taskDoc) => ({
   id: taskDoc._id,
@@ -394,7 +451,8 @@ export default Task;</code></pre>
 export const formatTaskList = (taskDocs) => taskDocs.map(formatTask);</code></pre>
 
         <h3>Step 3: Create the Async Wrapper &amp; Controller (<code>controllers/taskController.js</code>)</h3>
-        <p>The Controller coordinates between HTTP inputs, the <code>Task</code> Model, and the <code>taskView</code> formatter.</p>
+        <p>The Controller coordinates between HTTP inputs, the <code>Task</code> Model, and the <code>taskView</code>
+          formatter.</p>
         <p class="code-label">Backend Source Code: <code>utils/asyncHandler.js</code></p>
         <pre><code>export const asyncHandler = (fn) => {
   return (req, res, next) => {
@@ -609,19 +667,25 @@ mongoose
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. E-Commerce Order &amp; Inventory Platforms</h3>
-            <p>Models enforce strict product price and stock constraints; Controllers handle checkout HTTP requests; Views/presenters format safe order receipts for mobile apps, web dashboards, and email templates without duplicating logic.</p>
+            <p>Models enforce strict product price and stock constraints; Controllers handle checkout HTTP requests;
+              Views/presenters format safe order receipts for mobile apps, web dashboards, and email templates without
+              duplicating logic.</p>
           </article>
           <article class="info-box">
             <h3>2. Learning Management Systems (LMS)</h3>
-            <p>Separate MVC modules for <code>Course</code>, <code>Enrollment</code>, and <code>QuizAttempt</code> allow one team to update enrollment business rules inside the Model without modifying API routes or frontend JSON contracts.</p>
+            <p>Separate MVC modules for <code>Course</code>, <code>Enrollment</code>, and <code>QuizAttempt</code> allow
+              one team to update enrollment business rules inside the Model without modifying API routes or frontend
+              JSON contracts.</p>
           </article>
           <article class="info-box">
             <h3>3. Admin Portals + Public APIs Sharing Models</h3>
-            <p>A company can serve server-rendered HTML views (EJS) for an internal admin panel and JSON API responses for customer mobile apps while sharing the exact same Mongoose Models underneath.</p>
+            <p>A company can serve server-rendered HTML views (EJS) for an internal admin panel and JSON API responses
+              for customer mobile apps while sharing the exact same Mongoose Models underneath.</p>
           </article>
           <article class="info-box">
             <h3>4. Easier Migration &amp; Scaling</h3>
-            <p>Because database operations live inside Models rather than route callbacks, migrating a query or adding caching later only touches the data layer while Controllers and Routes remain intact.</p>
+            <p>Because database operations live inside Models rather than route callbacks, migrating a query or adding
+              caching later only touches the data layer while Controllers and Routes remain intact.</p>
           </article>
         </div>
       </section>
@@ -632,19 +696,31 @@ mongoose
           <article class="warning-box">
             <h3>Common MVC Design Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Writing Mongoose queries directly inside Route files:</strong> Routes should stay thin—only mapping paths and middleware to Controller functions.</li>
-              <li><strong>Passing <code>req.body</code> directly into <code>Model.create(req.body)</code>:</strong> Without explicit field extraction, attackers can inject unexpected fields (mass assignment). Always pick allowed fields explicitly.</li>
-              <li><strong>Skipping <code>runValidators: true</code> on <code>findByIdAndUpdate</code>:</strong> Mongoose does not run schema validators on update queries by default unless <code>{ runValidators: true }</code> is specified!</li>
-              <li><strong>Not validating MongoDB ObjectIds:</strong> Passing <code>/tasks/invalid-id</code> straight to <code>findById</code> throws a Mongoose <code>CastError</code> unless checked with <code>mongoose.isValidObjectId(id)</code> or handled in error middleware.</li>
+              <li><strong>Writing Mongoose queries directly inside Route files:</strong> Routes should stay thin—only
+                mapping paths and middleware to Controller functions.</li>
+              <li><strong>Passing <code>req.body</code> directly into <code>Model.create(req.body)</code>:</strong>
+                Without explicit field extraction, attackers can inject unexpected fields (mass assignment). Always pick
+                allowed fields explicitly.</li>
+              <li><strong>Skipping <code>runValidators: true</code> on <code>findByIdAndUpdate</code>:</strong> Mongoose
+                does not run schema validators on update queries by default unless <code>{ runValidators: true }</code>
+                is specified!</li>
+              <li><strong>Not validating MongoDB ObjectIds:</strong> Passing <code>/tasks/invalid-id</code> straight to
+                <code>findById</code> throws a Mongoose <code>CastError</code> unless checked with
+                <code>mongoose.isValidObjectId(id)</code> or handled in error middleware.</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Control output via View/Serializer functions:</strong> Never expose internal fields like password hashes, reset tokens, or internal flags directly from MongoDB documents.</li>
-              <li><strong>Keep database credentials in <code>.env</code>:</strong> Never hardcode <code>mongodb+srv://username:password@...</code> inside <code>server.js</code>.</li>
-              <li><strong>Keep Models HTTP-agnostic:</strong> Models should accept plain arguments and return data or throw errors—never touch <code>req</code> or <code>res</code>.</li>
-              <li><strong>Enforce schema constraints at the Model level:</strong> Use <code>required</code>, <code>trim</code>, <code>enum</code>, <code>min</code>, and <code>max</code> as a reliable data-integrity safety net.</li>
+              <li><strong>Control output via View/Serializer functions:</strong> Never expose internal fields like
+                password hashes, reset tokens, or internal flags directly from MongoDB documents.</li>
+              <li><strong>Keep database credentials in <code>.env</code>:</strong> Never hardcode
+                <code>mongodb+srv://username:password@...</code> inside <code>server.js</code>.</li>
+              <li><strong>Keep Models HTTP-agnostic:</strong> Models should accept plain arguments and return data or
+                throw errors—never touch <code>req</code> or <code>res</code>.</li>
+              <li><strong>Enforce schema constraints at the Model level:</strong> Use <code>required</code>,
+                <code>trim</code>, <code>enum</code>, <code>min</code>, and <code>max</code> as a reliable
+                data-integrity safety net.</li>
             </ul>
           </article>
         </div>
@@ -653,10 +729,19 @@ mongoose
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Add a Model Instance Method:</strong> Add an instance method <code>markAsDone()</code> on <code>taskSchema.methods</code> in <code>models/Task.js</code> that updates <code>this.status = 'done'</code> and saves the document, then call it from a new controller action.</li>
-          <li><strong>Refactor a Monolith:</strong> Take an existing single-file Express app with 3 endpoints (e.g., <code>/notes</code>) and split it cleanly into <code>models/Note.js</code>, <code>views/noteView.js</code>, <code>controllers/noteController.js</code>, and <code>routes/noteRoutes.js</code>.</li>
-          <li><strong>Test <code>runValidators: true</code>:</strong> Temporarily remove <code>runValidators: true</code> from <code>findByIdAndUpdate</code> and send an invalid status like <code>"archived"</code>. Observe why omitting that option creates silent data corruption, then restore it.</li>
-          <li><strong>Add Summary View Formatter:</strong> Create a second presenter function <code>formatTaskSummary(taskDoc)</code> in <code>views/taskView.js</code> that returns only <code>id</code>, <code>title</code>, and <code>status</code> for lightweight list endpoints.</li>
+          <li><strong>Add a Model Instance Method:</strong> Add an instance method <code>markAsDone()</code> on
+            <code>taskSchema.methods</code> in <code>models/Task.js</code> that updates
+            <code>this.status = 'done'</code> and saves the document, then call it from a new controller action.</li>
+          <li><strong>Refactor a Monolith:</strong> Take an existing single-file Express app with 3 endpoints (e.g.,
+            <code>/notes</code>) and split it cleanly into <code>models/Note.js</code>, <code>views/noteView.js</code>,
+            <code>controllers/noteController.js</code>, and <code>routes/noteRoutes.js</code>.</li>
+          <li><strong>Test <code>runValidators: true</code>:</strong> Temporarily remove
+            <code>runValidators: true</code> from <code>findByIdAndUpdate</code> and send an invalid status like
+            <code>"archived"</code>. Observe why omitting that option creates silent data corruption, then restore it.
+          </li>
+          <li><strong>Add Summary View Formatter:</strong> Create a second presenter function
+            <code>formatTaskSummary(taskDoc)</code> in <code>views/taskView.js</code> that returns only <code>id</code>,
+            <code>title</code>, and <code>status</code> for lightweight list endpoints.</li>
         </ol>
       </section>
 
@@ -667,76 +752,115 @@ mongoose
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Organize files cleanly into <code>models/Expense.js</code>, <code>views/expenseView.js</code>, <code>controllers/expenseController.js</code>, <code>routes/expenseRoutes.js</code>, <code>utils/asyncHandler.js</code>, <code>app.js</code>, and <code>server.js</code>.</li>
-          <li>In <code>models/Expense.js</code>, define fields: <code>title</code> (required string), <code>amount</code> (required positive number), <code>category</code> (enum: <code>food</code>, <code>transport</code>, <code>utilities</code>, <code>education</code>, <code>other</code>), and <code>spentAt</code> (date, default now).</li>
-          <li>Add a static method <code>Expense.getTotalByCategory(category)</code> using MongoDB aggregation or filtered query.</li>
-          <li>In <code>views/expenseView.js</code>, create <code>formatExpense</code> so internal fields like <code>__v</code> are never returned to clients.</li>
-          <li>In <code>controllers/expenseController.js</code>, implement <code>GET /api/v1/expenses</code> (optional <code>?category=...</code> filter), <code>POST /api/v1/expenses</code>, <code>PATCH /api/v1/expenses/:id</code> (with <code>runValidators: true</code>), and <code>DELETE /api/v1/expenses/:id</code>, validating ObjectIds before querying.</li>
+          <li>Organize files cleanly into <code>models/Expense.js</code>, <code>views/expenseView.js</code>,
+            <code>controllers/expenseController.js</code>, <code>routes/expenseRoutes.js</code>,
+            <code>utils/asyncHandler.js</code>, <code>app.js</code>, and <code>server.js</code>.</li>
+          <li>In <code>models/Expense.js</code>, define fields: <code>title</code> (required string),
+            <code>amount</code> (required positive number), <code>category</code> (enum: <code>food</code>,
+            <code>transport</code>, <code>utilities</code>, <code>education</code>, <code>other</code>), and
+            <code>spentAt</code> (date, default now).</li>
+          <li>Add a static method <code>Expense.getTotalByCategory(category)</code> using MongoDB aggregation or
+            filtered query.</li>
+          <li>In <code>views/expenseView.js</code>, create <code>formatExpense</code> so internal fields like
+            <code>__v</code> are never returned to clients.</li>
+          <li>In <code>controllers/expenseController.js</code>, implement <code>GET /api/v1/expenses</code> (optional
+            <code>?category=...</code> filter), <code>POST /api/v1/expenses</code>,
+            <code>PATCH /api/v1/expenses/:id</code> (with <code>runValidators: true</code>), and
+            <code>DELETE /api/v1/expenses/:id</code>, validating ObjectIds before querying.</li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 3 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and
+          explanations.</p>
 
         <form id="day3QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
             <legend>1. What is the primary purpose of the MVC architectural pattern?</legend>
-            <label class="quiz-option"><input type="radio" name="q1" value="a"> To combine HTML, database queries, and routes inside a single file</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> To separate data logic (Model), presentation (View), and request coordination (Controller) for maintainability</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="c"> To allow MongoDB to run directly inside the user's browser</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="d"> To eliminate the need for Express routers</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> To combine HTML, database queries, and
+              routes inside a single file</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> To separate data logic (Model),
+              presentation (View), and request coordination (Controller) for maintainability</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> To allow MongoDB to run directly inside
+              the user's browser</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> To eliminate the need for Express
+              routers</label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
             <legend>2. Which responsibility belongs strictly inside the Model layer?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> Reading <code>req.headers</code> and setting cookies</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> Defining data schemas, validation constraints, and database queries</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> Calling <code>res.status(201).json(...)</code></label>
-            <label class="quiz-option"><input type="radio" name="q2" value="d"> Matching URL strings with <code>express.Router()</code></label>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Reading <code>req.headers</code> and
+              setting cookies</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Defining data schemas, validation
+              constraints, and database queries</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Calling
+              <code>res.status(201).json(...)</code></label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> Matching URL strings with
+              <code>express.Router()</code></label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
-            <legend>3. Why should a Mongoose Model never import or accept Express <code>req</code> or <code>res</code> objects?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> Because Node.js forbids passing objects into Mongoose files</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> Because Models should remain HTTP-agnostic and reusable outside Express (such as in tests or background scripts)</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> Because MongoDB deletes any document created from an HTTP request</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="d"> Because <code>req</code> and <code>res</code> only exist in browser CSS</label>
+            <legend>3. Why should a Mongoose Model never import or accept Express <code>req</code> or <code>res</code>
+              objects?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Because Node.js forbids passing objects
+              into Mongoose files</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Because Models should remain
+              HTTP-agnostic and reusable outside Express (such as in tests or background scripts)</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Because MongoDB deletes any document
+              created from an HTTP request</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> Because <code>req</code> and
+              <code>res</code> only exist in browser CSS</label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
             <legend>4. In a RESTful JSON API built with MVC, what serves as the "View" layer on the backend?</legend>
-            <label class="quiz-option"><input type="radio" name="q4" value="a"> The MongoDB connection string in <code>.env</code></label>
-            <label class="quiz-option"><input type="radio" name="q4" value="b"> The JSON response formatter/serializer (or template renderer in SSR apps) that shapes data sent to clients</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="c"> The <code>package-lock.json</code> file</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="d"> The Express <code>app.listen()</code> call</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> The MongoDB connection string in
+              <code>.env</code></label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> The JSON response formatter/serializer
+              (or template renderer in SSR apps) that shapes data sent to clients</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> The <code>package-lock.json</code>
+              file</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> The Express <code>app.listen()</code>
+              call</label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
             <legend>5. What does the principle "Separation of Concerns" mean in backend development?</legend>
-            <label class="quiz-option"><input type="radio" name="q5" value="a"> Splitting each distinct responsibility (routing, validation, data access, formatting) into focused modules</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> Running every endpoint on a separate physical server</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="c"> Removing all error handling from controllers</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="d"> Disabling JSON parsing on <code>POST</code> routes</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Splitting each distinct responsibility
+              (routing, validation, data access, formatting) into focused modules</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Running every endpoint on a separate
+              physical server</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> Removing all error handling from
+              controllers</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> Disabling JSON parsing on
+              <code>POST</code> routes</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. What happens in Mongoose if you call <code>Task.findByIdAndUpdate(id, { status }, { new: true })</code> WITHOUT <code>runValidators: true</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q6" value="a"> Mongoose still runs all schema enum and min/max validators automatically</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="b"> Schema update validators are skipped, allowing invalid enum or out-of-range values to be saved</label>
+            <legend>6. What happens in Mongoose if you call
+              <code>Task.findByIdAndUpdate(id, { status }, { new: true })</code> WITHOUT
+              <code>runValidators: true</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Mongoose still runs all schema enum and
+              min/max validators automatically</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> Schema update validators are skipped,
+              allowing invalid enum or out-of-range values to be saved</label>
             <label class="quiz-option"><input type="radio" name="q6" value="c"> MongoDB refuses to connect</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="d"> The record is deleted instead of updated</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> The record is deleted instead of
+              updated</label>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. Which security risk occurs if a controller executes <code>await User.create(req.body)</code> without filtering allowed fields?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> Mass assignment, where a client sends extra fields like <code>role: "admin"</code> that get saved directly</label>
+            <legend>7. Which security risk occurs if a controller executes <code>await User.create(req.body)</code>
+              without filtering allowed fields?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> Mass assignment, where a client sends
+              extra fields like <code>role: "admin"</code> that get saved directly</label>
             <label class="quiz-option"><input type="radio" name="q7" value="b"> Faster database indexing</label>
             <label class="quiz-option"><input type="radio" name="q7" value="c"> Automatic HTTPS downgrade</label>
             <label class="quiz-option"><input type="radio" name="q7" value="d"> Express refusing to parse JSON</label>
@@ -745,28 +869,41 @@ mongoose
 
           <fieldset class="quiz-question" data-question="q8">
             <legend>8. What is the correct MVC flow for an incoming <code>GET /api/v1/tasks/123</code> request?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> Model &rarr; Router &rarr; Database &rarr; Controller</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> Router &rarr; Controller &rarr; Model &rarr; Database &rarr; Model &rarr; Controller &rarr; View/Response</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> View &rarr; Database &rarr; Router &rarr; Client</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="d"> Browser DOM &rarr; MongoDB directly &rarr; Controller</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Model &rarr; Router &rarr; Database
+              &rarr; Controller</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> Router &rarr; Controller &rarr; Model
+              &rarr; Database &rarr; Model &rarr; Controller &rarr; View/Response</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> View &rarr; Database &rarr; Router
+              &rarr; Client</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> Browser DOM &rarr; MongoDB directly
+              &rarr; Controller</label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
             <legend>9. What is meant by the anti-pattern "Fat Controller, Anemic Model"?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> Putting all business logic, calculations, and complex queries inside controllers while Models only hold bare field definitions</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> Creating too many small router files</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> Using <code>dotenv</code> to load environment variables</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="d"> Returning <code>204 No Content</code> on <code>DELETE</code> requests</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Putting all business logic,
+              calculations, and complex queries inside controllers while Models only hold bare field definitions</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Creating too many small router
+              files</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Using <code>dotenv</code> to load
+              environment variables</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> Returning <code>204 No Content</code> on
+              <code>DELETE</code> requests</label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. Why is checking <code>mongoose.isValidObjectId(id)</code> useful in a controller before calling <code>Model.findById(id)</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> It automatically creates a new MongoDB database</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> It catches malformed IDs early and lets you return a clean <code>400 Bad Request</code> instead of triggering a database CastError</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> It converts SQL queries into MongoDB queries</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="d"> It skips schema validation on create</label>
+            <legend>10. Why is checking <code>mongoose.isValidObjectId(id)</code> useful in a controller before calling
+              <code>Model.findById(id)</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> It automatically creates a new MongoDB
+              database</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> It catches malformed IDs early and lets
+              you return a clean <code>400 Bad Request</code> instead of triggering a database CastError</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> It converts SQL queries into MongoDB
+              queries</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> It skips schema validation on
+              create</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
 
@@ -784,24 +921,38 @@ mongoose
         <p>Write or mentally summarize your answer before opening each explanation.</p>
         <div class="qa-list">
           <details class="qa-item">
-            <summary>1. How does MVC improve teamwork compared to a simple single-file route-based Express app?</summary>
-            <p>MVC splits code into separate Models, Views/presenters, Controllers, and Routes. Team members can work on different feature files simultaneously with fewer Git merge conflicts and clearer ownership boundaries.</p>
+            <summary>1. How does MVC improve teamwork compared to a simple single-file route-based Express app?
+            </summary>
+            <p>MVC splits code into separate Models, Views/presenters, Controllers, and Routes. Team members can work on
+              different feature files simultaneously with fewer Git merge conflicts and clearer ownership boundaries.
+            </p>
           </details>
           <details class="qa-item">
-            <summary>2. What is the difference between a server-rendered View and a REST API JSON View/Presenter?</summary>
-            <p>A server-rendered View generates complete HTML pages on the server (e.g., via EJS) and sends HTML with <code>res.render()</code>. A REST API JSON View/Presenter transforms internal database documents into clean, safe JSON objects (removing private fields like passwords or <code>__v</code>) sent via <code>res.json()</code>.</p>
+            <summary>2. What is the difference between a server-rendered View and a REST API JSON View/Presenter?
+            </summary>
+            <p>A server-rendered View generates complete HTML pages on the server (e.g., via EJS) and sends HTML with
+              <code>res.render()</code>. A REST API JSON View/Presenter transforms internal database documents into
+              clean, safe JSON objects (removing private fields like passwords or <code>__v</code>) sent via
+              <code>res.json()</code>.</p>
           </details>
           <details class="qa-item">
             <summary>3. Why does the Express Router sit outside the Model in an MVC architecture?</summary>
-            <p>Routers map HTTP verbs and URLs to Controllers; they represent the web transport entry layer. Models represent persistent data and domain rules, so keeping them independent allows Models to be reused by jobs, tests, or CLI tools.</p>
+            <p>Routers map HTTP verbs and URLs to Controllers; they represent the web transport entry layer. Models
+              represent persistent data and domain rules, so keeping them independent allows Models to be reused by
+              jobs, tests, or CLI tools.</p>
           </details>
           <details class="qa-item">
             <summary>4. Give an example of logic that belongs in a Model rather than a Controller.</summary>
-            <p>Schema constraints (such as <code>min</code>, <code>max</code>, <code>enum</code>, <code>required</code>), custom Mongoose static query methods (like <code>Task.findByStatusSorted</code>), or password-comparison instance methods belong in the Model.</p>
+            <p>Schema constraints (such as <code>min</code>, <code>max</code>, <code>enum</code>,
+              <code>required</code>), custom Mongoose static query methods (like <code>Task.findByStatusSorted</code>),
+              or password-comparison instance methods belong in the Model.</p>
           </details>
           <details class="qa-item">
-            <summary>5. What happens when a Controller handles validation, database queries, and output formatting all inside one 200-line function?</summary>
-            <p>The controller becomes tightly coupled and difficult to read, test, or reuse—an anti-pattern known as a "Fat Controller." Breaking out Model methods and View formatters keeps the Controller concise and easy to maintain.</p>
+            <summary>5. What happens when a Controller handles validation, database queries, and output formatting all
+              inside one 200-line function?</summary>
+            <p>The controller becomes tightly coupled and difficult to read, test, or reuse—an anti-pattern known as a
+              "Fat Controller." Breaking out Model methods and View formatters keeps the Controller concise and easy to
+              maintain.</p>
           </details>
         </div>
       </section>
@@ -811,7 +962,9 @@ mongoose
         <div class="challenge-list">
           <article class="challenge-card">
             <h3>Challenge 1: Decouple HTTP from the Model</h3>
-            <p>The Mongoose Model method below violates MVC by accepting <code>req</code> and <code>res</code>. Refactor it so the Model method only accepts a plain <code>category</code> string and returns the query result, while the Controller handles HTTP status codes and JSON responses.</p>
+            <p>The Mongoose Model method below violates MVC by accepting <code>req</code> and <code>res</code>. Refactor
+              it so the Model method only accepts a plain <code>category</code> string and returns the query result,
+              while the Controller handles HTTP status codes and JSON responses.</p>
             <pre><code>productSchema.statics.sendByCategory = async function (req, res) {
   const items = await this.find({ category: req.query.category });
   res.status(200).json({ data: items });
@@ -820,12 +973,19 @@ mongoose
 
           <article class="challenge-card">
             <h3>Challenge 2: Create a Safe Public User View Presenter</h3>
-            <p>Suppose a MongoDB user document contains <code>_id</code>, <code>name</code>, <code>email</code>, <code>passwordHash</code>, <code>resetToken</code>, <code>__v</code>, and <code>createdAt</code>. Write <code>views/userView.js</code> exporting <code>formatPublicUser(userDoc)</code> and <code>formatUserList(userDocs)</code> so sensitive fields are never included in API responses.</p>
+            <p>Suppose a MongoDB user document contains <code>_id</code>, <code>name</code>, <code>email</code>,
+              <code>passwordHash</code>, <code>resetToken</code>, <code>__v</code>, and <code>createdAt</code>. Write
+              <code>views/userView.js</code> exporting <code>formatPublicUser(userDoc)</code> and
+              <code>formatUserList(userDocs)</code> so sensitive fields are never included in API responses.</p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Refactor a 2-Route Monolith into Full MVC</h3>
-            <p>Take an Express snippet containing <code>GET /api/v1/reviews</code> and <code>POST /api/v1/reviews</code> inside <code>server.js</code> with an inline Mongoose schema, and split it into <code>models/Review.js</code>, <code>views/reviewView.js</code>, <code>controllers/reviewController.js</code>, <code>routes/reviewRoutes.js</code>, <code>app.js</code>, and <code>server.js</code>.</p>
+            <p>Take an Express snippet containing <code>GET /api/v1/reviews</code> and <code>POST /api/v1/reviews</code>
+              inside <code>server.js</code> with an inline Mongoose schema, and split it into
+              <code>models/Review.js</code>, <code>views/reviewView.js</code>,
+              <code>controllers/reviewController.js</code>, <code>routes/reviewRoutes.js</code>, <code>app.js</code>,
+              and <code>server.js</code>.</p>
           </article>
         </div>
       </section>
@@ -833,23 +993,32 @@ mongoose
       <section class="card-section" id="summary">
         <h2>Day 3 Revision Summary</h2>
         <ul class="styled-list">
-          <li>MVC separates an application into <strong>Models</strong> (data &amp; rules), <strong>Views</strong> (HTML templates or JSON presenters), and <strong>Controllers</strong> (HTTP coordination), with Routers directing incoming traffic.</li>
+          <li>MVC separates an application into <strong>Models</strong> (data &amp; rules), <strong>Views</strong> (HTML
+            templates or JSON presenters), and <strong>Controllers</strong> (HTTP coordination), with Routers directing
+            incoming traffic.</li>
           <li>Separation of Concerns reduces coupling, prevents merge conflicts, and makes unit testing practical.</li>
-          <li>Models must stay completely HTTP-agnostic—never pass <code>req</code> or <code>res</code> into a Model.</li>
-          <li>Always pick explicit fields from <code>req.body</code>, enable <code>runValidators: true</code> on Mongoose updates, and format output intentionally via a View/presenter layer.</li>
-          <li>Refactoring route-based prototypes into MVC sets the foundation for scalable professional backend architectures.</li>
+          <li>Models must stay completely HTTP-agnostic—never pass <code>req</code> or <code>res</code> into a Model.
+          </li>
+          <li>Always pick explicit fields from <code>req.body</code>, enable <code>runValidators: true</code> on
+            Mongoose updates, and format output intentionally via a View/presenter layer.</li>
+          <li>Refactoring route-based prototypes into MVC sets the foundation for scalable professional backend
+            architectures.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 3 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 3: MVC Architecture layers, separation of concerns, and Express-to-MongoDB request flow.</p>
+        <p>Visual summary diagram for Day 3: MVC Architecture layers, separation of concerns, and Express-to-MongoDB
+          request flow.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating MVC Architecture with Router, Controller, Mongoose Model, MongoDB, and View Response Presenter" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating MVC Architecture with Router, Controller, Mongoose Model, MongoDB, and View Response Presenter"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 3 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 3/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 3/</code> folder to
+              display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -868,11 +1037,12 @@ mongoose
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -888,7 +1058,8 @@ mongoose
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -903,4 +1074,5 @@ mongoose
 
   <script src="script.js"></script>
 </body>
+
 </html>

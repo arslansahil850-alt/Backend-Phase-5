@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
- <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,7 +71,12 @@
         </div>
         <h1>Day 4: Professional Project Structure</h1>
         <p class="lead-intro">
-          On Day 3 you learned MVC. However, real production backends quickly outgrow basic Models, Views, and Controllers. Where should environment validation live? Where do you place complex multi-step business workflows like order checkout or email notifications? How do you prevent files from importing each other in circles? Today you will learn how professional Node.js and Express teams structure medium-to-large backends with dedicated <code>config/</code>, <code>services/</code>, <code>utils/</code>, <code>middleware/</code>, <code>models/</code>, <code>controllers/</code>, and <code>routes/</code> directories.
+          On Day 3 you learned MVC. However, real production backends quickly outgrow basic Models, Views, and
+          Controllers. Where should environment validation live? Where do you place complex multi-step business
+          workflows like order checkout or email notifications? How do you prevent files from importing each other in
+          circles? Today you will learn how professional Node.js and Express teams structure medium-to-large backends
+          with dedicated <code>config/</code>, <code>services/</code>, <code>utils/</code>, <code>middleware/</code>,
+          <code>models/</code>, <code>controllers/</code>, and <code>routes/</code> directories.
         </p>
       </section>
 
@@ -76,12 +84,17 @@
         <h2>Learning Objectives</h2>
         <p>By the end of Day 4, you will be able to:</p>
         <ul class="styled-list">
-          <li>Explain why consistent folder organization improves developer onboarding, scalability, and long-term maintenance.</li>
-          <li>Organize a Node.js/Express/MongoDB backend into <code>config/</code>, <code>routes/</code>, <code>controllers/</code>, <code>services/</code>, <code>models/</code>, <code>middleware/</code>, and <code>utils/</code>.</li>
+          <li>Explain why consistent folder organization improves developer onboarding, scalability, and long-term
+            maintenance.</li>
+          <li>Organize a Node.js/Express/MongoDB backend into <code>config/</code>, <code>routes/</code>,
+            <code>controllers/</code>, <code>services/</code>, <code>models/</code>, <code>middleware/</code>, and
+            <code>utils/</code>.</li>
           <li>Separate HTTP request handling (controllers) from core business logic (services).</li>
-          <li>Centralize and validate environment variables safely at startup instead of scattering <code>process.env</code> everywhere.</li>
+          <li>Centralize and validate environment variables safely at startup instead of scattering
+            <code>process.env</code> everywhere.</li>
           <li>Design pure, reusable utility functions and apply clear file and symbol naming conventions.</li>
-          <li>Organize package dependencies cleanly between <code>dependencies</code> and <code>devDependencies</code>.</li>
+          <li>Organize package dependencies cleanly between <code>dependencies</code> and <code>devDependencies</code>.
+          </li>
           <li>Detect, understand, and prevent circular dependencies across modules.</li>
         </ul>
       </section>
@@ -90,9 +103,12 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 4, make sure you are comfortable with:</p>
         <ul class="styled-list">
-          <li><strong>Days 1–3 Foundations:</strong> Express routers, custom middleware pipelines, and MVC separation using Mongoose models.</li>
-          <li><strong>ES Modules (<code>import</code> / <code>export</code>):</strong> Understanding default vs. named exports and relative file paths (<code>../services/orderService.js</code>).</li>
-          <li><strong>Node.js &amp; npm Basics:</strong> Reading <code>package.json</code> and working with <code>.env</code> files.</li>
+          <li><strong>Days 1–3 Foundations:</strong> Express routers, custom middleware pipelines, and MVC separation
+            using Mongoose models.</li>
+          <li><strong>ES Modules (<code>import</code> / <code>export</code>):</strong> Understanding default vs. named
+            exports and relative file paths (<code>../services/orderService.js</code>).</li>
+          <li><strong>Node.js &amp; npm Basics:</strong> Reading <code>package.json</code> and working with
+            <code>.env</code> files.</li>
         </ul>
       </section>
 
@@ -101,27 +117,34 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Service Layer (<code>services/</code>)</h3>
-            <p>A dedicated layer containing core business rules, multi-model database workflows, and external API calls, keeping controllers thin and focused strictly on HTTP.</p>
+            <p>A dedicated layer containing core business rules, multi-model database workflows, and external API calls,
+              keeping controllers thin and focused strictly on HTTP.</p>
           </article>
           <article class="term-card">
             <h3>Configuration Module (<code>config/</code>)</h3>
-            <p>Centralized files that read, validate, and export environment variables, database connections, and third-party client settings once at application startup.</p>
+            <p>Centralized files that read, validate, and export environment variables, database connections, and
+              third-party client settings once at application startup.</p>
           </article>
           <article class="term-card">
             <h3>Utility Function (<code>utils/</code>)</h3>
-            <p>Small, pure, stateless helper functions—such as slug generators, date formatters, or async wrappers—that contain no business rules or HTTP logic.</p>
+            <p>Small, pure, stateless helper functions—such as slug generators, date formatters, or async wrappers—that
+              contain no business rules or HTTP logic.</p>
           </article>
           <article class="term-card">
             <h3>Circular Dependency</h3>
-            <p>A broken import cycle where File A imports File B while File B simultaneously imports File A, resulting in incomplete or <code>undefined</code> module exports at runtime.</p>
+            <p>A broken import cycle where File A imports File B while File B simultaneously imports File A, resulting
+              in incomplete or <code>undefined</code> module exports at runtime.</p>
           </article>
           <article class="term-card">
             <h3>Barrel File (<code>index.js</code>)</h3>
-            <p>An index module inside a folder that re-exports public functions from sibling files to simplify import paths—useful when used carefully without hiding circular cycles.</p>
+            <p>An index module inside a folder that re-exports public functions from sibling files to simplify import
+              paths—useful when used carefully without hiding circular cycles.</p>
           </article>
           <article class="term-card">
             <h3><code>dependencies</code> vs <code>devDependencies</code></h3>
-            <p>Runtime packages required in production (like <code>express</code>, <code>mongoose</code>) belong in <code>dependencies</code>; local tools for coding/testing (like <code>nodemon</code>, <code>eslint</code>) belong in <code>devDependencies</code>.</p>
+            <p>Runtime packages required in production (like <code>express</code>, <code>mongoose</code>) belong in
+              <code>dependencies</code>; local tools for coding/testing (like <code>nodemon</code>, <code>eslint</code>)
+              belong in <code>devDependencies</code>.</p>
           </article>
         </div>
       </section>
@@ -131,7 +154,11 @@
 
         <h3>1. Why Project Structure Matters</h3>
         <p>
-          When a codebase lacks a deliberate structure, developers spend more time searching for files than building features. Worse, without clear layer boundaries, business rules leak into route handlers, database setup code mixes with Express setup, and reading <code>process.env.JWT_SECRET</code> in 12 different files leads to silent bugs when one variable is misspelled. A professional folder layout acts as a map: anyone opening the repository immediately understands where every piece of code belongs.
+          When a codebase lacks a deliberate structure, developers spend more time searching for files than building
+          features. Worse, without clear layer boundaries, business rules leak into route handlers, database setup code
+          mixes with Express setup, and reading <code>process.env.JWT_SECRET</code> in 12 different files leads to
+          silent bugs when one variable is misspelled. A professional folder layout acts as a map: anyone opening the
+          repository immediately understands where every piece of code belongs.
         </p>
 
         <h3>2. Core Folders and Their Exact Responsibilities</h3>
@@ -191,45 +218,77 @@
 
         <h3>3. Separating Business Logic from Request Handling</h3>
         <p>
-          In Day 3, controllers talked directly to Mongoose models. That works well for simple CRUD, but imagine an <strong>enrollment workflow</strong>: you must check if the course exists, verify remaining seat capacity, ensure the student is not already enrolled, deduct a seat atomically, and create an enrollment record.
+          In Day 3, controllers talked directly to Mongoose models. That works well for simple CRUD, but imagine an
+          <strong>enrollment workflow</strong>: you must check if the course exists, verify remaining seat capacity,
+          ensure the student is not already enrolled, deduct a seat atomically, and create an enrollment record.
         </p>
         <p>
-          If all 80 lines of that workflow live inside <code>enrollmentController.js</code>, you cannot reuse the logic in a bulk CSV importer or CLI admin script without duplicating code. Moving that workflow into <code>services/enrollmentService.js</code> means the controller stays under 15 lines: it extracts inputs from <code>req</code>, passes plain JavaScript values to <code>enrollmentService.enrollStudent({ userId, courseId })</code>, and sends the JSON response.
+          If all 80 lines of that workflow live inside <code>enrollmentController.js</code>, you cannot reuse the logic
+          in a bulk CSV importer or CLI admin script without duplicating code. Moving that workflow into
+          <code>services/enrollmentService.js</code> means the controller stays under 15 lines: it extracts inputs from
+          <code>req</code>, passes plain JavaScript values to
+          <code>enrollmentService.enrollStudent({ userId, courseId })</code>, and sends the JSON response.
         </p>
 
         <h3>4. Environment Configuration &amp; Startup Validation</h3>
         <p>
-          Never scatter <code>process.env.MONGO_URI</code> or <code>process.env.PORT</code> across twenty files. If someone forgets to set a required secret in production, the server might boot cleanly and only crash hours later when a user triggers that code path. Instead, create <code>src/config/env.js</code> to load <code>dotenv</code> once, validate required variables immediately at startup (failing fast if missing), parse types (like turning <code>PORT</code> into a number), and export a frozen immutable <code>env</code> object.
+          Never scatter <code>process.env.MONGO_URI</code> or <code>process.env.PORT</code> across twenty files. If
+          someone forgets to set a required secret in production, the server might boot cleanly and only crash hours
+          later when a user triggers that code path. Instead, create <code>src/config/env.js</code> to load
+          <code>dotenv</code> once, validate required variables immediately at startup (failing fast if missing), parse
+          types (like turning <code>PORT</code> into a number), and export a frozen immutable <code>env</code> object.
         </p>
 
         <h3>5. Naming Conventions &amp; Import/Export Organization</h3>
         <p>Consistency eliminates guesswork across a team:</p>
         <ul class="styled-list">
-          <li><strong>Models use PascalCase singular nouns:</strong> <code>User.js</code>, <code>Course.js</code>, <code>Enrollment.js</code> (matching the Mongoose Model class name).</li>
-          <li><strong>Controllers, Services, Routes, and Middleware use camelCase with role suffixes:</strong> <code>courseController.js</code>, <code>courseService.js</code>, <code>courseRoutes.js</code>, <code>authMiddleware.js</code>.</li>
-          <li><strong>Import ordering:</strong> Group imports at the top of each file in three clean tiers: (1) Node built-ins (<code>node:crypto</code>), (2) external npm packages (<code>express</code>, <code>mongoose</code>), and (3) internal project modules (<code>../services/...</code>).</li>
-          <li><strong>Use explicit named exports for multi-function modules:</strong> Prefer <code>export const createCourse = ...</code> inside controllers, services, and utils so refactoring tools and autocomplete work reliably.</li>
+          <li><strong>Models use PascalCase singular nouns:</strong> <code>User.js</code>, <code>Course.js</code>,
+            <code>Enrollment.js</code> (matching the Mongoose Model class name).</li>
+          <li><strong>Controllers, Services, Routes, and Middleware use camelCase with role suffixes:</strong>
+            <code>courseController.js</code>, <code>courseService.js</code>, <code>courseRoutes.js</code>,
+            <code>authMiddleware.js</code>.</li>
+          <li><strong>Import ordering:</strong> Group imports at the top of each file in three clean tiers: (1) Node
+            built-ins (<code>node:crypto</code>), (2) external npm packages (<code>express</code>,
+            <code>mongoose</code>), and (3) internal project modules (<code>../services/...</code>).</li>
+          <li><strong>Use explicit named exports for multi-function modules:</strong> Prefer
+            <code>export const createCourse = ...</code> inside controllers, services, and utils so refactoring tools
+            and autocomplete work reliably.</li>
         </ul>
 
         <h3>6. Layer-Based vs. Feature-Based Structure (Maintainability &amp; Scalability)</h3>
         <p>
-          Medium-sized APIs (5–25 resources) thrive with a <strong>layer-based structure</strong> inside <code>src/</code> (<code>routes/</code>, <code>controllers/</code>, <code>services/</code>, <code>models/</code>). Very large enterprise monoliths (50+ resources) often group by <strong>feature/domain</strong> (<code>src/modules/courses/</code> containing its own controller, service, model, and routes) while keeping shared <code>config/</code>, <code>middleware/</code>, and <code>utils/</code> at the root of <code>src/</code>. Both follow the exact same dependency rules!
+          Medium-sized APIs (5–25 resources) thrive with a <strong>layer-based structure</strong> inside
+          <code>src/</code> (<code>routes/</code>, <code>controllers/</code>, <code>services/</code>,
+          <code>models/</code>). Very large enterprise monoliths (50+ resources) often group by
+          <strong>feature/domain</strong> (<code>src/modules/courses/</code> containing its own controller, service,
+          model, and routes) while keeping shared <code>config/</code>, <code>middleware/</code>, and
+          <code>utils/</code> at the root of <code>src/</code>. Both follow the exact same dependency rules!
         </p>
 
         <h3>7. Avoiding Circular Dependencies</h3>
         <p>
-          A circular dependency happens when <code>serviceA.js</code> imports <code>serviceB.js</code> and <code>serviceB.js</code> imports <code>serviceA.js</code> (or <code>app.js</code> imports a route that imports a helper from <code>app.js</code>). When Node.js evaluates a cycle, one module receives an incomplete or uninitialized export, causing mysterious errors such as <code>TypeError: Cannot read properties of undefined</code> or <code>ReferenceError: Cannot access before initialization</code>.
+          A circular dependency happens when <code>serviceA.js</code> imports <code>serviceB.js</code> and
+          <code>serviceB.js</code> imports <code>serviceA.js</code> (or <code>app.js</code> imports a route that imports
+          a helper from <code>app.js</code>). When Node.js evaluates a cycle, one module receives an incomplete or
+          uninitialized export, causing mysterious errors such as
+          <code>TypeError: Cannot read properties of undefined</code> or
+          <code>ReferenceError: Cannot access before initialization</code>.
         </p>
         <p>
           To prevent cycles, enforce a <strong>strict one-way (acyclic) dependency flow</strong>:
-          <code>server.js &rarr; app.js &rarr; routes &rarr; middleware &amp; controllers &rarr; services &rarr; models</code>, with <code>config/</code> and <code>utils/</code> at the base. Lower layers must <strong>never</strong> import higher layers (a Service must never import a Controller; a Model must never import a Service or Route). If two services share common helpers, extract the shared logic into a third lower-level utility or shared service.
+          <code>server.js &rarr; app.js &rarr; routes &rarr; middleware &amp; controllers &rarr; services &rarr; models</code>,
+          with <code>config/</code> and <code>utils/</code> at the base. Lower layers must <strong>never</strong> import
+          higher layers (a Service must never import a Controller; a Model must never import a Service or Route). If two
+          services share common helpers, extract the shared logic into a third lower-level utility or shared service.
         </p>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Professional Folder Tree &amp; One-Way Dependency Flow</h2>
-        <p>Notice how dependencies always point downward—lower layers never import higher layers, preventing circular dependencies:</p>
-        <div class="diagram-container" role="img" aria-label="Diagram showing the folder structure inside src/ with config, routes, middleware, controllers, services, models, and utils, alongside a one-way downward dependency flow from server.js down to models and config.">
+        <p>Notice how dependencies always point downward—lower layers never import higher layers, preventing circular
+          dependencies:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Diagram showing the folder structure inside src/ with config, routes, middleware, controllers, services, models, and utils, alongside a one-way downward dependency flow from server.js down to models and config.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">Entry Layer</span>
@@ -239,8 +298,10 @@
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-step flow-app">
               <span class="flow-tag">Transport &amp; HTTP Layer</span>
-              <strong><code>src/routes/</code> &rarr; <code>src/middleware/</code> &rarr; <code>src/controllers/</code></strong>
-              <span>Matches URLs, runs auth/validation gates, extracts <code>req</code> data, sends HTTP responses</span>
+              <strong><code>src/routes/</code> &rarr; <code>src/middleware/</code> &rarr;
+                <code>src/controllers/</code></strong>
+              <span>Matches URLs, runs auth/validation gates, extracts <code>req</code> data, sends HTTP
+                responses</span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-step flow-router">
@@ -268,7 +329,8 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial: Building a Professional Medium-Sized Backend</h2>
         <p>
-          Let us build the skeleton and working core of a medium-sized Course &amp; Enrollment API running on <strong>Node.js (server-side)</strong> with Express and MongoDB.
+          Let us build the skeleton and working core of a medium-sized Course &amp; Enrollment API running on
+          <strong>Node.js (server-side)</strong> with Express and MongoDB.
         </p>
 
         <h3>Step 1: Scaffold the Folder Structure and <code>package.json</code></h3>
@@ -280,7 +342,8 @@ npm install express mongoose dotenv
 npm install --save-dev nodemon
 mkdir -p src/config src/controllers src/middleware src/models src/routes src/services src/utils</code></pre>
 
-        <p class="code-label">Project File: <code>package.json</code> (Excerpt showing scripts &amp; dependency split)</p>
+        <p class="code-label">Project File: <code>package.json</code> (Excerpt showing scripts &amp; dependency split)
+        </p>
         <pre><code>{
   "name": "academy-backend",
   "version": "1.0.0",
@@ -301,7 +364,8 @@ mkdir -p src/config src/controllers src/middleware src/models src/routes src/ser
 }</code></pre>
 
         <h3>Step 2: Centralize Environment &amp; Database Configuration</h3>
-        <p class="code-label">Configuration Template: <code>.env.example</code> (Safe to commit to Git; copy to <code>.env</code> locally)</p>
+        <p class="code-label">Configuration Template: <code>.env.example</code> (Safe to commit to Git; copy to
+          <code>.env</code> locally)</p>
         <pre><code>NODE_ENV=development
 PORT=5000
 MONGO_URI=mongodb://127.0.0.1:27017/academy_phase5
@@ -603,19 +667,24 @@ startServer().catch((err) => {
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. Reusing Business Logic Across Channels</h3>
-            <p>When seat-reservation or invoice-calculation logic lives inside <code>src/services/</code>, both an HTTP API controller and an automated nightly background worker can call the exact same service function safely.</p>
+            <p>When seat-reservation or invoice-calculation logic lives inside <code>src/services/</code>, both an HTTP
+              API controller and an automated nightly background worker can call the exact same service function safely.
+            </p>
           </article>
           <article class="info-box">
             <h3>2. Fast Failure on Misconfigured Deployments</h3>
-            <p>Having <code>src/config/env.js</code> validate required variables on boot prevents a production deployment from running silently without a database URI or payment webhook secret.</p>
+            <p>Having <code>src/config/env.js</code> validate required variables on boot prevents a production
+              deployment from running silently without a database URI or payment webhook secret.</p>
           </article>
           <article class="info-box">
             <h3>3. Smooth Team Onboarding</h3>
-            <p>A new backend developer joining a 40-endpoint Express repo can locate route definitions, middleware, services, and schemas within seconds because every folder follows predictable naming conventions.</p>
+            <p>A new backend developer joining a 40-endpoint Express repo can locate route definitions, middleware,
+              services, and schemas within seconds because every folder follows predictable naming conventions.</p>
           </article>
           <article class="info-box">
             <h3>4. Clean Automated Testing</h3>
-            <p>Keeping <code>src/app.js</code> separate from <code>server.js</code> allows integration test suites (such as Supertest) to import <code>app</code> directly without port collisions.</p>
+            <p>Keeping <code>src/app.js</code> separate from <code>server.js</code> allows integration test suites (such
+              as Supertest) to import <code>app</code> directly without port collisions.</p>
           </article>
         </div>
       </section>
@@ -626,19 +695,34 @@ startServer().catch((err) => {
           <article class="warning-box">
             <h3>Common Structural Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Services importing Controllers or <code>req/res</code>:</strong> Never pass <code>req</code> or <code>res</code> into a service function. Services should take plain parameters and return plain data or throw errors.</li>
-              <li><strong>Circular imports via overly broad barrel files:</strong> Importing <code>../services/index.js</code> inside another service within the same folder can accidentally create circular references. Import specific sibling files directly.</li>
-              <li><strong>Installing dev tools in <code>dependencies</code>:</strong> Putting <code>nodemon</code> or testing frameworks inside production <code>dependencies</code> bloats production container builds. Use <code>--save-dev</code> for dev tools.</li>
-              <li><strong>Inconsistent file naming:</strong> Mixing <code>UserModel.js</code>, <code>course_controller.js</code>, and <code>AuthRoutes.js</code> in one codebase makes imports error-prone on case-sensitive Linux servers!</li>
+              <li><strong>Services importing Controllers or <code>req/res</code>:</strong> Never pass <code>req</code>
+                or <code>res</code> into a service function. Services should take plain parameters and return plain data
+                or throw errors.</li>
+              <li><strong>Circular imports via overly broad barrel files:</strong> Importing
+                <code>../services/index.js</code> inside another service within the same folder can accidentally create
+                circular references. Import specific sibling files directly.</li>
+              <li><strong>Installing dev tools in <code>dependencies</code>:</strong> Putting <code>nodemon</code> or
+                testing frameworks inside production <code>dependencies</code> bloats production container builds. Use
+                <code>--save-dev</code> for dev tools.</li>
+              <li><strong>Inconsistent file naming:</strong> Mixing <code>UserModel.js</code>,
+                <code>course_controller.js</code>, and <code>AuthRoutes.js</code> in one codebase makes imports
+                error-prone on case-sensitive Linux servers!</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Commit <code>.env.example</code>, never <code>.env</code>:</strong> Add <code>.env</code> and <code>node_modules/</code> to <code>.gitignore</code> on day one so database URIs and API secrets never reach GitHub.</li>
-              <li><strong>Freeze exported config objects:</strong> Using <code>Object.freeze(env)</code> prevents accidental runtime mutation of critical configuration flags.</li>
-              <li><strong>Keep <code>src/</code> clean:</strong> Place all application source code inside <code>src/</code> while leaving root files (<code>package.json</code>, <code>.env.example</code>, <code>README.md</code>, <code>server.js</code>) minimal.</li>
-              <li><strong>Enforce atomic updates in services:</strong> Notice how <code>reserveSeatInCourse</code> checks capacity inside the MongoDB query filter to prevent race conditions when two users enroll at the exact same millisecond.</li>
+              <li><strong>Commit <code>.env.example</code>, never <code>.env</code>:</strong> Add <code>.env</code> and
+                <code>node_modules/</code> to <code>.gitignore</code> on day one so database URIs and API secrets never
+                reach GitHub.</li>
+              <li><strong>Freeze exported config objects:</strong> Using <code>Object.freeze(env)</code> prevents
+                accidental runtime mutation of critical configuration flags.</li>
+              <li><strong>Keep <code>src/</code> clean:</strong> Place all application source code inside
+                <code>src/</code> while leaving root files (<code>package.json</code>, <code>.env.example</code>,
+                <code>README.md</code>, <code>server.js</code>) minimal.</li>
+              <li><strong>Enforce atomic updates in services:</strong> Notice how <code>reserveSeatInCourse</code>
+                checks capacity inside the MongoDB query filter to prevent race conditions when two users enroll at the
+                exact same millisecond.</li>
             </ul>
           </article>
         </div>
@@ -647,80 +731,120 @@ startServer().catch((err) => {
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Create a Centralized Route Aggregator:</strong> Add a second resource <code>instructorRoutes.js</code> and mount both <code>/courses</code> and <code>/instructors</code> inside <code>src/routes/index.js</code>.</li>
-          <li><strong>Add Environment Variable Validation:</strong> Update <code>src/config/env.js</code> so that if <code>PORT</code> is set to a non-numeric string like <code>"abc"</code>, startup throws a clear descriptive error instead of silently falling back.</li>
-          <li><strong>Break a Circular Dependency:</strong> Write two tiny files <code>a.js</code> and <code>b.js</code> that import each other and log their imported values to observe the broken behavior, then fix the cycle by extracting the shared function into <code>shared.js</code>.</li>
-          <li><strong>Extract a Utility Helper:</strong> Move the integer validation check inside <code>createCourse</code> into a reusable pure function <code>isPositiveIntInRange(value, min, max)</code> inside <code>src/utils/validators.js</code>.</li>
+          <li><strong>Create a Centralized Route Aggregator:</strong> Add a second resource
+            <code>instructorRoutes.js</code> and mount both <code>/courses</code> and <code>/instructors</code> inside
+            <code>src/routes/index.js</code>.</li>
+          <li><strong>Add Environment Variable Validation:</strong> Update <code>src/config/env.js</code> so that if
+            <code>PORT</code> is set to a non-numeric string like <code>"abc"</code>, startup throws a clear descriptive
+            error instead of silently falling back.</li>
+          <li><strong>Break a Circular Dependency:</strong> Write two tiny files <code>a.js</code> and <code>b.js</code>
+            that import each other and log their imported values to observe the broken behavior, then fix the cycle by
+            extracting the shared function into <code>shared.js</code>.</li>
+          <li><strong>Extract a Utility Helper:</strong> Move the integer validation check inside
+            <code>createCourse</code> into a reusable pure function <code>isPositiveIntInRange(value, min, max)</code>
+            inside <code>src/utils/validators.js</code>.</li>
         </ol>
       </section>
 
       <section class="card-section" id="mini-project">
         <h2>Day 4 Mini Project: Professional Folder Structure for an Event Ticketing Backend</h2>
         <p>
-          Design and implement the full folder structure and working core modules for a medium-sized Event Ticketing API built with Express.js and MongoDB.
+          Design and implement the full folder structure and working core modules for a medium-sized Event Ticketing API
+          built with Express.js and MongoDB.
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Scaffold <code>src/config/</code>, <code>src/controllers/</code>, <code>src/middleware/</code>, <code>src/models/</code>, <code>src/routes/</code>, <code>src/services/</code>, and <code>src/utils/</code>, plus <code>src/app.js</code>, <code>server.js</code>, and <code>.env.example</code>.</li>
-          <li>Create <code>src/config/env.js</code> validating <code>MONGO_URI</code> and <code>PORT</code>, and <code>src/config/database.js</code> managing Mongoose connect/disconnect.</li>
-          <li>Create two Mongoose Models: <code>Event.js</code> (title, slug, venue, totalTickets, soldTickets) and <code>Booking.js</code> (eventId, attendeeEmail, quantity).</li>
-          <li>Implement <code>src/services/bookingService.js</code> to handle atomic ticket reservation without touching <code>req</code> or <code>res</code>.</li>
-          <li>Keep <code>src/controllers/eventController.js</code> and <code>src/controllers/bookingController.js</code> slim, validate ObjectIds and payloads, mount routes via <code>src/routes/index.js</code>, and verify zero circular imports exist.</li>
+          <li>Scaffold <code>src/config/</code>, <code>src/controllers/</code>, <code>src/middleware/</code>,
+            <code>src/models/</code>, <code>src/routes/</code>, <code>src/services/</code>, and <code>src/utils/</code>,
+            plus <code>src/app.js</code>, <code>server.js</code>, and <code>.env.example</code>.</li>
+          <li>Create <code>src/config/env.js</code> validating <code>MONGO_URI</code> and <code>PORT</code>, and
+            <code>src/config/database.js</code> managing Mongoose connect/disconnect.</li>
+          <li>Create two Mongoose Models: <code>Event.js</code> (title, slug, venue, totalTickets, soldTickets) and
+            <code>Booking.js</code> (eventId, attendeeEmail, quantity).</li>
+          <li>Implement <code>src/services/bookingService.js</code> to handle atomic ticket reservation without touching
+            <code>req</code> or <code>res</code>.</li>
+          <li>Keep <code>src/controllers/eventController.js</code> and <code>src/controllers/bookingController.js</code>
+            slim, validate ObjectIds and payloads, mount routes via <code>src/routes/index.js</code>, and verify zero
+            circular imports exist.</li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 4 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and
+          explanations.</p>
 
         <form id="day4QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
-            <legend>1. What is the main responsibility of the <code>src/services/</code> layer in a professional Express backend?</legend>
-            <label class="quiz-option"><input type="radio" name="q1" value="a"> Parsing HTTP query strings and setting response status codes</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> Encapsulating core business logic and multi-step data operations independently of HTTP</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="c"> Rendering browser CSS stylesheets</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="d"> Binding the server to a TCP port with <code>app.listen()</code></label>
+            <legend>1. What is the main responsibility of the <code>src/services/</code> layer in a professional Express
+              backend?</legend>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> Parsing HTTP query strings and setting
+              response status codes</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> Encapsulating core business logic and
+              multi-step data operations independently of HTTP</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Rendering browser CSS
+              stylesheets</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> Binding the server to a TCP port with
+              <code>app.listen()</code></label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
-            <legend>2. Why should you centralize and validate environment variables in <code>src/config/env.js</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> So missing or invalid configuration fails immediately at startup rather than causing late runtime crashes</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> So you can safely commit real passwords into GitHub</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> Because Node.js forbids reading <code>process.env</code> more than once</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="d"> To eliminate the need for <code>package.json</code></label>
+            <legend>2. Why should you centralize and validate environment variables in <code>src/config/env.js</code>?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> So missing or invalid configuration
+              fails immediately at startup rather than causing late runtime crashes</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> So you can safely commit real passwords
+              into GitHub</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Because Node.js forbids reading
+              <code>process.env</code> more than once</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> To eliminate the need for
+              <code>package.json</code></label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
             <legend>3. Which items belong inside <code>src/utils/</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> Mongoose schemas and database connection strings</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> Generic, stateless helper functions such as <code>createSlug</code> or <code>asyncHandler</code></label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> Route definitions mounted with <code>app.use()</code></label>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Mongoose schemas and database connection
+              strings</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> Generic, stateless helper functions such
+              as <code>createSlug</code> or <code>asyncHandler</code></label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Route definitions mounted with
+              <code>app.use()</code></label>
             <label class="quiz-option"><input type="radio" name="q3" value="d"> Secret production API keys</label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
             <legend>4. What causes a circular dependency in a Node.js project?</legend>
-            <label class="quiz-option"><input type="radio" name="q4" value="a"> Installing packages with <code>npm install</code></label>
-            <label class="quiz-option"><input type="radio" name="q4" value="b"> Module A importing Module B while Module B (directly or indirectly) imports Module A</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="c"> Using more than three Express routers</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="d"> Separating <code>app.js</code> from <code>server.js</code></label>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> Installing packages with
+              <code>npm install</code></label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> Module A importing Module B while Module
+              B (directly or indirectly) imports Module A</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> Using more than three Express
+              routers</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> Separating <code>app.js</code> from
+              <code>server.js</code></label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
-            <legend>5. Which dependency direction prevents circular dependencies in a layered Express architecture?</legend>
-            <label class="quiz-option"><input type="radio" name="q5" value="a"> Models &rarr; Services &rarr; Controllers &rarr; Routes</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> Routes &rarr; Controllers &rarr; Services &rarr; Models</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="c"> Utils &rarr; Controllers &rarr; App</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="d"> Config &rarr; Routes &rarr; Server</label>
+            <legend>5. Which dependency direction prevents circular dependencies in a layered Express architecture?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Models &rarr; Services &rarr;
+              Controllers &rarr; Routes</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> Routes &rarr; Controllers &rarr;
+              Services &rarr; Models</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> Utils &rarr; Controllers &rarr;
+              App</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> Config &rarr; Routes &rarr;
+              Server</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. Where should a development-only tool like <code>nodemon</code> be listed in <code>package.json</code>?</legend>
+            <legend>6. Where should a development-only tool like <code>nodemon</code> be listed in
+              <code>package.json</code>?</legend>
             <label class="quiz-option"><input type="radio" name="q6" value="a"> <code>dependencies</code></label>
             <label class="quiz-option"><input type="radio" name="q6" value="b"> <code>devDependencies</code></label>
             <label class="quiz-option"><input type="radio" name="q6" value="c"> <code>peerDependencies</code></label>
@@ -729,38 +853,58 @@ startServer().catch((err) => {
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. Why is consistent file-casing (for example, PascalCase for Models and camelCase for services/controllers) critical?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> Linux production servers have case-sensitive filesystems, so mismatched import casing breaks deployments even if it worked on Windows/macOS</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> Express refuses to parse JSON if filenames use lowercase letters</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="c"> MongoDB automatically renames collections based on controller filenames</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="d"> Node.js skips files longer than 10 characters</label>
+            <legend>7. Why is consistent file-casing (for example, PascalCase for Models and camelCase for
+              services/controllers) critical?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> Linux production servers have
+              case-sensitive filesystems, so mismatched import casing breaks deployments even if it worked on
+              Windows/macOS</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Express refuses to parse JSON if
+              filenames use lowercase letters</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> MongoDB automatically renames
+              collections based on controller filenames</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> Node.js skips files longer than 10
+              characters</label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
             <legend>8. What is the purpose of committing a <code>.env.example</code> file to your repository?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> To document required environment variable keys using safe placeholders without exposing real secrets</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> To share your production database password with contributors</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> To replace <code>dotenv</code> at runtime</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="d"> To store MongoDB document backups</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> To document required environment
+              variable keys using safe placeholders without exposing real secrets</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> To share your production database
+              password with contributors</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> To replace <code>dotenv</code> at
+              runtime</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> To store MongoDB document
+              backups</label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. Suppose <code>orderService.js</code> and <code>paymentService.js</code> both need a shared tax-calculation helper. What is the cleanest way to avoid a circular dependency?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> Have <code>orderService</code> and <code>paymentService</code> import each other directly</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> Extract the tax-calculation helper into a lower-level module (such as <code>src/utils/pricing.js</code>) that both services import</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> Duplicate the tax formula inside every Express route file</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="d"> Move the calculation into <code>server.js</code></label>
+            <legend>9. Suppose <code>orderService.js</code> and <code>paymentService.js</code> both need a shared
+              tax-calculation helper. What is the cleanest way to avoid a circular dependency?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Have <code>orderService</code> and
+              <code>paymentService</code> import each other directly</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Extract the tax-calculation helper into
+              a lower-level module (such as <code>src/utils/pricing.js</code>) that both services import</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Duplicate the tax formula inside every
+              Express route file</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> Move the calculation into
+              <code>server.js</code></label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. Why should a Service function never accept <code>req</code> or <code>res</code> as arguments?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> Because services cannot run asynchronously</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> Because keeping services independent of HTTP allows reusing the exact same business logic in background jobs, CLI scripts, and unit tests</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> Because Express deletes <code>req</code> before services load</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="d"> Because Mongoose blocks functions with more than one parameter</label>
+            <legend>10. Why should a Service function never accept <code>req</code> or <code>res</code> as arguments?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Because services cannot run
+              asynchronously</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Because keeping services independent of
+              HTTP allows reusing the exact same business logic in background jobs, CLI scripts, and unit tests</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Because Express deletes
+              <code>req</code> before services load</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> Because Mongoose blocks functions with
+              more than one parameter</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
 
@@ -778,24 +922,38 @@ startServer().catch((err) => {
         <p>Think through each question before opening the explanation.</p>
         <div class="qa-list">
           <details class="qa-item">
-            <summary>1. What is the difference between a Controller and a Service in a professional Node.js backend?</summary>
-            <p>A Controller handles the HTTP transport layer: reading <code>req.params/query/body</code>, performing basic HTTP input checks, calling the Service, and returning an HTTP status code and JSON response. A Service contains the actual business logic and coordinates Models or external APIs without knowing anything about HTTP.</p>
+            <summary>1. What is the difference between a Controller and a Service in a professional Node.js backend?
+            </summary>
+            <p>A Controller handles the HTTP transport layer: reading <code>req.params/query/body</code>, performing
+              basic HTTP input checks, calling the Service, and returning an HTTP status code and JSON response. A
+              Service contains the actual business logic and coordinates Models or external APIs without knowing
+              anything about HTTP.</p>
           </details>
           <details class="qa-item">
-            <summary>2. Why is failing fast inside <code>src/config/env.js</code> better than using fallback strings for critical secrets?</summary>
-            <p>Using a hardcoded fallback secret like <code>process.env.JWT_SECRET || 'dev-secret'</code> is dangerous in production because a missing environment variable goes unnoticed and weakens security. Failing immediately at startup alerts you right away before serving traffic.</p>
+            <summary>2. Why is failing fast inside <code>src/config/env.js</code> better than using fallback strings for
+              critical secrets?</summary>
+            <p>Using a hardcoded fallback secret like <code>process.env.JWT_SECRET || 'dev-secret'</code> is dangerous
+              in production because a missing environment variable goes unnoticed and weakens security. Failing
+              immediately at startup alerts you right away before serving traffic.</p>
           </details>
           <details class="qa-item">
             <summary>3. Explain what happens at runtime when two ES modules create a circular dependency.</summary>
-            <p>Node.js starts evaluating Module A, pauses to evaluate Module B, and when Module B tries to read an export from Module A, Module A has not finished initializing yet—causing <code>ReferenceError</code> or <code>undefined</code> import errors.</p>
+            <p>Node.js starts evaluating Module A, pauses to evaluate Module B, and when Module B tries to read an
+              export from Module A, Module A has not finished initializing yet—causing <code>ReferenceError</code> or
+              <code>undefined</code> import errors.</p>
           </details>
           <details class="qa-item">
-            <summary>4. When might a team switch from a layer-based folder structure to a feature-based structure?</summary>
-            <p>When an application grows very large (dozens of domains), navigating separate top-level <code>controllers/</code> and <code>services/</code> folders with 40 files each becomes noisy. Grouping files by domain (e.g., <code>src/modules/orders/</code>) keeps related files side by side.</p>
+            <summary>4. When might a team switch from a layer-based folder structure to a feature-based structure?
+            </summary>
+            <p>When an application grows very large (dozens of domains), navigating separate top-level
+              <code>controllers/</code> and <code>services/</code> folders with 40 files each becomes noisy. Grouping
+              files by domain (e.g., <code>src/modules/orders/</code>) keeps related files side by side.</p>
           </details>
           <details class="qa-item">
             <summary>5. Why should <code>src/app.js</code> and <code>server.js</code> remain separate files?</summary>
-            <p><code>src/app.js</code> configures Express middleware and routes without opening a network port. <code>server.js</code> connects to MongoDB, calls <code>app.listen()</code>, and manages graceful shutdown signals. This lets automated test suites import <code>app</code> cleanly without port conflicts.</p>
+            <p><code>src/app.js</code> configures Express middleware and routes without opening a network port.
+              <code>server.js</code> connects to MongoDB, calls <code>app.listen()</code>, and manages graceful shutdown
+              signals. This lets automated test suites import <code>app</code> cleanly without port conflicts.</p>
           </details>
         </div>
       </section>
@@ -805,7 +963,9 @@ startServer().catch((err) => {
         <div class="challenge-list">
           <article class="challenge-card">
             <h3>Challenge 1: Refactor Business Logic Out of a Controller</h3>
-            <p>Move the discount calculation and database creation logic below out of the controller into a clean <code>orderService.createOrder({ itemPrice, quantity, couponCode })</code> function so the controller only validates HTTP input and sends <code>201 Created</code>.</p>
+            <p>Move the discount calculation and database creation logic below out of the controller into a clean
+              <code>orderService.createOrder({ itemPrice, quantity, couponCode })</code> function so the controller only
+              validates HTTP input and sends <code>201 Created</code>.</p>
             <pre><code>export const placeOrder = async (req, res, next) => {
   const { itemPrice, quantity, couponCode } = req.body;
   let total = itemPrice * quantity;
@@ -819,12 +979,18 @@ startServer().catch((err) => {
 
           <article class="challenge-card">
             <h3>Challenge 2: Build a Strict Startup Env Validator</h3>
-            <p>Extend <code>src/config/env.js</code> to require <code>MONGO_URI</code>, validate that <code>NODE_ENV</code> is one of <code>development</code>, <code>test</code>, or <code>production</code>, and validate that <code>PORT</code> is an integer between <code>1</code> and <code>65535</code>.</p>
+            <p>Extend <code>src/config/env.js</code> to require <code>MONGO_URI</code>, validate that
+              <code>NODE_ENV</code> is one of <code>development</code>, <code>test</code>, or <code>production</code>,
+              and validate that <code>PORT</code> is an integer between <code>1</code> and <code>65535</code>.</p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Eliminate a Circular Import</h3>
-            <p>Suppose <code>src/routes/userRoutes.js</code> imports <code>src/controllers/userController.js</code>, and someone accidentally imports <code>API_PREFIX</code> from <code>src/app.js</code> inside <code>userController.js</code> (while <code>src/app.js</code> imports <code>userRoutes.js</code>). Explain why that creates a cycle and refactor the shared constant into <code>src/config/env.js</code> to break the cycle.</p>
+            <p>Suppose <code>src/routes/userRoutes.js</code> imports <code>src/controllers/userController.js</code>, and
+              someone accidentally imports <code>API_PREFIX</code> from <code>src/app.js</code> inside
+              <code>userController.js</code> (while <code>src/app.js</code> imports <code>userRoutes.js</code>). Explain
+              why that creates a cycle and refactor the shared constant into <code>src/config/env.js</code> to break the
+              cycle.</p>
           </article>
         </div>
       </section>
@@ -832,23 +998,33 @@ startServer().catch((err) => {
       <section class="card-section" id="summary">
         <h2>Day 4 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Organize medium-sized Node.js/Express backends into clear layers: <code>config/</code>, <code>routes/</code>, <code>middleware/</code>, <code>controllers/</code>, <code>services/</code>, <code>models/</code>, and <code>utils/</code>.</li>
-          <li>Keep Controllers focused on HTTP; move multi-step domain rules into HTTP-independent <code>services/</code>.</li>
-          <li>Validate environment variables once at startup in <code>src/config/env.js</code> and keep <code>.env</code> out of version control.</li>
-          <li>Follow consistent naming conventions and separate production <code>dependencies</code> from <code>devDependencies</code>.</li>
-          <li>Maintain a strict one-way dependency flow from entry point down to models and utilities to avoid circular dependencies.</li>
+          <li>Organize medium-sized Node.js/Express backends into clear layers: <code>config/</code>,
+            <code>routes/</code>, <code>middleware/</code>, <code>controllers/</code>, <code>services/</code>,
+            <code>models/</code>, and <code>utils/</code>.</li>
+          <li>Keep Controllers focused on HTTP; move multi-step domain rules into HTTP-independent
+            <code>services/</code>.</li>
+          <li>Validate environment variables once at startup in <code>src/config/env.js</code> and keep
+            <code>.env</code> out of version control.</li>
+          <li>Follow consistent naming conventions and separate production <code>dependencies</code> from
+            <code>devDependencies</code>.</li>
+          <li>Maintain a strict one-way dependency flow from entry point down to models and utilities to avoid circular
+            dependencies.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 4 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 4: Professional Express &amp; MongoDB project folder structure and one-way dependency flow.</p>
+        <p>Visual summary diagram for Day 4: Professional Express &amp; MongoDB project folder structure and one-way
+          dependency flow.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating professional Express and MongoDB backend folder structure and dependency hierarchy" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating professional Express and MongoDB backend folder structure and dependency hierarchy"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 4 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 4/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 4/</code> folder to
+              display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -867,11 +1043,12 @@ startServer().catch((err) => {
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -887,7 +1064,8 @@ startServer().catch((err) => {
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -902,4 +1080,5 @@ startServer().catch((err) => {
 
   <script src="script.js"></script>
 </body>
+
 </html>

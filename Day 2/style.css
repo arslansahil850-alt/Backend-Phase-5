@@ -972,6 +972,7 @@ pre code {
 }
 
 @media (max-width: 860px) {
+
   .two-col-grid,
   .flow-branch,
   .footer-grid {
@@ -1056,6 +1057,7 @@ pre code {
     animation-duration: 0.001ms !important;
   }
 }
+
 :root {
   --scroll-track: #050505;
   --scroll-thumb: #ffffff;

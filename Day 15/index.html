@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
-   <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,7 +71,12 @@
         </div>
         <h1>Day 15: Performance Optimization</h1>
         <p class="lead-intro">
-          An API that feels instant with 1 user and 20 test documents can crawl to 3-second response times—or crash entirely—when 500 concurrent users query 200,000 records. Real performance engineering is never guesswork: you <strong>measure first</strong>, locate the actual bottleneck (slow database scans, N+1 query loops, bloated JSON payloads, or blocked Node.js event loops), apply targeted fixes with clear trade-offs, and verify measurable gains safely. Today you will master database indexing, query optimization, payload compression, caching with safe invalidation, background jobs, and safe load-testing workflows.
+          An API that feels instant with 1 user and 20 test documents can crawl to 3-second response times—or crash
+          entirely—when 500 concurrent users query 200,000 records. Real performance engineering is never guesswork: you
+          <strong>measure first</strong>, locate the actual bottleneck (slow database scans, N+1 query loops, bloated
+          JSON payloads, or blocked Node.js event loops), apply targeted fixes with clear trade-offs, and verify
+          measurable gains safely. Today you will master database indexing, query optimization, payload compression,
+          caching with safe invalidation, background jobs, and safe load-testing workflows.
         </p>
       </section>
 
@@ -76,13 +84,17 @@
         <h2>Learning Objectives</h2>
         <p>By the end of Day 15, you will be able to:</p>
         <ul class="styled-list">
-          <li>Define core backend performance metrics: latency (average vs. p95/p99), throughput (requests/sec), and resource utilization.</li>
-          <li>Follow the golden rule of optimization: <strong>measure before optimizing</strong> using timing logs and MongoDB <code>.explain('executionStats')</code>.</li>
-          <li>Eliminate N+1 query loops, fetch only needed fields via <code>.select()</code>, and skip document hydration via <code>.lean()</code>.</li>
+          <li>Define core backend performance metrics: latency (average vs. p95/p99), throughput (requests/sec), and
+            resource utilization.</li>
+          <li>Follow the golden rule of optimization: <strong>measure before optimizing</strong> using timing logs and
+            MongoDB <code>.explain('executionStats')</code>.</li>
+          <li>Eliminate N+1 query loops, fetch only needed fields via <code>.select()</code>, and skip document
+            hydration via <code>.lean()</code>.</li>
           <li>Design effective MongoDB compound indexes and explain their write-speed and memory trade-offs.</li>
           <li>Shrink network payloads with field projection and HTTP <code>compression</code> middleware.</li>
           <li>Implement cache-aside caching with TTL expiration and explicit cache invalidation on writes.</li>
-          <li>Keep Node.js's single-threaded event loop responsive by offloading slow tasks asynchronously and avoiding synchronous I/O.</li>
+          <li>Keep Node.js's single-threaded event loop responsive by offloading slow tasks asynchronously and avoiding
+            synchronous I/O.</li>
           <li>Run safe, controlled load tests strictly against isolated local or staging environments.</li>
         </ul>
       </section>
@@ -91,8 +103,10 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 15, make sure you understand:</p>
         <ul class="styled-list">
-          <li><strong>Days 1–14 Concepts:</strong> Express middleware pipelines, request timing loggers, MongoDB/Mongoose queries, pagination, and search indexes.</li>
-          <li><strong>Node.js Event Loop Basics:</strong> Knowing that Node.js runs JavaScript on one main thread; synchronous CPU loops or <code>fs.readFileSync()</code> block every incoming HTTP request!</li>
+          <li><strong>Days 1–14 Concepts:</strong> Express middleware pipelines, request timing loggers,
+            MongoDB/Mongoose queries, pagination, and search indexes.</li>
+          <li><strong>Node.js Event Loop Basics:</strong> Knowing that Node.js runs JavaScript on one main thread;
+            synchronous CPU loops or <code>fs.readFileSync()</code> block every incoming HTTP request!</li>
         </ul>
       </section>
 
@@ -101,27 +115,33 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Latency &amp; p95 / p99</h3>
-            <p><strong>Latency</strong> is how long one request takes (in ms). <strong>p95</strong> means 95% of requests finish faster than that threshold—catching slow tail requests that averages hide.</p>
+            <p><strong>Latency</strong> is how long one request takes (in ms). <strong>p95</strong> means 95% of
+              requests finish faster than that threshold—catching slow tail requests that averages hide.</p>
           </article>
           <article class="term-card">
             <h3>Throughput (RPS)</h3>
-            <p>Requests per second (RPS) your backend can serve sustainably without spiking errors or exhausting CPU/database connections.</p>
+            <p>Requests per second (RPS) your backend can serve sustainably without spiking errors or exhausting
+              CPU/database connections.</p>
           </article>
           <article class="term-card">
             <h3>N+1 Query Problem</h3>
-            <p>Fetching a list of <code>N</code> parent records in 1 query, then running <code>N</code> separate database queries inside a loop to fetch related data for each item.</p>
+            <p>Fetching a list of <code>N</code> parent records in 1 query, then running <code>N</code> separate
+              database queries inside a loop to fetch related data for each item.</p>
           </article>
           <article class="term-card">
             <h3>Collection Scan (<code>COLLSCAN</code>)</h3>
-            <p>When MongoDB lacks a matching index and must read every single document in the collection from start to finish, rather than jumping straight via an index (<code>IXSCAN</code>).</p>
+            <p>When MongoDB lacks a matching index and must read every single document in the collection from start to
+              finish, rather than jumping straight via an index (<code>IXSCAN</code>).</p>
           </article>
           <article class="term-card">
             <h3>Cache-Aside &amp; Invalidation</h3>
-            <p>Checking a fast cache before querying MongoDB; storing the result with a Time-To-Live (TTL); and deleting/updating that cache key whenever underlying data changes.</p>
+            <p>Checking a fast cache before querying MongoDB; storing the result with a Time-To-Live (TTL); and
+              deleting/updating that cache key whenever underlying data changes.</p>
           </article>
           <article class="term-card">
             <h3>Background Job</h3>
-            <p>Slow non-critical work (sending welcome emails, generating PDF invoices, syncing search) queued to run asynchronously outside the user's immediate HTTP response.</p>
+            <p>Slow non-critical work (sending welcome emails, generating PDF invoices, syncing search) queued to run
+              asynchronously outside the user's immediate HTTP response.</p>
           </article>
         </div>
       </section>
@@ -131,62 +151,97 @@
 
         <h3>1. Measuring Before Optimizing</h3>
         <p>
-          Guessing where an API is slow often wastes hours tuning a 1 ms function while ignoring a 400 ms unindexed database scan. Always collect baseline measurements first:
+          Guessing where an API is slow often wastes hours tuning a 1 ms function while ignoring a 400 ms unindexed
+          database scan. Always collect baseline measurements first:
         </p>
         <ul class="styled-list">
-          <li><strong>Route Timing Logs:</strong> Use your Day 2 <code>requestLogger</code> (with <code>process.hrtime.bigint()</code>) to surface slow endpoints.</li>
-          <li><strong>Database Query Plans:</strong> Inspect MongoDB's <code>await Model.find(filter).explain('executionStats')</code> in dev to check <code>executionTimeMillis</code>, <code>totalDocsExamined</code> vs. <code>nReturned</code>, and whether MongoDB used <code>IXSCAN</code> instead of <code>COLLSCAN</code>.</li>
-          <li><strong>Process Health:</strong> Monitor Node.js heap memory (<code>process.memoryUsage()</code>) and event-loop responsiveness.</li>
+          <li><strong>Route Timing Logs:</strong> Use your Day 2 <code>requestLogger</code> (with
+            <code>process.hrtime.bigint()</code>) to surface slow endpoints.</li>
+          <li><strong>Database Query Plans:</strong> Inspect MongoDB's
+            <code>await Model.find(filter).explain('executionStats')</code> in dev to check
+            <code>executionTimeMillis</code>, <code>totalDocsExamined</code> vs. <code>nReturned</code>, and whether
+            MongoDB used <code>IXSCAN</code> instead of <code>COLLSCAN</code>.</li>
+          <li><strong>Process Health:</strong> Monitor Node.js heap memory (<code>process.memoryUsage()</code>) and
+            event-loop responsiveness.</li>
         </ul>
 
         <h3>2. Efficient Database Queries &amp; Index Trade-Offs</h3>
         <p>Three low-effort Mongoose habits deliver massive speedups immediately:</p>
         <ul class="styled-list">
-          <li><strong>Fix N+1 Queries:</strong> Never put <code>await Order.find({ userId })</code> inside a <code>for (const user of users)</code> loop! Collect all IDs first and run a single batch query using <code>{ userId: { $in: userIds } }</code> or an aggregation pipeline.</li>
-          <li><strong>Project Only Needed Fields:</strong> Calling <code>.select('title category price')</code> avoids transferring massive description paragraphs or arrays when rendering summary cards.</li>
-          <li><strong>Use <code>.lean()</code> on Read Queries:</strong> Plain objects skip Mongoose change-tracking wrappers and serialize to JSON much faster.</li>
+          <li><strong>Fix N+1 Queries:</strong> Never put <code>await Order.find({ userId })</code> inside a
+            <code>for (const user of users)</code> loop! Collect all IDs first and run a single batch query using
+            <code>{ userId: { $in: userIds } }</code> or an aggregation pipeline.</li>
+          <li><strong>Project Only Needed Fields:</strong> Calling <code>.select('title category price')</code> avoids
+            transferring massive description paragraphs or arrays when rendering summary cards.</li>
+          <li><strong>Use <code>.lean()</code> on Read Queries:</strong> Plain objects skip Mongoose change-tracking
+            wrappers and serialize to JSON much faster.</li>
         </ul>
         <p>
-          <strong>Database Indexes &amp; Their Trade-Offs:</strong> Indexes turn linear scans into fast tree lookups. Follow the <strong>ESR rule</strong> when building compound indexes: <strong>E</strong>quality fields first, <strong>S</strong>ort fields second, <strong>R</strong>ange fields last (e.g., <code>{ category: 1, createdAt: -1, price: 1 }</code>). However, indexes are not free—every additional index consumes RAM/disk and slightly slows down <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code> operations because MongoDB must update every index on write. Index only queries that actually run frequently!
+          <strong>Database Indexes &amp; Their Trade-Offs:</strong> Indexes turn linear scans into fast tree lookups.
+          Follow the <strong>ESR rule</strong> when building compound indexes: <strong>E</strong>quality fields first,
+          <strong>S</strong>ort fields second, <strong>R</strong>ange fields last (e.g.,
+          <code>{ category: 1, createdAt: -1, price: 1 }</code>). However, indexes are not free—every additional index
+          consumes RAM/disk and slightly slows down <code>INSERT</code>, <code>UPDATE</code>, and <code>DELETE</code>
+          operations because MongoDB must update every index on write. Index only queries that actually run frequently!
         </p>
 
         <h3>3. Response Payload Optimization &amp; Compression</h3>
         <p>
-          Sending smaller HTTP responses saves both server serialization CPU and user mobile bandwidth. First, trim unused JSON properties with DTOs/projections and paginate lists. Second, register Express's <code>compression()</code> middleware to gzip/Brotli-compress text and JSON responses over ~1 KB—often shrinking JSON payloads by 70–85%.
+          Sending smaller HTTP responses saves both server serialization CPU and user mobile bandwidth. First, trim
+          unused JSON properties with DTOs/projections and paginate lists. Second, register Express's
+          <code>compression()</code> middleware to gzip/Brotli-compress text and JSON responses over ~1 KB—often
+          shrinking JSON payloads by 70–85%.
         </p>
         <p>
-          Note: Do not waste CPU re-compressing already-compressed formats like WebP, JPEG, PNG, or ZIP files (<code>compression</code> skips common binary MIME types by default).
+          Note: Do not waste CPU re-compressing already-compressed formats like WebP, JPEG, PNG, or ZIP files
+          (<code>compression</code> skips common binary MIME types by default).
         </p>
 
         <h3>4. Caching Fundamentals &amp; Cache Invalidation</h3>
         <p>
-          If 1,000 visitors load <code>GET /api/v1/projects/featured</code> every minute and featured projects change only a few times a day, querying MongoDB 1,000 times is wasteful. With the <strong>cache-aside pattern</strong>:
+          If 1,000 visitors load <code>GET /api/v1/projects/featured</code> every minute and featured projects change
+          only a few times a day, querying MongoDB 1,000 times is wasteful. With the <strong>cache-aside
+            pattern</strong>:
         </p>
         <ol class="styled-list">
-          <li>Check fast cache (in-memory TTL cache for single-instance apps, or shared <strong>Redis</strong> for multi-instance apps).</li>
+          <li>Check fast cache (in-memory TTL cache for single-instance apps, or shared <strong>Redis</strong> for
+            multi-instance apps).</li>
           <li>On a <strong>cache hit</strong>, return the cached JSON immediately (often &lt; 2 ms).</li>
-          <li>On a <strong>cache miss</strong>, query MongoDB, store the response in cache with a bounded TTL (e.g., 60 seconds), and return it.</li>
-          <li><strong>Cache Invalidation:</strong> Whenever an admin creates, updates, or deletes a featured project, explicitly delete (invalidate) the affected cache key so users do not see stale data!</li>
+          <li>On a <strong>cache miss</strong>, query MongoDB, store the response in cache with a bounded TTL (e.g., 60
+            seconds), and return it.</li>
+          <li><strong>Cache Invalidation:</strong> Whenever an admin creates, updates, or deletes a featured project,
+            explicitly delete (invalidate) the affected cache key so users do not see stale data!</li>
         </ol>
         <p>
-          <strong>Critical Safety Rule:</strong> Never cache private user-specific responses under a shared global key—always include <code>userId</code> in private cache keys or cache only public shared data!
+          <strong>Critical Safety Rule:</strong> Never cache private user-specific responses under a shared global
+          key—always include <code>userId</code> in private cache keys or cache only public shared data!
         </p>
 
         <h3>5. Asynchronous Work &amp; Background Jobs</h3>
         <p>
-          Never block the Node.js event loop with synchronous calls like <code>fs.readFileSync()</code>, <code>bcrypt.hashSync()</code>, or giant nested <code>for</code> loops inside request handlers. Additionally, when a user signs up or submits an order, avoid forcing the HTTP response to wait 2 seconds for external SMTP email servers or PDF generators when possible—enqueue background jobs (using a job queue like BullMQ + Redis in production, or non-blocking async task workers) so the HTTP endpoint responds rapidly.
+          Never block the Node.js event loop with synchronous calls like <code>fs.readFileSync()</code>,
+          <code>bcrypt.hashSync()</code>, or giant nested <code>for</code> loops inside request handlers. Additionally,
+          when a user signs up or submits an order, avoid forcing the HTTP response to wait 2 seconds for external SMTP
+          email servers or PDF generators when possible—enqueue background jobs (using a job queue like BullMQ + Redis
+          in production, or non-blocking async task workers) so the HTTP endpoint responds rapidly.
         </p>
 
         <h3>6. Safe Load Testing Concepts</h3>
         <p>
-          Tools such as <code>autocannon</code>, <code>k6</code>, or <code>ApacheBench</code> measure how many requests/second and what p95 latency your API achieves under concurrent traffic. <strong>Golden safety rule:</strong> run load tests <em>strictly</em> against your local machine or a dedicated staging environment—never against production databases or third-party servers! Disable or whitelist test runners carefully when testing behind rate limiters so you measure real application throughput accurately.
+          Tools such as <code>autocannon</code>, <code>k6</code>, or <code>ApacheBench</code> measure how many
+          requests/second and what p95 latency your API achieves under concurrent traffic. <strong>Golden safety
+            rule:</strong> run load tests <em>strictly</em> against your local machine or a dedicated staging
+          environment—never against production databases or third-party servers! Disable or whitelist test runners
+          carefully when testing behind rate limiters so you measure real application throughput accurately.
         </p>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Performance Optimization Measurement &amp; Execution Workflow</h2>
-        <p>Observe the disciplined optimization loop alongside how cached vs. uncached requests flow through a tuned Express backend:</p>
-        <div class="diagram-container" role="img" aria-label="Flowchart showing Step 1 Measure Baseline (route latency logs, MongoDB explain executionStats, local autocannon benchmark), Step 2 Request Handling (compression middleware + Cache-Aside lookup returning fast cache hit or querying indexed lean MongoDB with Promise.all on cache miss + TTL write), Step 3 Write Invalidation & Async Offloading (invalidate stale cache keys on mutation and defer slow tasks), and Step 4 Re-Measure p95 Latency & DB Examined Docs.">
+        <p>Observe the disciplined optimization loop alongside how cached vs. uncached requests flow through a tuned
+          Express backend:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Flowchart showing Step 1 Measure Baseline (route latency logs, MongoDB explain executionStats, local autocannon benchmark), Step 2 Request Handling (compression middleware + Cache-Aside lookup returning fast cache hit or querying indexed lean MongoDB with Promise.all on cache miss + TTL write), Step 3 Write Invalidation & Async Offloading (invalidate stale cache keys on mutation and defer slow tasks), and Step 4 Re-Measure p95 Latency & DB Examined Docs.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">Step 1 &bull; Measure Baseline</span>
@@ -202,7 +257,8 @@
               </div>
               <div class="flow-step flow-app">
                 <span class="flow-tag">Cache Miss &bull; Optimized DB Query</span>
-                <strong><code>IXSCAN</code> + <code>.select()</code> + <code>.lean()</code> + <code>Promise.all</code></strong>
+                <strong><code>IXSCAN</code> + <code>.select()</code> + <code>.lean()</code> +
+                  <code>Promise.all</code></strong>
                 <span>Stores result in cache with bounded TTL; avoids N+1 loops</span>
               </div>
             </div>
@@ -225,7 +281,9 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial: Inspecting &amp; Optimizing a Slow API</h2>
         <p>
-          Let us examine a slow Express + Mongoose dashboard endpoint with classic bottlenecks (<code>N+1</code> loop, missing projection/lean, sequential awaits, no compression, no cache) and optimize it step by step on <strong>Node.js (server-side)</strong>.
+          Let us examine a slow Express + Mongoose dashboard endpoint with classic bottlenecks (<code>N+1</code> loop,
+          missing projection/lean, sequential awaits, no compression, no cache) and optimize it step by step on
+          <strong>Node.js (server-side)</strong>.
         </p>
 
         <h3>Before: Slow Unoptimized Endpoint (Anti-Pattern)</h3>
@@ -249,7 +307,8 @@
     next(err);
   }
 });</code></pre>
-        <p>If there are 100 authors, this executes <strong>101 sequential database queries</strong>, hydrates hundreds of heavy Mongoose documents, and sends uncompressed bloated JSON!</p>
+        <p>If there are 100 authors, this executes <strong>101 sequential database queries</strong>, hydrates hundreds
+          of heavy Mongoose documents, and sends uncompressed bloated JSON!</p>
 
         <h3>Step 1: Install <code>compression</code> (and <code>autocannon</code> as a Dev Tool)</h3>
         <p class="code-label">Terminal Commands</p>
@@ -257,7 +316,8 @@
 npm install --save-dev autocannon</code></pre>
 
         <h3>Step 2: Build a Safe Bounded TTL Cache Utility (<code>src/utils/ttlCache.js</code>)</h3>
-        <p>A clean Map-based cache with both per-entry TTL expiration and a <code>maxEntries</code> cap so memory never grows unboundedly in single-instance apps (swap for Redis when scaling across multiple servers).</p>
+        <p>A clean Map-based cache with both per-entry TTL expiration and a <code>maxEntries</code> cap so memory never
+          grows unboundedly in single-instance apps (swap for Redis when scaling across multiple servers).</p>
         <p class="code-label">Backend Source Code: <code>src/utils/ttlCache.js</code> (Runs on Node.js)</p>
         <pre><code>export class TtlCache {
   constructor({ defaultTtlMs = 60_000, maxEntries = 500 } = {}) {
@@ -308,7 +368,8 @@ npm install --save-dev autocannon</code></pre>
 }</code></pre>
 
         <h3>Step 3: Optimize the Service with Batching, <code>.lean()</code>, Projection &amp; Cache-Aside</h3>
-        <p>Notice how 101 queries drop to just <strong>2 fast indexed queries</strong> (or <strong>0 queries</strong> on cache hit), and creating/updating a book invalidates the cached summary immediately.</p>
+        <p>Notice how 101 queries drop to just <strong>2 fast indexed queries</strong> (or <strong>0 queries</strong> on
+          cache hit), and creating/updating a book invalidates the cached summary immediately.</p>
         <p class="code-label">Backend Source Code: <code>src/services/dashboardService.js</code> (Runs on Node.js)</p>
         <pre><code>import Author from '../models/Author.js';
 import Book from '../models/Book.js';
@@ -432,7 +493,8 @@ app.post('/api/v1/books', async (req, res) => {
 export default app;</code></pre>
 
         <h3>Step 5: Safely Benchmark Locally with <code>autocannon</code></h3>
-        <p>Run load benchmarks strictly against your local server (<code>http://localhost:5000</code>) to verify throughput and p95/p99 latency before and after optimization.</p>
+        <p>Run load benchmarks strictly against your local server (<code>http://localhost:5000</code>) to verify
+          throughput and p95/p99 latency before and after optimization.</p>
         <p class="code-label">Terminal Safe Local Benchmark Command (10 concurrent connections for 10 seconds)</p>
         <pre><code>npx autocannon -c 10 -d 10 http://localhost:5000/api/v1/dashboard/authors</code></pre>
       </section>
@@ -442,19 +504,23 @@ export default app;</code></pre>
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. Fixing N+1 Bottlenecks on Feeds</h3>
-            <p>Replacing a loop of per-post <code>Comment.countDocuments()</code> calls with one MongoDB aggregation or batched <code>$in</code> query routinely cuts API latency from 800 ms down to 15 ms.</p>
+            <p>Replacing a loop of per-post <code>Comment.countDocuments()</code> calls with one MongoDB aggregation or
+              batched <code>$in</code> query routinely cuts API latency from 800 ms down to 15 ms.</p>
           </article>
           <article class="info-box">
             <h3>2. Caching Public Catalog &amp; Config Data</h3>
-            <p>Homepages, category navigation trees, and exchange rates rarely change every second; caching them in Redis for 60 seconds slashes database CPU load by 95%+.</p>
+            <p>Homepages, category navigation trees, and exchange rates rarely change every second; caching them in
+              Redis for 60 seconds slashes database CPU load by 95%+.</p>
           </article>
           <article class="info-box">
             <h3>3. Gzip/Brotli Compression for Mobile APIs</h3>
-            <p>Compressing a 120 KB paginated JSON product response down to ~18 KB dramatically speeds up loading over slower 3G/4G mobile connections.</p>
+            <p>Compressing a 120 KB paginated JSON product response down to ~18 KB dramatically speeds up loading over
+              slower 3G/4G mobile connections.</p>
           </article>
           <article class="info-box">
             <h3>4. Offloading Heavy Exports &amp; Emails</h3>
-            <p>Instead of making a user wait 8 seconds while Node.js generates a multi-page PDF report and emails it via Nodemailer, enqueue a background job and return <code>202 Accepted</code> immediately.</p>
+            <p>Instead of making a user wait 8 seconds while Node.js generates a multi-page PDF report and emails it via
+              Nodemailer, enqueue a background job and return <code>202 Accepted</code> immediately.</p>
           </article>
         </div>
       </section>
@@ -465,20 +531,31 @@ export default app;</code></pre>
           <article class="warning-box">
             <h3>Common Performance Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Optimizing blindly without measuring:</strong> Adding caches or complex code before profiling wastes time and adds bugs while missing the actual bottleneck.</li>
-              <li><strong>Using synchronous Node.js APIs in routes:</strong> Calling <code>fs.readFileSync</code>, <code>bcrypt.hashSync</code>, or heavy JSON loops stalls the entire Node event loop for every active user.</li>
-              <li><strong>Unbounded in-memory caches:</strong> Storing keys in a plain JavaScript object without TTL expiration or <code>maxEntries</code> causes a slow memory leak until Node.js crashes!</li>
-              <li><strong>Over-indexing every field in MongoDB:</strong> Slows down writes and wastes valuable RAM needed for hot working-set indexes.</li>
-              <li><strong>Running load tests against production or external sites:</strong> Can cause a real outage or look like a DoS attack. Test strictly on local or isolated staging!</li>
+              <li><strong>Optimizing blindly without measuring:</strong> Adding caches or complex code before profiling
+                wastes time and adds bugs while missing the actual bottleneck.</li>
+              <li><strong>Using synchronous Node.js APIs in routes:</strong> Calling <code>fs.readFileSync</code>,
+                <code>bcrypt.hashSync</code>, or heavy JSON loops stalls the entire Node event loop for every active
+                user.</li>
+              <li><strong>Unbounded in-memory caches:</strong> Storing keys in a plain JavaScript object without TTL
+                expiration or <code>maxEntries</code> causes a slow memory leak until Node.js crashes!</li>
+              <li><strong>Over-indexing every field in MongoDB:</strong> Slows down writes and wastes valuable RAM
+                needed for hot working-set indexes.</li>
+              <li><strong>Running load tests against production or external sites:</strong> Can cause a real outage or
+                look like a DoS attack. Test strictly on local or isolated staging!</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Never share private cached responses across users:</strong> Always namespace private caches by <code>userId</code>, or restrict caching strictly to public non-sensitive endpoints.</li>
-              <li><strong>Always invalidate or expire caches:</strong> Combine explicit invalidation on writes with a reasonable TTL safety net so stale permissions or prices never linger indefinitely.</li>
-              <li><strong>Check <code>explain('executionStats')</code> on critical queries:</strong> Verify <code>IXSCAN</code> is used and <code>totalDocsExamined</code> stays close to <code>nReturned</code>.</li>
-              <li><strong>Keep logs lightweight &amp; safe:</strong> Log slow-request metrics without dumping sensitive payloads or headers.</li>
+              <li><strong>Never share private cached responses across users:</strong> Always namespace private caches by
+                <code>userId</code>, or restrict caching strictly to public non-sensitive endpoints.</li>
+              <li><strong>Always invalidate or expire caches:</strong> Combine explicit invalidation on writes with a
+                reasonable TTL safety net so stale permissions or prices never linger indefinitely.</li>
+              <li><strong>Check <code>explain('executionStats')</code> on critical queries:</strong> Verify
+                <code>IXSCAN</code> is used and <code>totalDocsExamined</code> stays close to <code>nReturned</code>.
+              </li>
+              <li><strong>Keep logs lightweight &amp; safe:</strong> Log slow-request metrics without dumping sensitive
+                payloads or headers.</li>
             </ul>
           </article>
         </div>
@@ -487,118 +564,171 @@ export default app;</code></pre>
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Measure <code>X-Cache: MISS</code> vs. <code>HIT</code>:</strong> Send two consecutive <code>curl -i http://localhost:5000/api/v1/dashboard/authors</code> requests and compare response headers and timing logs.</li>
-          <li><strong>Compression Size Check:</strong> Send a request with <code>curl -H "Accept-Encoding: gzip" -i ...</code> vs. without it and observe the <code>Content-Encoding: gzip</code> header and smaller transferred byte count.</li>
-          <li><strong>Inspect a MongoDB Query Plan:</strong> In a small local Node script or <code>mongosh</code>, run <code>.explain('executionStats')</code> on a query both before and after adding a compound index, comparing <code>COLLSCAN</code> vs. <code>IXSCAN</code> and <code>totalDocsExamined</code>.</li>
-          <li><strong>Cache Invalidation Verification:</strong> Trigger <code>POST /api/v1/books</code>, then immediately re-request the dashboard endpoint and verify <code>X-Cache: MISS</code> confirms stale data was cleared.</li>
+          <li><strong>Measure <code>X-Cache: MISS</code> vs. <code>HIT</code>:</strong> Send two consecutive
+            <code>curl -i http://localhost:5000/api/v1/dashboard/authors</code> requests and compare response headers
+            and timing logs.</li>
+          <li><strong>Compression Size Check:</strong> Send a request with
+            <code>curl -H "Accept-Encoding: gzip" -i ...</code> vs. without it and observe the
+            <code>Content-Encoding: gzip</code> header and smaller transferred byte count.</li>
+          <li><strong>Inspect a MongoDB Query Plan:</strong> In a small local Node script or <code>mongosh</code>, run
+            <code>.explain('executionStats')</code> on a query both before and after adding a compound index, comparing
+            <code>COLLSCAN</code> vs. <code>IXSCAN</code> and <code>totalDocsExamined</code>.</li>
+          <li><strong>Cache Invalidation Verification:</strong> Trigger <code>POST /api/v1/books</code>, then
+            immediately re-request the dashboard endpoint and verify <code>X-Cache: MISS</code> confirms stale data was
+            cleared.</li>
         </ol>
       </section>
 
       <section class="card-section" id="mini-project">
         <h2>Day 15 Mini Project: Measurable API Speedup Audit</h2>
         <p>
-          Inspect a slow Express + MongoDB API endpoint, document baseline metrics, apply safe optimizations, and prove the improvement locally.
+          Inspect a slow Express + MongoDB API endpoint, document baseline metrics, apply safe optimizations, and prove
+          the improvement locally.
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Start with a baseline endpoint containing an N+1 query loop, missing projection/<code>.lean()</code>, no pagination, and no compression, and record baseline p95 latency and request/sec locally using <code>autocannon</code> or timing logs.</li>
-          <li>Eliminate the N+1 query using batched <code>$in</code> lookup, add <code>.select()</code> + <code>.lean()</code>, add bounded pagination, and add a compound ESR index on the Mongoose schema.</li>
-          <li>Enable <code>compression({ threshold: 1024 })</code> and add a bounded <code>TtlCache</code> (with cache-aside lookup, <code>X-Cache</code> diagnostic header, and write-path invalidation).</li>
-          <li>Re-run the local benchmark and compare before vs. after p95 latency, throughput (RPS), and payload size.</li>
+          <li>Start with a baseline endpoint containing an N+1 query loop, missing projection/<code>.lean()</code>, no
+            pagination, and no compression, and record baseline p95 latency and request/sec locally using
+            <code>autocannon</code> or timing logs.</li>
+          <li>Eliminate the N+1 query using batched <code>$in</code> lookup, add <code>.select()</code> +
+            <code>.lean()</code>, add bounded pagination, and add a compound ESR index on the Mongoose schema.</li>
+          <li>Enable <code>compression({ threshold: 1024 })</code> and add a bounded <code>TtlCache</code> (with
+            cache-aside lookup, <code>X-Cache</code> diagnostic header, and write-path invalidation).</li>
+          <li>Re-run the local benchmark and compare before vs. after p95 latency, throughput (RPS), and payload size.
+          </li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 15 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and
+          explanations.</p>
 
         <form id="day15QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
             <legend>1. What should ALWAYS be your very first step before optimizing an API endpoint?</legend>
-            <label class="quiz-option"><input type="radio" name="q1" value="a"> Immediately rewrite the entire backend in another language</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> Measure baseline latency, query execution stats, and payload sizes to locate the actual bottleneck</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="c"> Add a database index to every single schema field blindly</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> Immediately rewrite the entire backend
+              in another language</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> Measure baseline latency, query
+              execution stats, and payload sizes to locate the actual bottleneck</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Add a database index to every single
+              schema field blindly</label>
             <label class="quiz-option"><input type="radio" name="q1" value="d"> Remove all input validation</label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
             <legend>2. What is the "N+1 query problem"?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> Returning one extra pagination metadata field</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> Fetching <code>N</code> parent items in 1 query and then running <code>N</code> separate database queries inside a loop for each item</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> Using <code>Promise.all</code> for two queries</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="d"> Adding <code>_id</code> as a sort tie-breaker</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Returning one extra pagination metadata
+              field</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Fetching <code>N</code> parent items in
+              1 query and then running <code>N</code> separate database queries inside a loop for each item</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Using <code>Promise.all</code> for two
+              queries</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> Adding <code>_id</code> as a sort
+              tie-breaker</label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
             <legend>3. Why can creating 15 unnecessary MongoDB indexes on a collection hurt performance?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> Every index consumes RAM/disk and adds write overhead because MongoDB must update all indexes on every insert, update, or delete</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> MongoDB stops supporting <code>GET</code> queries if a collection has more than 2 indexes</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> Indexes disable <code>.lean()</code></label>
-            <label class="quiz-option"><input type="radio" name="q3" value="d"> Indexes delete expired cache keys</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Every index consumes RAM/disk and adds
+              write overhead because MongoDB must update all indexes on every insert, update, or delete</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> MongoDB stops supporting
+              <code>GET</code> queries if a collection has more than 2 indexes</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Indexes disable
+              <code>.lean()</code></label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> Indexes delete expired cache
+              keys</label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
-            <legend>4. What does seeing <code>COLLSCAN</code> in MongoDB's <code>.explain('executionStats')</code> output tell you?</legend>
+            <legend>4. What does seeing <code>COLLSCAN</code> in MongoDB's <code>.explain('executionStats')</code>
+              output tell you?</legend>
             <label class="quiz-option"><input type="radio" name="q4" value="a"> The query used a fast index scan</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="b"> MongoDB lacked an appropriate index and had to scan every document in the collection</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="c"> The JSON response was compressed with gzip</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> MongoDB lacked an appropriate index and
+              had to scan every document in the collection</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> The JSON response was compressed with
+              gzip</label>
             <label class="quiz-option"><input type="radio" name="q4" value="d"> The cache hit rate was 100%</label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
-            <legend>5. Why are synchronous Node.js calls like <code>fs.readFileSync()</code> or <code>bcrypt.hashSync()</code> harmful inside Express route handlers?</legend>
-            <label class="quiz-option"><input type="radio" name="q5" value="a"> They block Node.js's single main event loop thread, freezing all other concurrent user requests until finished</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> They automatically bypass CORS checks</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="c"> They prevent Express from reading <code>req.params</code></label>
-            <label class="quiz-option"><input type="radio" name="q5" value="d"> They double database storage usage</label>
+            <legend>5. Why are synchronous Node.js calls like <code>fs.readFileSync()</code> or
+              <code>bcrypt.hashSync()</code> harmful inside Express route handlers?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> They block Node.js's single main event
+              loop thread, freezing all other concurrent user requests until finished</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> They automatically bypass CORS
+              checks</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> They prevent Express from reading
+              <code>req.params</code></label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> They double database storage
+              usage</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. What happens if an in-memory cache stores entries in a <code>Map</code> forever with NO TTL expiration and NO maximum size?</legend>
-            <label class="quiz-option"><input type="radio" name="q6" value="a"> Memory grows unboundedly over time (a memory leak) until Node.js crashes, and stale data is served indefinitely</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="b"> Express automatically moves the cache to MongoDB</label>
+            <legend>6. What happens if an in-memory cache stores entries in a <code>Map</code> forever with NO TTL
+              expiration and NO maximum size?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Memory grows unboundedly over time (a
+              memory leak) until Node.js crashes, and stale data is served indefinitely</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> Express automatically moves the cache to
+              MongoDB</label>
             <label class="quiz-option"><input type="radio" name="q6" value="c"> Gzip compression disables itself</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="d"> The server becomes immune to slow queries</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> The server becomes immune to slow
+              queries</label>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
             <legend>7. What is "cache invalidation" in the cache-aside pattern?</legend>
             <label class="quiz-option"><input type="radio" name="q7" value="a"> Disabling browser cookies</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> Deleting or updating cached entries whenever the underlying database records are created, updated, or deleted so users don't see stale data</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Deleting or updating cached entries
+              whenever the underlying database records are created, updated, or deleted so users don't see stale
+              data</label>
             <label class="quiz-option"><input type="radio" name="q7" value="c"> Increasing the TTL to 10 years</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="d"> Running load tests against production</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> Running load tests against
+              production</label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
-            <legend>8. What critical security mistake occurs if you cache an authenticated endpoint like <code>GET /api/v1/me/orders</code> under a shared cache key <code>"orders:latest"</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> Cross-user data leakage: User B receives User A's private cached orders</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> MongoDB throws a <code>CastError</code></label>
+            <legend>8. What critical security mistake occurs if you cache an authenticated endpoint like
+              <code>GET /api/v1/me/orders</code> under a shared cache key <code>"orders:latest"</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Cross-user data leakage: User B receives
+              User A's private cached orders</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> MongoDB throws a
+              <code>CastError</code></label>
             <label class="quiz-option"><input type="radio" name="q8" value="c"> Express stops compressing JSON</label>
             <label class="quiz-option"><input type="radio" name="q8" value="d"> It deletes the user's password</label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. Why does Express <code>compression()</code> middleware skip tiny responses under a threshold (e.g., 1024 bytes) and already-compressed images?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> Compressing tiny payloads or binary WebP/JPEG files wastes CPU for negligible (or negative) byte savings</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because gzip corrupts strings under 1 KB</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> Because browsers forbid compressed JSON</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="d"> To disable <code>ETag</code> headers</label>
+            <legend>9. Why does Express <code>compression()</code> middleware skip tiny responses under a threshold
+              (e.g., 1024 bytes) and already-compressed images?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Compressing tiny payloads or binary
+              WebP/JPEG files wastes CPU for negligible (or negative) byte savings</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because gzip corrupts strings under 1
+              KB</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> Because browsers forbid compressed
+              JSON</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d"> To disable <code>ETag</code>
+              headers</label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. Where is it safe to run automated load tests using tools like <code>autocannon</code> or <code>k6</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> Against any public third-party website on the internet</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> Strictly against your local machine or a dedicated isolated staging environment</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> Against your live production database during peak traffic hours</label>
+            <legend>10. Where is it safe to run automated load tests using tools like <code>autocannon</code> or
+              <code>k6</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Against any public third-party website
+              on the internet</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Strictly against your local machine or
+              a dedicated isolated staging environment</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Against your live production database
+              during peak traffic hours</label>
             <label class="quiz-option"><input type="radio" name="q10" value="d"> Inside browser CSS files</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
@@ -617,24 +747,35 @@ export default app;</code></pre>
         <p>Think through each answer carefully before opening the explanation.</p>
         <div class="qa-list">
           <details class="qa-item">
-            <summary>1. Why is looking only at average latency misleading compared to also checking p95 or p99 latency?</summary>
-            <p>Averages hide painful outliers. An endpoint might average 40 ms while the slowest 5% of users (p95) wait 1,800 ms due to unindexed queries or garbage-collection pauses.</p>
+            <summary>1. Why is looking only at average latency misleading compared to also checking p95 or p99 latency?
+            </summary>
+            <p>Averages hide painful outliers. An endpoint might average 40 ms while the slowest 5% of users (p95) wait
+              1,800 ms due to unindexed queries or garbage-collection pauses.</p>
           </details>
           <details class="qa-item">
             <summary>2. Explain how to fix an N+1 query loop in Mongoose.</summary>
-            <p>Instead of querying inside a loop per parent record, collect all parent IDs into an array and execute a single batched <code>Model.find({ parentId: { $in: ids } }).lean()</code> query (or MongoDB aggregation), then group results in a JavaScript <code>Map</code>.</p>
+            <p>Instead of querying inside a loop per parent record, collect all parent IDs into an array and execute a
+              single batched <code>Model.find({ parentId: { $in: ids } }).lean()</code> query (or MongoDB aggregation),
+              then group results in a JavaScript <code>Map</code>.</p>
           </details>
           <details class="qa-item">
             <summary>3. Explain the ESR rule for designing compound MongoDB indexes.</summary>
-            <p>Order compound index keys as <strong>E</strong>quality filters first, <strong>S</strong>ort fields second, and <strong>R</strong>ange filters last so MongoDB narrows exact matches, reads results already sorted, and scans minimal index keys.</p>
+            <p>Order compound index keys as <strong>E</strong>quality filters first, <strong>S</strong>ort fields
+              second, and <strong>R</strong>ange filters last so MongoDB narrows exact matches, reads results already
+              sorted, and scans minimal index keys.</p>
           </details>
           <details class="qa-item">
-            <summary>4. Why do slow tasks like sending bulk emails or generating PDFs belong in asynchronous background jobs?</summary>
-            <p>Keeping multi-second third-party network calls or CPU-heavy generation inside HTTP handlers creates terrible user wait times and risks request timeouts. Queuing jobs lets the API respond immediately while workers process tasks reliably.</p>
+            <summary>4. Why do slow tasks like sending bulk emails or generating PDFs belong in asynchronous background
+              jobs?</summary>
+            <p>Keeping multi-second third-party network calls or CPU-heavy generation inside HTTP handlers creates
+              terrible user wait times and risks request timeouts. Queuing jobs lets the API respond immediately while
+              workers process tasks reliably.</p>
           </details>
           <details class="qa-item">
             <summary>5. What trade-offs exist between adding a cache and querying the database directly?</summary>
-            <p>Caching dramatically improves read latency and lowers database load, at the trade-off of extra infrastructure/memory complexity and the risk of temporarily stale data if cache invalidation is missed.</p>
+            <p>Caching dramatically improves read latency and lowers database load, at the trade-off of extra
+              infrastructure/memory complexity and the risk of temporarily stale data if cache invalidation is missed.
+            </p>
           </details>
         </div>
       </section>
@@ -644,7 +785,8 @@ export default app;</code></pre>
         <div class="challenge-list">
           <article class="challenge-card">
             <h3>Challenge 1: Eliminate N+1 Queries &amp; Blocking Calls</h3>
-            <p>Refactor the slow endpoint below to remove synchronous file reading, batch the user lookups, project only <code>name</code>, and use <code>.lean()</code>:</p>
+            <p>Refactor the slow endpoint below to remove synchronous file reading, batch the user lookups, project only
+              <code>name</code>, and use <code>.lean()</code>:</p>
             <pre><code>app.get('/api/v1/posts', async (req, res) => {
   const config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
   const posts = await Post.find().limit(20);
@@ -657,12 +799,18 @@ export default app;</code></pre>
 
           <article class="challenge-card">
             <h3>Challenge 2: Design an ESR Compound Index</h3>
-            <p>Suppose your app frequently runs: <code>Order.find({ storeId, status: 'paid', total: { $gte: 50 } }).sort({ createdAt: -1 })</code>. Write the optimal Mongoose <code>schema.index(...)</code> following the ESR rule and explain why field order matters.</p>
+            <p>Suppose your app frequently runs:
+              <code>Order.find({ storeId, status: 'paid', total: { $gte: 50 } }).sort({ createdAt: -1 })</code>. Write
+              the optimal Mongoose <code>schema.index(...)</code> following the ESR rule and explain why field order
+              matters.</p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Safe Per-User vs. Public Cache Key Helper</h3>
-            <p>Write a helper <code>buildCacheKey({ scope, userId, resource, query })</code> that enforces <code>user:${userId}</code> prefixing whenever <code>scope === 'private'</code> (throwing an error if <code>userId</code> is missing), and sorts query keys deterministically so <code>?a=1&amp;b=2</code> and <code>?b=2&amp;a=1</code> share the same cache entry.</p>
+            <p>Write a helper <code>buildCacheKey({ scope, userId, resource, query })</code> that enforces
+              <code>user:${userId}</code> prefixing whenever <code>scope === 'private'</code> (throwing an error if
+              <code>userId</code> is missing), and sorts query keys deterministically so <code>?a=1&amp;b=2</code> and
+              <code>?b=2&amp;a=1</code> share the same cache entry.</p>
           </article>
         </div>
       </section>
@@ -670,22 +818,29 @@ export default app;</code></pre>
       <section class="card-section" id="summary">
         <h2>Day 15 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Always measure baseline latency, p95/p99, and <code>explain('executionStats')</code> before optimizing.</li>
-          <li>Eliminate N+1 loops with batched <code>$in</code> queries, project only required fields, use <code>.lean()</code>, and run independent awaits via <code>Promise.all</code>.</li>
+          <li>Always measure baseline latency, p95/p99, and <code>explain('executionStats')</code> before optimizing.
+          </li>
+          <li>Eliminate N+1 loops with batched <code>$in</code> queries, project only required fields, use
+            <code>.lean()</code>, and run independent awaits via <code>Promise.all</code>.</li>
           <li>Design compound indexes using the ESR rule while respecting write/memory trade-offs.</li>
-          <li>Shrink payloads with <code>compression()</code>, use bounded cache-aside caching with proper invalidation, keep the Node event loop non-blocking, and load-test strictly in safe local/staging environments.</li>
+          <li>Shrink payloads with <code>compression()</code>, use bounded cache-aside caching with proper invalidation,
+            keep the Node event loop non-blocking, and load-test strictly in safe local/staging environments.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 15 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 15: Measure-first optimization loop, caching, database indexing, compression, and async offloading.</p>
+        <p>Visual summary diagram for Day 15: Measure-first optimization loop, caching, database indexing, compression,
+          and async offloading.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating backend performance optimization workflow including profiling, caching, indexed queries, compression, and background jobs" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating backend performance optimization workflow including profiling, caching, indexed queries, compression, and background jobs"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 15 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 15/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 15/</code> folder
+              to display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -704,11 +859,12 @@ export default app;</code></pre>
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -723,7 +879,8 @@ export default app;</code></pre>
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -738,4 +895,5 @@ export default app;</code></pre>
 
   <script src="script.js"></script>
 </body>
+
 </html>

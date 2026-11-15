@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
-  <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,7 +71,12 @@
         </div>
         <h1>Day 5: Advanced Error Handling</h1>
         <p class="lead-intro">
-          In a beginner Express app, errors are handled ad hoc with scattered <code>try/catch</code> blocks returning inconsistent JSON shapes—or worse, crashing the entire Node.js server or leaking sensitive stack traces to users. Production APIs treat error handling as a first-class architectural layer. Today you will learn the difference between operational and programming errors, how to build custom error classes, how to normalize Mongoose and JSON errors, and how to design a centralized error-handling pipeline that keeps both users and servers safe.
+          In a beginner Express app, errors are handled ad hoc with scattered <code>try/catch</code> blocks returning
+          inconsistent JSON shapes—or worse, crashing the entire Node.js server or leaking sensitive stack traces to
+          users. Production APIs treat error handling as a first-class architectural layer. Today you will learn the
+          difference between operational and programming errors, how to build custom error classes, how to normalize
+          Mongoose and JSON errors, and how to design a centralized error-handling pipeline that keeps both users and
+          servers safe.
         </p>
       </section>
 
@@ -76,14 +84,19 @@
         <h2>Learning Objectives</h2>
         <p>By the end of Day 5, you will be able to:</p>
         <ul class="styled-list">
-          <li>Distinguish clearly between <strong>operational errors</strong> and <strong>programming errors</strong>.</li>
+          <li>Distinguish clearly between <strong>operational errors</strong> and <strong>programming errors</strong>.
+          </li>
           <li>Explain how synchronous and asynchronous errors propagate through Express middleware.</li>
-          <li>Design custom error classes (such as <code>AppError</code>) carrying HTTP status codes, error codes, and <code>isOperational</code> flags.</li>
+          <li>Design custom error classes (such as <code>AppError</code>) carrying HTTP status codes, error codes, and
+            <code>isOperational</code> flags.</li>
           <li>Build a centralized 4-argument Express error-handling middleware <code>(err, req, res, next)</code>.</li>
-          <li>Normalize Mongoose validation errors, malformed ObjectId <code>CastError</code>s, duplicate key <code>11000</code> errors, and malformed JSON syntax errors into clean API responses.</li>
-          <li>Select accurate HTTP status codes (<code>400</code>, <code>401</code>, <code>403</code>, <code>404</code>, <code>409</code>, <code>422</code>, <code>500</code>).</li>
+          <li>Normalize Mongoose validation errors, malformed ObjectId <code>CastError</code>s, duplicate key
+            <code>11000</code> errors, and malformed JSON syntax errors into clean API responses.</li>
+          <li>Select accurate HTTP status codes (<code>400</code>, <code>401</code>, <code>403</code>, <code>404</code>,
+            <code>409</code>, <code>422</code>, <code>500</code>).</li>
           <li>Return rich debugging details in development while preventing information leakage in production.</li>
-          <li>Log server errors safely and configure process-level safety handlers for <code>unhandledRejection</code> and <code>uncaughtException</code>.</li>
+          <li>Log server errors safely and configure process-level safety handlers for <code>unhandledRejection</code>
+            and <code>uncaughtException</code>.</li>
         </ul>
       </section>
 
@@ -91,9 +104,13 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 5, ensure you understand:</p>
         <ul class="styled-list">
-          <li><strong>Days 1–4 Concepts:</strong> Express middleware order, <code>next(err)</code>, <code>asyncHandler</code>, and layered project structure (<code>utils/</code>, <code>middleware/</code>, <code>services/</code>, <code>controllers/</code>).</li>
-          <li><strong>JavaScript Classes &amp; Inheritance:</strong> Extending the built-in <code>Error</code> class using <code>class AppError extends Error</code> and <code>super(message)</code>.</li>
-          <li><strong>Environment Separation:</strong> Reading <code>env.isProduction</code> vs. development mode from <code>src/config/env.js</code>.</li>
+          <li><strong>Days 1–4 Concepts:</strong> Express middleware order, <code>next(err)</code>,
+            <code>asyncHandler</code>, and layered project structure (<code>utils/</code>, <code>middleware/</code>,
+            <code>services/</code>, <code>controllers/</code>).</li>
+          <li><strong>JavaScript Classes &amp; Inheritance:</strong> Extending the built-in <code>Error</code> class
+            using <code>class AppError extends Error</code> and <code>super(message)</code>.</li>
+          <li><strong>Environment Separation:</strong> Reading <code>env.isProduction</code> vs. development mode from
+            <code>src/config/env.js</code>.</li>
         </ul>
       </section>
 
@@ -102,27 +119,34 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Operational Error</h3>
-            <p>A predictable, runtime failure caused by external inputs or environment conditions—such as invalid user input, a missing record (404), duplicate email, or database timeout.</p>
+            <p>A predictable, runtime failure caused by external inputs or environment conditions—such as invalid user
+              input, a missing record (404), duplicate email, or database timeout.</p>
           </article>
           <article class="term-card">
             <h3>Programming Error</h3>
-            <p>An unexpected bug in source code—such as reading a property of <code>undefined</code>, a typo in a variable name, or passing wrong argument types.</p>
+            <p>An unexpected bug in source code—such as reading a property of <code>undefined</code>, a typo in a
+              variable name, or passing wrong argument types.</p>
           </article>
           <article class="term-card">
             <h3>Centralized Error Middleware</h3>
-            <p>A single 4-parameter Express middleware <code>(err, req, res, next)</code> placed at the bottom of <code>app.js</code> that catches all forwarded errors and formats consistent responses.</p>
+            <p>A single 4-parameter Express middleware <code>(err, req, res, next)</code> placed at the bottom of
+              <code>app.js</code> that catches all forwarded errors and formats consistent responses.</p>
           </article>
           <article class="term-card">
             <h3>Custom Error Class (<code>AppError</code>)</h3>
-            <p>A subclass of JavaScript's built-in <code>Error</code> that attaches HTTP metadata like <code>statusCode</code>, <code>errorCode</code>, <code>details</code>, and <code>isOperational: true</code>.</p>
+            <p>A subclass of JavaScript's built-in <code>Error</code> that attaches HTTP metadata like
+              <code>statusCode</code>, <code>errorCode</code>, <code>details</code>, and
+              <code>isOperational: true</code>.</p>
           </article>
           <article class="term-card">
             <h3>Information Leakage</h3>
-            <p>Accidentally exposing stack traces, server file paths, database driver messages, or library versions in API responses—giving attackers clues about your backend internals.</p>
+            <p>Accidentally exposing stack traces, server file paths, database driver messages, or library versions in
+              API responses—giving attackers clues about your backend internals.</p>
           </article>
           <article class="term-card">
             <h3><code>unhandledRejection</code></h3>
-            <p>A Node.js process event emitted whenever an asynchronous Promise rejects without a <code>.catch()</code> handler anywhere in the call stack.</p>
+            <p>A Node.js process event emitted whenever an asynchronous Promise rejects without a <code>.catch()</code>
+              handler anywhere in the call stack.</p>
           </article>
         </div>
       </section>
@@ -132,7 +156,8 @@
 
         <h3>1. Operational vs. Programming Errors</h3>
         <p>
-          Not all errors deserve the same response. Distinguishing between operational and programming errors is the foundation of reliable backend engineering:
+          Not all errors deserve the same response. Distinguishing between operational and programming errors is the
+          foundation of reliable backend engineering:
         </p>
         <div class="table-wrap">
           <table class="data-table">
@@ -170,24 +195,38 @@
 
         <h3>2. Synchronous vs. Asynchronous Errors in Express</h3>
         <p>
-          When a <strong>synchronous</strong> route handler executes <code>throw new AppError('Invalid filter', 400)</code>, Express catches that thrown exception automatically and forwards it to the 4-argument error middleware.
+          When a <strong>synchronous</strong> route handler executes
+          <code>throw new AppError('Invalid filter', 400)</code>, Express catches that thrown exception automatically
+          and forwards it to the 4-argument error middleware.
         </p>
         <p>
-          However, when an <strong>asynchronous</strong> controller uses <code>async/await</code> in Express 4, an awaited rejection turns into a rejected Promise. Express 4 does not await the return value of handlers, so an uncaught rejection inside an <code>async</code> function bypasses Express error middleware completely unless wrapped in <code>try/catch</code> + <code>next(err)</code> or our <code>asyncHandler</code> utility. Even in Express 5 (which adds native async promise catching), keeping explicit error utilities and consistent <code>next(err)</code> patterns keeps services and middleware predictable.
+          However, when an <strong>asynchronous</strong> controller uses <code>async/await</code> in Express 4, an
+          awaited rejection turns into a rejected Promise. Express 4 does not await the return value of handlers, so an
+          uncaught rejection inside an <code>async</code> function bypasses Express error middleware completely unless
+          wrapped in <code>try/catch</code> + <code>next(err)</code> or our <code>asyncHandler</code> utility. Even in
+          Express 5 (which adds native async promise catching), keeping explicit error utilities and consistent
+          <code>next(err)</code> patterns keeps services and middleware predictable.
         </p>
 
         <h3>3. Custom Error Classes &amp; Consistent API Error Responses</h3>
         <p>
-          Throwing plain strings or generic <code>new Error('Not found')</code> forces your error handler to guess what HTTP status code applies. By extending <code>Error</code> with an <code>AppError</code> class, services and controllers can throw rich, structured errors:
+          Throwing plain strings or generic <code>new Error('Not found')</code> forces your error handler to guess what
+          HTTP status code applies. By extending <code>Error</code> with an <code>AppError</code> class, services and
+          controllers can throw rich, structured errors:
         </p>
         <ul class="styled-list">
-          <li><code>statusCode</code>: The exact HTTP code (<code>400</code>, <code>404</code>, <code>409</code>, etc.).</li>
-          <li><code>status</code>: Derived automatically—<code>'fail'</code> for <code>4xx</code> client errors and <code>'error'</code> for <code>5xx</code> server errors.</li>
-          <li><code>errorCode</code>: A machine-readable string like <code>'DUPLICATE_RESOURCE'</code> or <code>'VALIDATION_ERROR'</code> so frontend apps can localize or react cleanly.</li>
-          <li><code>isOperational</code>: Set to <code>true</code> so the centralized handler knows the error message is safe to display to the client in production.</li>
+          <li><code>statusCode</code>: The exact HTTP code (<code>400</code>, <code>404</code>, <code>409</code>, etc.).
+          </li>
+          <li><code>status</code>: Derived automatically—<code>'fail'</code> for <code>4xx</code> client errors and
+            <code>'error'</code> for <code>5xx</code> server errors.</li>
+          <li><code>errorCode</code>: A machine-readable string like <code>'DUPLICATE_RESOURCE'</code> or
+            <code>'VALIDATION_ERROR'</code> so frontend apps can localize or react cleanly.</li>
+          <li><code>isOperational</code>: Set to <code>true</code> so the centralized handler knows the error message is
+            safe to display to the client in production.</li>
         </ul>
         <p>
-          Every error response returned by your API should follow one predictable JSON envelope—for example: <code>{ status, errorCode, message, requestId, details? }</code>.
+          Every error response returned by your API should follow one predictable JSON envelope—for example:
+          <code>{ status, errorCode, message, requestId, details? }</code>.
         </p>
 
         <h3>4. Choosing Accurate HTTP Status Codes</h3>
@@ -242,51 +281,71 @@
 
         <h3>5. Handling Validation, JSON Parsing, and Database Errors</h3>
         <p>
-          Many common errors originate from Express built-in parsers or Mongoose rather than your custom <code>throw new AppError(...)</code> statements. Inside your centralized error middleware, translate those library-specific errors into clean operational <code>AppError</code> instances:
+          Many common errors originate from Express built-in parsers or Mongoose rather than your custom
+          <code>throw new AppError(...)</code> statements. Inside your centralized error middleware, translate those
+          library-specific errors into clean operational <code>AppError</code> instances:
         </p>
         <ul class="styled-list">
-          <li><strong>Malformed JSON (<code>SyntaxError</code> with <code>err.type === 'entity.parse.failed'</code>):</strong> Thrown by <code>express.json()</code> when a client sends broken JSON like <code>{"name": }</code>. Map to <code>400 Bad Request</code>.</li>
-          <li><strong>Mongoose <code>CastError</code>:</strong> Occurs when an invalid string (e.g., <code>"abc"</code>) is queried as an ObjectId. Map to <code>400 Bad Request</code>.</li>
-          <li><strong>Mongoose <code>ValidationError</code>:</strong> Occurs when schema rules (<code>required</code>, <code>min</code>, <code>enum</code>) fail. Extract field messages into a clean <code>400</code> or <code>422</code> response with structured <code>details</code>.</li>
-          <li><strong>MongoDB Duplicate Key (<code>err.code === 11000</code>):</strong> Occurs when inserting a duplicate value into a <code>unique: true</code> index. Map to <code>409 Conflict</code> without exposing raw index names.</li>
+          <li><strong>Malformed JSON (<code>SyntaxError</code> with
+              <code>err.type === 'entity.parse.failed'</code>):</strong> Thrown by <code>express.json()</code> when a
+            client sends broken JSON like <code>{"name": }</code>. Map to <code>400 Bad Request</code>.</li>
+          <li><strong>Mongoose <code>CastError</code>:</strong> Occurs when an invalid string (e.g., <code>"abc"</code>)
+            is queried as an ObjectId. Map to <code>400 Bad Request</code>.</li>
+          <li><strong>Mongoose <code>ValidationError</code>:</strong> Occurs when schema rules (<code>required</code>,
+            <code>min</code>, <code>enum</code>) fail. Extract field messages into a clean <code>400</code> or
+            <code>422</code> response with structured <code>details</code>.</li>
+          <li><strong>MongoDB Duplicate Key (<code>err.code === 11000</code>):</strong> Occurs when inserting a
+            duplicate value into a <code>unique: true</code> index. Map to <code>409 Conflict</code> without exposing
+            raw index names.</li>
         </ul>
 
         <h3>6. Safe Logging &amp; Avoiding Information Leakage</h3>
         <p>
-          In <strong>development</strong>, developers need the full error object and <code>err.stack</code> to debug fast. In <strong>production</strong>, returning <code>err.stack</code>, file paths (like <code>/var/www/app/src/services/userService.js:42</code>), or raw MongoDB index strings leaks internal architecture to potential attackers.
+          In <strong>development</strong>, developers need the full error object and <code>err.stack</code> to debug
+          fast. In <strong>production</strong>, returning <code>err.stack</code>, file paths (like
+          <code>/var/www/app/src/services/userService.js:42</code>), or raw MongoDB index strings leaks internal
+          architecture to potential attackers.
         </p>
         <p>
-          Always separate what you <strong>log on the server</strong> (timestamp, <code>requestId</code>, method, URL, status code, sanitized message, stack trace for <code>5xx</code>) from what you <strong>send to the client</strong> (safe operational message or generic <code>500</code> fallback in production).
+          Always separate what you <strong>log on the server</strong> (timestamp, <code>requestId</code>, method, URL,
+          status code, sanitized message, stack trace for <code>5xx</code>) from what you <strong>send to the
+            client</strong> (safe operational message or generic <code>500</code> fallback in production).
         </p>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Centralized Error-Handling Flow</h2>
-        <p>Trace how errors from any layer—parsers, middleware, controllers, services, or Mongoose—converge into one centralized pipeline:</p>
-        <div class="diagram-container" role="img" aria-label="Flowchart showing errors originating from express.json, async controllers, services, Mongoose, or 404 fallback flowing via next(err) into the Centralized Error Middleware, which normalizes known library errors, branches between Development detailed output and Production safe output, logs safely, and sends a consistent JSON response.">
+        <p>Trace how errors from any layer—parsers, middleware, controllers, services, or Mongoose—converge into one
+          centralized pipeline:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Flowchart showing errors originating from express.json, async controllers, services, Mongoose, or 404 fallback flowing via next(err) into the Centralized Error Middleware, which normalizes known library errors, branches between Development detailed output and Production safe output, logs safely, and sends a consistent JSON response.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">1. Error Sources</span>
               <strong>Controllers / Services / Mongoose / <code>express.json()</code> / 404 Handler</strong>
-              <span>Throws <code>AppError</code>, Mongoose error, or calls <code>next(err)</code> via <code>asyncHandler</code></span>
+              <span>Throws <code>AppError</code>, Mongoose error, or calls <code>next(err)</code> via
+                <code>asyncHandler</code></span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-step flow-app">
               <span class="flow-tag">2. Error Normalization</span>
               <strong>Centralized Error Middleware <code>(err, req, res, next)</code></strong>
-              <span>Maps <code>CastError</code> &rarr; 400, <code>ValidationError</code> &rarr; 422, Duplicate <code>11000</code> &rarr; 409, Bad JSON &rarr; 400</span>
+              <span>Maps <code>CastError</code> &rarr; 400, <code>ValidationError</code> &rarr; 422, Duplicate
+                <code>11000</code> &rarr; 409, Bad JSON &rarr; 400</span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-branch">
               <div class="flow-step flow-router">
                 <span class="flow-tag">3a. Development Mode</span>
                 <strong>Full Diagnostics</strong>
-                <span>Logs full error + returns <code>message</code>, <code>errorCode</code>, <code>details</code>, and <code>stack</code></span>
+                <span>Logs full error + returns <code>message</code>, <code>errorCode</code>, <code>details</code>, and
+                  <code>stack</code></span>
               </div>
               <div class="flow-step flow-controller">
                 <span class="flow-tag">3b. Production Mode</span>
                 <strong>Leak-Free Safe Response</strong>
-                <span>If <code>isOperational</code>: sends safe message; if programming bug: logs privately &amp; sends generic <code>500</code></span>
+                <span>If <code>isOperational</code>: sends safe message; if programming bug: logs privately &amp; sends
+                  generic <code>500</code></span>
               </div>
             </div>
           </div>
@@ -296,7 +355,8 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial: Reusable Centralized Error System</h2>
         <p>
-          Let us build a complete, reusable error-handling system in Node.js, Express.js, and Mongoose. All files below execute on the <strong>Node.js server</strong>.
+          Let us build a complete, reusable error-handling system in Node.js, Express.js, and Mongoose. All files below
+          execute on the <strong>Node.js server</strong>.
         </p>
 
         <h3>Step 1: Create Custom Error Classes (<code>src/utils/AppError.js</code>)</h3>
@@ -340,7 +400,9 @@ export class ValidationAppError extends AppError {
 }</code></pre>
 
         <h3>Step 2: Create the 404 Not-Found Middleware (<code>src/middleware/notFoundHandler.js</code>)</h3>
-        <p>Instead of responding directly inside a catch-all, forwarding a <code>NotFoundError</code> into <code>next()</code> ensures 404s use the exact same response format and logging pipeline as all other errors.</p>
+        <p>Instead of responding directly inside a catch-all, forwarding a <code>NotFoundError</code> into
+          <code>next()</code> ensures 404s use the exact same response format and logging pipeline as all other errors.
+        </p>
         <p class="code-label">Backend Source Code: <code>src/middleware/notFoundHandler.js</code></p>
         <pre><code>import { NotFoundError } from '../utils/AppError.js';
 
@@ -348,8 +410,10 @@ export const notFoundHandler = (req, res, next) => {
   next(new NotFoundError(`Route ${req.method} ${req.originalUrl} does not exist.`));
 };</code></pre>
 
-        <h3>Step 3: Build Error Normalizers &amp; Centralized Error Middleware (<code>src/middleware/errorHandler.js</code>)</h3>
-        <p>Notice how raw Mongoose and JSON parser errors are converted into operational errors before deciding what to send in development versus production.</p>
+        <h3>Step 3: Build Error Normalizers &amp; Centralized Error Middleware
+          (<code>src/middleware/errorHandler.js</code>)</h3>
+        <p>Notice how raw Mongoose and JSON parser errors are converted into operational errors before deciding what to
+          send in development versus production.</p>
         <p class="code-label">Backend Source Code: <code>src/middleware/errorHandler.js</code></p>
         <pre><code>import { env } from '../config/env.js';
 import {
@@ -572,7 +636,8 @@ start();</code></pre>
   "requestId": "9f2a1d4c-3b8a-4e92-a210-7764b19d0f21"
 }</code></pre>
 
-        <p class="code-label">Expected Production JSON Response for an Unexpected Bug (<code>500 Internal Server Error</code>)</p>
+        <p class="code-label">Expected Production JSON Response for an Unexpected Bug
+          (<code>500 Internal Server Error</code>)</p>
         <pre><code>{
   "status": "error",
   "errorCode": "INTERNAL_SERVER_ERROR",
@@ -586,19 +651,25 @@ start();</code></pre>
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. Frontend Error Handling &amp; Localization</h3>
-            <p>Returning a consistent <code>errorCode</code> (like <code>COUPON_EXPIRED</code> or <code>VALIDATION_ERROR</code>) lets browser and mobile frontends display friendly localized alerts instead of fragile string matching on English error messages.</p>
+            <p>Returning a consistent <code>errorCode</code> (like <code>COUPON_EXPIRED</code> or
+              <code>VALIDATION_ERROR</code>) lets browser and mobile frontends display friendly localized alerts instead
+              of fragile string matching on English error messages.</p>
           </article>
           <article class="info-box">
             <h3>2. Fast Incident Debugging with Request IDs</h3>
-            <p>When a user reports an unexpected <code>500</code> error and shares the <code>requestId</code> from the UI, engineers can look up the exact server stack trace in seconds without ever exposing the stack trace to the user.</p>
+            <p>When a user reports an unexpected <code>500</code> error and shares the <code>requestId</code> from the
+              UI, engineers can look up the exact server stack trace in seconds without ever exposing the stack trace to
+              the user.</p>
           </article>
           <article class="info-box">
             <h3>3. Clean Form Feedback with Field-Level Details</h3>
-            <p>Normalizing Mongoose <code>ValidationError</code> objects into an array of <code>{ field, message }</code> pairs allows client forms to highlight the exact invalid input box.</p>
+            <p>Normalizing Mongoose <code>ValidationError</code> objects into an array of
+              <code>{ field, message }</code> pairs allows client forms to highlight the exact invalid input box.</p>
           </article>
           <article class="info-box">
             <h3>4. Zero-Crash Async Services</h3>
-            <p>Combining <code>asyncHandler</code>, custom <code>AppError</code> subclasses, and centralized normalization eliminates duplicate <code>try/catch</code> boilerplate across dozens of controllers.</p>
+            <p>Combining <code>asyncHandler</code>, custom <code>AppError</code> subclasses, and centralized
+              normalization eliminates duplicate <code>try/catch</code> boilerplate across dozens of controllers.</p>
           </article>
         </div>
       </section>
@@ -609,20 +680,35 @@ start();</code></pre>
           <article class="warning-box">
             <h3>Common Error-Handling Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Returning <code>err.message</code> blindly on 500 errors in production:</strong> Raw database or system errors like <code>ECONNREFUSED 10.0.0.12:27017</code> reveal internal host IPs and infrastructure!</li>
-              <li><strong>Returning <code>200 OK</code> for errors:</strong> Always use proper <code>4xx</code> or <code>5xx</code> HTTP status codes so browser <code>fetch()</code> checks (<code>response.ok</code>) and monitoring alerts work properly.</li>
-              <li><strong>Mounting error middleware above routes:</strong> Express only passes errors forward to middleware registered <em>after</em> the failing route. <code>globalErrorHandler</code> must sit last in <code>app.js</code>.</li>
-              <li><strong>Swallowing errors inside empty <code>catch (err) {}</code> blocks:</strong> Silent catches hide real bugs and leave clients without feedback. Either handle meaningfully or pass to <code>next(err)</code>.</li>
-              <li><strong>Continuing to run after an <code>uncaughtException</code>:</strong> Once an uncaught synchronous exception hits the top of Node's event loop, process memory and connections may be in an inconsistent state—log and exit cleanly so a process manager restarts fresh.</li>
+              <li><strong>Returning <code>err.message</code> blindly on 500 errors in production:</strong> Raw database
+                or system errors like <code>ECONNREFUSED 10.0.0.12:27017</code> reveal internal host IPs and
+                infrastructure!</li>
+              <li><strong>Returning <code>200 OK</code> for errors:</strong> Always use proper <code>4xx</code> or
+                <code>5xx</code> HTTP status codes so browser <code>fetch()</code> checks (<code>response.ok</code>) and
+                monitoring alerts work properly.</li>
+              <li><strong>Mounting error middleware above routes:</strong> Express only passes errors forward to
+                middleware registered <em>after</em> the failing route. <code>globalErrorHandler</code> must sit last in
+                <code>app.js</code>.</li>
+              <li><strong>Swallowing errors inside empty <code>catch (err) {}</code> blocks:</strong> Silent catches
+                hide real bugs and leave clients without feedback. Either handle meaningfully or pass to
+                <code>next(err)</code>.</li>
+              <li><strong>Continuing to run after an <code>uncaughtException</code>:</strong> Once an uncaught
+                synchronous exception hits the top of Node's event loop, process memory and connections may be in an
+                inconsistent state—log and exit cleanly so a process manager restarts fresh.</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Never send stack traces in production:</strong> Gate <code>stack</code> strictly behind <code>!env.isProduction</code>.</li>
-              <li><strong>Avoid generic leakage on auth errors:</strong> On login failures, return a neutral message such as <code>"Invalid email or password"</code> instead of revealing whether an email exists.</li>
-              <li><strong>Check <code>res.headersSent</code> inside the global error handler:</strong> If an error occurs mid-stream after headers were already flushed, delegate to Express's built-in default handler via <code>return next(err)</code>.</li>
-              <li><strong>Sanitize logs:</strong> Ensure error loggers never dump raw <code>req.body.password</code>, cookies, or <code>Authorization</code> headers.</li>
+              <li><strong>Never send stack traces in production:</strong> Gate <code>stack</code> strictly behind
+                <code>!env.isProduction</code>.</li>
+              <li><strong>Avoid generic leakage on auth errors:</strong> On login failures, return a neutral message
+                such as <code>"Invalid email or password"</code> instead of revealing whether an email exists.</li>
+              <li><strong>Check <code>res.headersSent</code> inside the global error handler:</strong> If an error
+                occurs mid-stream after headers were already flushed, delegate to Express's built-in default handler via
+                <code>return next(err)</code>.</li>
+              <li><strong>Sanitize logs:</strong> Ensure error loggers never dump raw <code>req.body.password</code>,
+                cookies, or <code>Authorization</code> headers.</li>
             </ul>
           </article>
         </div>
@@ -631,120 +717,182 @@ start();</code></pre>
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Create an <code>UnauthorizedError</code> &amp; <code>ForbiddenError</code>:</strong> Extend <code>AppError</code> with two new subclasses for <code>401</code> (<code>UNAUTHORIZED</code>) and <code>403</code> (<code>FORBIDDEN</code>), and update your Day 2 auth middleware to call <code>next(new UnauthorizedError(...))</code> instead of formatting JSON manually.</li>
-          <li><strong>Test Production vs. Development Mode:</strong> Create a temporary route <code>GET /api/v1/bug-test</code> that references an undeclared variable. Test it with <code>NODE_ENV=development</code> and then with <code>NODE_ENV=production</code> to verify stack traces are hidden in production.</li>
-          <li><strong>Trigger and Inspect a Malformed JSON Error:</strong> Send broken JSON (<code>{"name": </code>) via <code>curl</code> with <code>Content-Type: application/json</code> and confirm your centralized handler returns a clean <code>400</code> JSON payload instead of HTML.</li>
-          <li><strong>Duplicate Key Normalization:</strong> Create two documents with the same unique email in Mongoose and confirm your handler converts MongoDB code <code>11000</code> into a clean <code>409 Conflict</code> response.</li>
+          <li><strong>Create an <code>UnauthorizedError</code> &amp; <code>ForbiddenError</code>:</strong> Extend
+            <code>AppError</code> with two new subclasses for <code>401</code> (<code>UNAUTHORIZED</code>) and
+            <code>403</code> (<code>FORBIDDEN</code>), and update your Day 2 auth middleware to call
+            <code>next(new UnauthorizedError(...))</code> instead of formatting JSON manually.</li>
+          <li><strong>Test Production vs. Development Mode:</strong> Create a temporary route
+            <code>GET /api/v1/bug-test</code> that references an undeclared variable. Test it with
+            <code>NODE_ENV=development</code> and then with <code>NODE_ENV=production</code> to verify stack traces are
+            hidden in production.</li>
+          <li><strong>Trigger and Inspect a Malformed JSON Error:</strong> Send broken JSON (<code>{"name": </code>) via
+            <code>curl</code> with <code>Content-Type: application/json</code> and confirm your centralized handler
+            returns a clean <code>400</code> JSON payload instead of HTML.</li>
+          <li><strong>Duplicate Key Normalization:</strong> Create two documents with the same unique email in Mongoose
+            and confirm your handler converts MongoDB code <code>11000</code> into a clean <code>409 Conflict</code>
+            response.</li>
         </ol>
       </section>
 
       <section class="card-section" id="mini-project">
         <h2>Day 5 Mini Project: Centralized Error Engine for an Express + MongoDB API</h2>
         <p>
-          Upgrade a multi-route Express + Mongoose backend with a production-ready centralized error-handling architecture.
+          Upgrade a multi-route Express + Mongoose backend with a production-ready centralized error-handling
+          architecture.
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Build <code>src/utils/AppError.js</code> with <code>AppError</code> and at least four semantic subclasses (<code>BadRequestError</code>, <code>UnauthorizedError</code>, <code>NotFoundError</code>, <code>ConflictError</code>).</li>
-          <li>Create <code>src/middleware/notFoundHandler.js</code> and <code>src/middleware/errorHandler.js</code> handling: custom <code>AppError</code>s, Express JSON <code>SyntaxError</code>, payload too large (<code>413</code>), Mongoose <code>CastError</code>, Mongoose <code>ValidationError</code> (with field-level <code>details</code>), and MongoDB duplicate key <code>11000</code>.</li>
-          <li>Ensure every error JSON payload contains <code>status</code>, <code>errorCode</code>, <code>message</code>, and <code>requestId</code>, with <code>stack</code> shown <strong>only</strong> outside production.</li>
-          <li>Ensure non-operational programming errors return a safe generic <code>500</code> message in production while logging the full stack trace to the server console.</li>
-          <li>Configure <code>uncaughtException</code> and <code>unhandledRejection</code> listeners in <code>server.js</code> for safe shutdown.</li>
+          <li>Build <code>src/utils/AppError.js</code> with <code>AppError</code> and at least four semantic subclasses
+            (<code>BadRequestError</code>, <code>UnauthorizedError</code>, <code>NotFoundError</code>,
+            <code>ConflictError</code>).</li>
+          <li>Create <code>src/middleware/notFoundHandler.js</code> and <code>src/middleware/errorHandler.js</code>
+            handling: custom <code>AppError</code>s, Express JSON <code>SyntaxError</code>, payload too large
+            (<code>413</code>), Mongoose <code>CastError</code>, Mongoose <code>ValidationError</code> (with field-level
+            <code>details</code>), and MongoDB duplicate key <code>11000</code>.</li>
+          <li>Ensure every error JSON payload contains <code>status</code>, <code>errorCode</code>,
+            <code>message</code>, and <code>requestId</code>, with <code>stack</code> shown <strong>only</strong>
+            outside production.</li>
+          <li>Ensure non-operational programming errors return a safe generic <code>500</code> message in production
+            while logging the full stack trace to the server console.</li>
+          <li>Configure <code>uncaughtException</code> and <code>unhandledRejection</code> listeners in
+            <code>server.js</code> for safe shutdown.</li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 5 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and
+          explanations.</p>
 
         <form id="day5QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
             <legend>1. Which of the following is an example of an <strong>operational error</strong>?</legend>
-            <label class="quiz-option"><input type="radio" name="q1" value="a"> Calling a misspelled function name like <code>req.jsoon()</code></label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> A client requesting a product ID that does not exist in MongoDB (404)</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="c"> Reading <code>user.profile.name</code> when <code>user</code> is <code>undefined</code></label>
-            <label class="quiz-option"><input type="radio" name="q1" value="d"> Forgetting to import <code>express</code> at the top of <code>app.js</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> Calling a misspelled function name like
+              <code>req.jsoon()</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> A client requesting a product ID that
+              does not exist in MongoDB (404)</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Reading <code>user.profile.name</code>
+              when <code>user</code> is <code>undefined</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="d"> Forgetting to import
+              <code>express</code> at the top of <code>app.js</code></label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
-            <legend>2. Where must the centralized Express error-handling middleware <code>(err, req, res, next)</code> be mounted in <code>app.js</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> Above <code>express.json()</code> at the very top of <code>app.js</code></label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> Inside <code>models/</code> before schema creation</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> At the very end of <code>app.js</code>, after all routes and the 404 fallback handler</label>
+            <legend>2. Where must the centralized Express error-handling middleware <code>(err, req, res, next)</code>
+              be mounted in <code>app.js</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Above <code>express.json()</code> at the
+              very top of <code>app.js</code></label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> Inside <code>models/</code> before
+              schema creation</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> At the very end of <code>app.js</code>,
+              after all routes and the 404 fallback handler</label>
             <label class="quiz-option"><input type="radio" name="q2" value="d"> Inside browser-side JavaScript</label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
-            <legend>3. Why do we set <code>this.isOperational = true</code> inside our custom <code>AppError</code> class?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> So the error handler knows the error is a predictable operational failure whose message is safe to send to clients in production</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> To force Express to return <code>200 OK</code> on every failure</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> To automatically expose stack traces to public users in production</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="d"> To skip Mongoose validation checks</label>
+            <legend>3. Why do we set <code>this.isOperational = true</code> inside our custom <code>AppError</code>
+              class?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> So the error handler knows the error is
+              a predictable operational failure whose message is safe to send to clients in production</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> To force Express to return
+              <code>200 OK</code> on every failure</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> To automatically expose stack traces to
+              public users in production</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> To skip Mongoose validation
+              checks</label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
-            <legend>4. Which HTTP status code is most appropriate when a user tries to register with an email address that already exists (MongoDB error code <code>11000</code>)?</legend>
+            <legend>4. Which HTTP status code is most appropriate when a user tries to register with an email address
+              that already exists (MongoDB error code <code>11000</code>)?</legend>
             <label class="quiz-option"><input type="radio" name="q4" value="a"> <code>200 OK</code></label>
             <label class="quiz-option"><input type="radio" name="q4" value="b"> <code>404 Not Found</code></label>
             <label class="quiz-option"><input type="radio" name="q4" value="c"> <code>409 Conflict</code></label>
-            <label class="quiz-option"><input type="radio" name="q4" value="d"> <code>503 Service Unavailable</code></label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d">
+              <code>503 Service Unavailable</code></label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
             <legend>5. What does a Mongoose <code>CastError</code> typically indicate in an Express API?</legend>
             <label class="quiz-option"><input type="radio" name="q5" value="a"> The MongoDB server is turned off</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> A value such as a route <code>:id</code> could not be cast to the expected schema type (e.g., an invalid ObjectId string)</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="c"> The client sent too many requests per minute</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="d"> A circular dependency occurred between two files</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> A value such as a route <code>:id</code>
+              could not be cast to the expected schema type (e.g., an invalid ObjectId string)</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> The client sent too many requests per
+              minute</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> A circular dependency occurred between
+              two files</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. Why must stack traces (<code>err.stack</code>) NEVER be included in production API responses?</legend>
-            <label class="quiz-option"><input type="radio" name="q6" value="a"> Stack traces leak internal file paths, library versions, and implementation details that help attackers</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="b"> Browsers crash whenever they receive a JSON property named <code>stack</code></label>
-            <label class="quiz-option"><input type="radio" name="q6" value="c"> Node.js deletes stack traces automatically when <code>NODE_ENV=production</code></label>
-            <label class="quiz-option"><input type="radio" name="q6" value="d"> Stack traces are only generated for <code>200 OK</code> responses</label>
+            <legend>6. Why must stack traces (<code>err.stack</code>) NEVER be included in production API responses?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Stack traces leak internal file paths,
+              library versions, and implementation details that help attackers</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> Browsers crash whenever they receive a
+              JSON property named <code>stack</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> Node.js deletes stack traces
+              automatically when <code>NODE_ENV=production</code></label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> Stack traces are only generated for
+              <code>200 OK</code> responses</label>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. If a programming error (<code>isOperational</code> is false) happens in production, what should the API return to the client?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> The raw database error and complete stack trace</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> A generic <code>500</code> JSON message with a <code>requestId</code>, while logging full details privately on the server</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="c"> A <code>204 No Content</code> status</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="d"> The contents of <code>process.env</code></label>
+            <legend>7. If a programming error (<code>isOperational</code> is false) happens in production, what should
+              the API return to the client?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> The raw database error and complete
+              stack trace</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> A generic <code>500</code> JSON message
+              with a <code>requestId</code>, while logging full details privately on the server</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> A <code>204 No Content</code>
+              status</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> The contents of
+              <code>process.env</code></label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
             <legend>8. What happens if <code>express.json()</code> receives malformed JSON from a client?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> It ignores the error and sets <code>req.body = {}</code></label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> It passes a <code>SyntaxError</code> (with <code>err.type === 'entity.parse.failed'</code>) to Express error-handling middleware</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> It converts the broken JSON into URL-encoded form data</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> It ignores the error and sets
+              <code>req.body = {}</code></label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> It passes a <code>SyntaxError</code>
+              (with <code>err.type === 'entity.parse.failed'</code>) to Express error-handling middleware</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> It converts the broken JSON into
+              URL-encoded form data</label>
             <label class="quiz-option"><input type="radio" name="q8" value="d"> It restarts MongoDB</label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. Why should the global error handler check <code>if (res.headersSent) { return next(err); }</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> Because if headers were already sent to the client, trying to send another JSON error throws <code>ERR_HTTP_HEADERS_SENT</code>; delegating to Express safely closes the connection</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because it forces Express to retry the controller</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> To clear all cookies from the browser</label>
+            <legend>9. Why should the global error handler check
+              <code>if (res.headersSent) { return next(err); }</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> Because if headers were already sent to
+              the client, trying to send another JSON error throws <code>ERR_HTTP_HEADERS_SENT</code>; delegating to
+              Express safely closes the connection</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> Because it forces Express to retry the
+              controller</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> To clear all cookies from the
+              browser</label>
             <label class="quiz-option"><input type="radio" name="q9" value="d"> To skip logging errors</label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. What is the safest way to handle an <code>uncaughtException</code> in a Node.js backend process?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> Ignore it so the server stays online no matter what</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> Log the error and exit the process cleanly so a process manager restarts the app in a clean state</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> Send the exception to the next client request</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="d"> Disable <code>asyncHandler</code> across all routes</label>
+            <legend>10. What is the safest way to handle an <code>uncaughtException</code> in a Node.js backend process?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> Ignore it so the server stays online no
+              matter what</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Log the error and exit the process
+              cleanly so a process manager restarts the app in a clean state</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Send the exception to the next client
+              request</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> Disable <code>asyncHandler</code>
+              across all routes</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
 
@@ -763,23 +911,38 @@ start();</code></pre>
         <div class="qa-list">
           <details class="qa-item">
             <summary>1. What is the key difference between an operational error and a programming error?</summary>
-            <p>Operational errors are expected runtime problems (like invalid client input, missing documents, or duplicate database keys) that should produce informative <code>4xx</code> client responses. Programming errors are unintended bugs in code (like <code>TypeError</code>) whose internal details must be logged privately and hidden behind a generic <code>500</code> message in production.</p>
+            <p>Operational errors are expected runtime problems (like invalid client input, missing documents, or
+              duplicate database keys) that should produce informative <code>4xx</code> client responses. Programming
+              errors are unintended bugs in code (like <code>TypeError</code>) whose internal details must be logged
+              privately and hidden behind a generic <code>500</code> message in production.</p>
           </details>
           <details class="qa-item">
-            <summary>2. Why is a centralized error-handling middleware better than writing <code>try/catch</code> JSON responses in every controller?</summary>
-            <p>Centralized error handling enforces one consistent JSON format, removes duplicated status/logging logic across controllers, ensures Mongoose/JSON parser errors are normalized uniformly, and guarantees production stack traces are never accidentally leaked.</p>
+            <summary>2. Why is a centralized error-handling middleware better than writing <code>try/catch</code> JSON
+              responses in every controller?</summary>
+            <p>Centralized error handling enforces one consistent JSON format, removes duplicated status/logging logic
+              across controllers, ensures Mongoose/JSON parser errors are normalized uniformly, and guarantees
+              production stack traces are never accidentally leaked.</p>
           </details>
           <details class="qa-item">
             <summary>3. How do synchronous thrown errors and rejected async promises differ in Express 4?</summary>
-            <p>Synchronous errors thrown inside a route handler are caught automatically by Express and passed to error middleware. Rejected promises in <code>async</code> Express 4 handlers are not caught automatically unless wrapped with <code>try/catch</code> calling <code>next(err)</code> or an <code>asyncHandler</code> helper.</p>
+            <p>Synchronous errors thrown inside a route handler are caught automatically by Express and passed to error
+              middleware. Rejected promises in <code>async</code> Express 4 handlers are not caught automatically unless
+              wrapped with <code>try/catch</code> calling <code>next(err)</code> or an <code>asyncHandler</code> helper.
+            </p>
           </details>
           <details class="qa-item">
-            <summary>4. Why does including a <code>requestId</code> in both error logs and client JSON responses help support teams?</summary>
-            <p>Clients only see a safe error message and the <code>requestId</code>, without sensitive stack traces. When they report an issue, engineers can search server logs by that exact <code>requestId</code> to inspect the full stack trace immediately.</p>
+            <summary>4. Why does including a <code>requestId</code> in both error logs and client JSON responses help
+              support teams?</summary>
+            <p>Clients only see a safe error message and the <code>requestId</code>, without sensitive stack traces.
+              When they report an issue, engineers can search server logs by that exact <code>requestId</code> to
+              inspect the full stack trace immediately.</p>
           </details>
           <details class="qa-item">
-            <summary>5. Explain why Mongoose <code>CastError</code> and MongoDB code <code>11000</code> should be normalized in error middleware.</summary>
-            <p>Without normalization, both look like unexpected <code>500</code> server errors and leak raw MongoDB details (like collection/index names). Normalizing them turns <code>CastError</code> into <code>400 Bad Request</code> and <code>11000</code> into a clean <code>409 Conflict</code>.</p>
+            <summary>5. Explain why Mongoose <code>CastError</code> and MongoDB code <code>11000</code> should be
+              normalized in error middleware.</summary>
+            <p>Without normalization, both look like unexpected <code>500</code> server errors and leak raw MongoDB
+              details (like collection/index names). Normalizing them turns <code>CastError</code> into
+              <code>400 Bad Request</code> and <code>11000</code> into a clean <code>409 Conflict</code>.</p>
           </details>
         </div>
       </section>
@@ -789,7 +952,8 @@ start();</code></pre>
         <div class="challenge-list">
           <article class="challenge-card">
             <h3>Challenge 1: Fix Information Leakage in Production</h3>
-            <p>Identify why the error handler below is unsafe for production and rewrite it using <code>AppError</code> and <code>env.isProduction</code> checks:</p>
+            <p>Identify why the error handler below is unsafe for production and rewrite it using <code>AppError</code>
+              and <code>env.isProduction</code> checks:</p>
             <pre><code>app.use((err, req, res, next) => {
   res.status(500).json({
     error: err.message,
@@ -801,12 +965,19 @@ start();</code></pre>
 
           <article class="challenge-card">
             <h3>Challenge 2: Write a Mongoose Error Normalizer Function</h3>
-            <p>Write a standalone helper <code>handleDatabaseError(err)</code> that inspects <code>err</code> and returns: a <code>400 BadRequestError</code> for <code>CastError</code>, a <code>422 ValidationAppError</code> with field-level <code>{ field, message }</code> details for Mongoose <code>ValidationError</code>, and a <code>409 ConflictError</code> for duplicate key error code <code>11000</code>.</p>
+            <p>Write a standalone helper <code>handleDatabaseError(err)</code> that inspects <code>err</code> and
+              returns: a <code>400 BadRequestError</code> for <code>CastError</code>, a
+              <code>422 ValidationAppError</code> with field-level <code>{ field, message }</code> details for Mongoose
+              <code>ValidationError</code>, and a <code>409 ConflictError</code> for duplicate key error code
+              <code>11000</code>.</p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Refactor Repeated Controller Error Responses</h3>
-            <p>Refactor a controller that manually calls <code>res.status(404).json(...)</code> and <code>res.status(409).json(...)</code> inside <code>try/catch</code> so it uses <code>asyncHandler</code> and throws <code>NotFoundError</code> / <code>ConflictError</code> directly into the centralized error pipeline.</p>
+            <p>Refactor a controller that manually calls <code>res.status(404).json(...)</code> and
+              <code>res.status(409).json(...)</code> inside <code>try/catch</code> so it uses <code>asyncHandler</code>
+              and throws <code>NotFoundError</code> / <code>ConflictError</code> directly into the centralized error
+              pipeline.</p>
           </article>
         </div>
       </section>
@@ -814,23 +985,34 @@ start();</code></pre>
       <section class="card-section" id="summary">
         <h2>Day 5 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Separate predictable <strong>operational errors</strong> from unexpected <strong>programming errors</strong> using <code>isOperational</code>.</li>
-          <li>Extend <code>Error</code> with custom classes (<code>AppError</code>, <code>BadRequestError</code>, <code>NotFoundError</code>, <code>ConflictError</code>) to carry exact status codes and machine-readable error codes.</li>
-          <li>Forward all async errors with <code>asyncHandler</code> and missing routes with <code>notFoundHandler</code> into one 4-argument <code>globalErrorHandler</code> mounted last in <code>app.js</code>.</li>
-          <li>Normalize Express JSON syntax errors, Mongoose <code>CastError</code>, Mongoose <code>ValidationError</code>, and MongoDB <code>11000</code> duplicates cleanly.</li>
-          <li>Show stack traces in development only; never leak stack traces, file paths, or raw DB errors in production, and attach process-level safety nets in <code>server.js</code>.</li>
+          <li>Separate predictable <strong>operational errors</strong> from unexpected <strong>programming
+              errors</strong> using <code>isOperational</code>.</li>
+          <li>Extend <code>Error</code> with custom classes (<code>AppError</code>, <code>BadRequestError</code>,
+            <code>NotFoundError</code>, <code>ConflictError</code>) to carry exact status codes and machine-readable
+            error codes.</li>
+          <li>Forward all async errors with <code>asyncHandler</code> and missing routes with
+            <code>notFoundHandler</code> into one 4-argument <code>globalErrorHandler</code> mounted last in
+            <code>app.js</code>.</li>
+          <li>Normalize Express JSON syntax errors, Mongoose <code>CastError</code>, Mongoose
+            <code>ValidationError</code>, and MongoDB <code>11000</code> duplicates cleanly.</li>
+          <li>Show stack traces in development only; never leak stack traces, file paths, or raw DB errors in
+            production, and attach process-level safety nets in <code>server.js</code>.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 5 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 5: Centralized Express error-handling flow, normalization, and safe production responses.</p>
+        <p>Visual summary diagram for Day 5: Centralized Express error-handling flow, normalization, and safe production
+          responses.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating centralized Express error handling, AppError classification, and development vs production responses" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating centralized Express error handling, AppError classification, and development vs production responses"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 5 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 5/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 5/</code> folder to
+              display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -849,11 +1031,12 @@ start();</code></pre>
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -869,7 +1052,8 @@ start();</code></pre>
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -884,4 +1068,5 @@ start();</code></pre>
 
   <script src="script.js"></script>
 </body>
+
 </html>

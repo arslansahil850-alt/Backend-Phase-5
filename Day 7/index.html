@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
   <header class="top-navbar" id="topNavbar">
     <div class="container top-navbar-inner">
- <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
+      <a href="https://arslan-weblab.netlify.app/" target="_blank" class="brand">
         <img src="../logo.webp" alt="Arslan Weblab logo" class="brand-logo" width="40" height="40">
         <span class="brand-text">Arslan Weblab</span>
       </a>
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -68,7 +71,12 @@
         </div>
         <h1>Day 7: Rate Limiting</h1>
         <p class="lead-intro">
-          Without request throttling, a single automated script can hammer your login endpoint with 10,000 password guesses per minute, scrape your entire database, or exhaust your server's CPU and database connection pool. <strong>Rate limiting</strong> controls how many requests a client can make within a defined time window. Today you will learn how rate-limiting algorithms and headers work, how to configure IP-based and account-based limits safely in Express, how to protect sensitive endpoints, and what changes when scaling across multiple servers.
+          Without request throttling, a single automated script can hammer your login endpoint with 10,000 password
+          guesses per minute, scrape your entire database, or exhaust your server's CPU and database connection pool.
+          <strong>Rate limiting</strong> controls how many requests a client can make within a defined time window.
+          Today you will learn how rate-limiting algorithms and headers work, how to configure IP-based and
+          account-based limits safely in Express, how to protect sensitive endpoints, and what changes when scaling
+          across multiple servers.
         </p>
       </section>
 
@@ -77,12 +85,17 @@
         <p>By the end of Day 7, you will be able to:</p>
         <ul class="styled-list">
           <li>Explain what rate limiting is and why APIs rely on it for security, stability, and cost control.</li>
-          <li>Compare common window strategies (Fixed Window, Sliding Window, and Token Bucket) and their trade-offs.</li>
+          <li>Compare common window strategies (Fixed Window, Sliding Window, and Token Bucket) and their trade-offs.
+          </li>
           <li>Distinguish between IP-based rate limits and account/API-key-based rate limits.</li>
-          <li>Interpret standard rate-limit HTTP headers (<code>RateLimit-Limit</code>, <code>RateLimit-Remaining</code>, <code>RateLimit-Reset</code>, <code>Retry-After</code>) and status code <code>429 Too Many Requests</code>.</li>
+          <li>Interpret standard rate-limit HTTP headers (<code>RateLimit-Limit</code>,
+            <code>RateLimit-Remaining</code>, <code>RateLimit-Reset</code>, <code>Retry-After</code>) and status code
+            <code>429 Too Many Requests</code>.</li>
           <li>Configure global and route-specific rate limiters in Express using <code>express-rate-limit</code>.</li>
-          <li>Protect sensitive routes such as <code>/login</code>, <code>/forgot-password</code>, and contact forms without blocking legitimate users accidentally.</li>
-          <li>Explain why distributed deployments require shared stores like Redis rather than single-process memory.</li>
+          <li>Protect sensitive routes such as <code>/login</code>, <code>/forgot-password</code>, and contact forms
+            without blocking legitimate users accidentally.</li>
+          <li>Explain why distributed deployments require shared stores like Redis rather than single-process memory.
+          </li>
         </ul>
       </section>
 
@@ -90,8 +103,10 @@
         <h2>Prerequisites</h2>
         <p>Before starting Day 7, make sure you understand:</p>
         <ul class="styled-list">
-          <li><strong>Days 1, 2 &amp; 6 Concepts:</strong> Express middleware ordering, <code>app.set('trust proxy', 1)</code>, <code>req.ip</code>, and API security fundamentals.</li>
-          <li><strong>HTTP Headers &amp; Status Codes:</strong> Reading and writing custom headers and returning structured JSON error payloads.</li>
+          <li><strong>Days 1, 2 &amp; 6 Concepts:</strong> Express middleware ordering,
+            <code>app.set('trust proxy', 1)</code>, <code>req.ip</code>, and API security fundamentals.</li>
+          <li><strong>HTTP Headers &amp; Status Codes:</strong> Reading and writing custom headers and returning
+            structured JSON error payloads.</li>
         </ul>
       </section>
 
@@ -100,27 +115,33 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Rate Limiting</h3>
-            <p>A defensive middleware mechanism that restricts the maximum number of HTTP requests a client may perform during a specified time window.</p>
+            <p>A defensive middleware mechanism that restricts the maximum number of HTTP requests a client may perform
+              during a specified time window.</p>
           </article>
           <article class="term-card">
             <h3>Time Window</h3>
-            <p>The measurement interval (for example, <code>15 minutes</code> or <code>60 seconds</code>) during which request counts are tracked before resetting or decaying.</p>
+            <p>The measurement interval (for example, <code>15 minutes</code> or <code>60 seconds</code>) during which
+              request counts are tracked before resetting or decaying.</p>
           </article>
           <article class="term-card">
             <h3><code>429 Too Many Requests</code></h3>
-            <p>The standard HTTP status code returned when a client exceeds its permitted request quota, typically paired with a <code>Retry-After</code> header.</p>
+            <p>The standard HTTP status code returned when a client exceeds its permitted request quota, typically
+              paired with a <code>Retry-After</code> header.</p>
           </article>
           <article class="term-card">
             <h3>Rate-Limit Key</h3>
-            <p>The unique identifier used to bucket request counts—most commonly a client IP address (<code>req.ip</code>), an authenticated <code>userId</code>, or a combination of IP and email.</p>
+            <p>The unique identifier used to bucket request counts—most commonly a client IP address
+              (<code>req.ip</code>), an authenticated <code>userId</code>, or a combination of IP and email.</p>
           </article>
           <article class="term-card">
             <h3>Fixed Window Counter</h3>
-            <p>Tracks requests per discrete block of time (e.g., 12:00–12:15). Simple and memory-light, though bursts can briefly occur right across a window boundary.</p>
+            <p>Tracks requests per discrete block of time (e.g., 12:00–12:15). Simple and memory-light, though bursts
+              can briefly occur right across a window boundary.</p>
           </article>
           <article class="term-card">
             <h3>Distributed Store (e.g., Redis)</h3>
-            <p>An external shared fast in-memory store used when multiple Node.js instances run behind a load balancer so all instances share the same request counters.</p>
+            <p>An external shared fast in-memory store used when multiple Node.js instances run behind a load balancer
+              so all instances share the same request counters.</p>
           </article>
         </div>
       </section>
@@ -131,14 +152,19 @@
         <h3>1. Why APIs Need Rate Limits</h3>
         <p>Rate limiting protects both security and infrastructure availability across four critical areas:</p>
         <ul class="styled-list">
-          <li><strong>Brute-Force &amp; Credential-Stuffing Prevention:</strong> Stops automated bots from trying thousands of passwords or 6-digit OTP verification codes on login and reset endpoints.</li>
-          <li><strong>Resource &amp; Database Protection:</strong> Prevents a buggy client loop or intentional flood from saturating CPU, memory, or MongoDB connections (application-layer Denial of Service).</li>
-          <li><strong>Data Scraping Defense:</strong> Slows down bots attempting to download your entire product catalog or user directory.</li>
-          <li><strong>Fair Usage &amp; Cost Control:</strong> Protects paid downstream services—such as email providers, SMS gateways, or AI APIs—from runaway bills triggered by abusive traffic.</li>
+          <li><strong>Brute-Force &amp; Credential-Stuffing Prevention:</strong> Stops automated bots from trying
+            thousands of passwords or 6-digit OTP verification codes on login and reset endpoints.</li>
+          <li><strong>Resource &amp; Database Protection:</strong> Prevents a buggy client loop or intentional flood
+            from saturating CPU, memory, or MongoDB connections (application-layer Denial of Service).</li>
+          <li><strong>Data Scraping Defense:</strong> Slows down bots attempting to download your entire product catalog
+            or user directory.</li>
+          <li><strong>Fair Usage &amp; Cost Control:</strong> Protects paid downstream services—such as email providers,
+            SMS gateways, or AI APIs—from runaway bills triggered by abusive traffic.</li>
         </ul>
 
         <h3>2. Requests per Time Window &amp; Window Algorithms</h3>
-        <p>Every rate limiter answers two questions: <em>How many requests are allowed?</em> (<code>limit</code>) and <em>Over what duration?</em> (<code>windowMs</code>). Common counting strategies include:</p>
+        <p>Every rate limiter answers two questions: <em>How many requests are allowed?</em> (<code>limit</code>) and
+          <em>Over what duration?</em> (<code>windowMs</code>). Common counting strategies include:</p>
         <div class="table-wrap">
           <table class="data-table">
             <thead>
@@ -152,7 +178,8 @@
               <tr>
                 <td><strong>Fixed Window</strong></td>
                 <td>Resets a counter every <code>N</code> minutes (e.g., 100 requests per 15 minutes).</td>
-                <td>Very fast and simple; slight edge-burst possible if 100 requests hit at 12:14:59 and 100 more at 12:15:01.</td>
+                <td>Very fast and simple; slight edge-burst possible if 100 requests hit at 12:14:59 and 100 more at
+                  12:15:01.</td>
               </tr>
               <tr>
                 <td><strong>Sliding Window</strong></td>
@@ -170,66 +197,101 @@
 
         <h3>3. IP-Based vs. Account-Based Limits</h3>
         <p>
-          <strong>IP-based limiting</strong> tracks requests by <code>req.ip</code>. It works on unauthenticated endpoints (like signup, login, or public search) because no user is logged in yet. However, remember two crucial caveats:
+          <strong>IP-based limiting</strong> tracks requests by <code>req.ip</code>. It works on unauthenticated
+          endpoints (like signup, login, or public search) because no user is logged in yet. However, remember two
+          crucial caveats:
         </p>
         <ul class="styled-list">
-          <li><strong>Reverse Proxies &amp; <code>trust proxy</code>:</strong> In cloud hosting (Render, Railway, Nginx, Cloudflare), every request arrives at Node.js from the proxy's local IP unless <code>app.set('trust proxy', 1)</code> is set. Without <code>trust proxy</code>, all users appear to share the same proxy IP and one user's spam blocks everybody!</li>
-          <li><strong>Shared NAT Networks:</strong> A university campus, corporate office, or mobile carrier often shares one public IP among hundreds of students or employees. Overly aggressive IP limits on general browsing routes can accidentally block innocent users sharing a network.</li>
+          <li><strong>Reverse Proxies &amp; <code>trust proxy</code>:</strong> In cloud hosting (Render, Railway, Nginx,
+            Cloudflare), every request arrives at Node.js from the proxy's local IP unless
+            <code>app.set('trust proxy', 1)</code> is set. Without <code>trust proxy</code>, all users appear to share
+            the same proxy IP and one user's spam blocks everybody!</li>
+          <li><strong>Shared NAT Networks:</strong> A university campus, corporate office, or mobile carrier often
+            shares one public IP among hundreds of students or employees. Overly aggressive IP limits on general
+            browsing routes can accidentally block innocent users sharing a network.</li>
         </ul>
         <p>
-          <strong>Account-based (or API-key-based) limiting</strong> runs <em>after</em> authentication middleware and keys counters by <code>req.user.id</code> (or <code>ip + email</code> on login). This prevents one user on shared office Wi-Fi from exhausting the quota of other coworkers, and stops an attacker from bypassing limits simply by switching VPN IPs while attacking a single victim's email account.
+          <strong>Account-based (or API-key-based) limiting</strong> runs <em>after</em> authentication middleware and
+          keys counters by <code>req.user.id</code> (or <code>ip + email</code> on login). This prevents one user on
+          shared office Wi-Fi from exhausting the quota of other coworkers, and stops an attacker from bypassing limits
+          simply by switching VPN IPs while attacking a single victim's email account.
         </p>
 
         <h3>4. Rate-Limit Headers and Responses</h3>
-        <p>Well-behaved APIs communicate quota status clearly in HTTP headers so legitimate frontend apps can back off gracefully:</p>
+        <p>Well-behaved APIs communicate quota status clearly in HTTP headers so legitimate frontend apps can back off
+          gracefully:</p>
         <ul class="styled-list">
-          <li><code>RateLimit-Limit</code> (draft-7/8 standard): Maximum requests permitted in the current window (e.g., <code>100</code>).</li>
+          <li><code>RateLimit-Limit</code> (draft-7/8 standard): Maximum requests permitted in the current window (e.g.,
+            <code>100</code>).</li>
           <li><code>RateLimit-Remaining</code>: How many requests remain before throttling begins.</li>
           <li><code>RateLimit-Reset</code>: Seconds remaining until the window resets.</li>
-          <li><code>Retry-After</code>: Sent on <code>429 Too Many Requests</code> responses telling clients how many seconds to wait before retrying.</li>
+          <li><code>Retry-After</code>: Sent on <code>429 Too Many Requests</code> responses telling clients how many
+            seconds to wait before retrying.</li>
         </ul>
 
         <h3>5. Applying Rate Limits to Selected Routes &amp; Sensitive Endpoints</h3>
         <p>
-          A single global limit is rarely ideal on its own. A normal browser user loading a dashboard might legitimately trigger 30 <code>GET</code> requests in a minute, whereas nobody legitimately submits 30 failed password attempts in a minute! Best practice uses <strong>tiered limiters</strong>:
+          A single global limit is rarely ideal on its own. A normal browser user loading a dashboard might legitimately
+          trigger 30 <code>GET</code> requests in a minute, whereas nobody legitimately submits 30 failed password
+          attempts in a minute! Best practice uses <strong>tiered limiters</strong>:
         </p>
         <ul class="styled-list">
-          <li><strong>General API Limiter:</strong> Moderate threshold across <code>/api/v1</code> (for example, 100–200 requests per 15 minutes per IP).</li>
-          <li><strong>Strict Auth / Sensitive Limiter:</strong> Tight threshold specifically on <code>POST /api/v1/auth/login</code>, <code>POST /api/v1/auth/forgot-password</code>, or <code>POST /api/v1/contact</code> (for example, 5–10 attempts per 15 minutes), optionally setting <code>skipSuccessfulRequests: true</code> on login so legitimate users who log in cleanly do not waste failure quota.</li>
+          <li><strong>General API Limiter:</strong> Moderate threshold across <code>/api/v1</code> (for example, 100–200
+            requests per 15 minutes per IP).</li>
+          <li><strong>Strict Auth / Sensitive Limiter:</strong> Tight threshold specifically on
+            <code>POST /api/v1/auth/login</code>, <code>POST /api/v1/auth/forgot-password</code>, or
+            <code>POST /api/v1/contact</code> (for example, 5–10 attempts per 15 minutes), optionally setting
+            <code>skipSuccessfulRequests: true</code> on login so legitimate users who log in cleanly do not waste
+            failure quota.</li>
         </ul>
 
         <h3>6. Distributed Deployment Considerations</h3>
         <p>
-          By default, <code>express-rate-limit</code> stores counters inside your Node.js process RAM (<code>MemoryStore</code>). This works fine on a single server instance during development or small deployments. However, if you scale horizontally to 4 server containers behind a load balancer, each container has its own separate RAM—an attacker sending 20 requests could hit 5 requests per container without ever triggering a limit of 10!
+          By default, <code>express-rate-limit</code> stores counters inside your Node.js process RAM
+          (<code>MemoryStore</code>). This works fine on a single server instance during development or small
+          deployments. However, if you scale horizontally to 4 server containers behind a load balancer, each container
+          has its own separate RAM—an attacker sending 20 requests could hit 5 requests per container without ever
+          triggering a limit of 10!
         </p>
         <p>
-          In multi-instance production environments, configure a shared store such as <strong>Redis</strong> (for example, using <code>rate-limit-redis</code>) so all Node.js instances increment and read one central atomic counter.
+          In multi-instance production environments, configure a shared store such as <strong>Redis</strong> (for
+          example, using <code>rate-limit-redis</code>) so all Node.js instances increment and read one central atomic
+          counter.
         </p>
 
         <h3>7. Avoiding Accidental Denial of Service</h3>
-        <p>Carelessly configured rate limits can lock out your own systems or real users. Avoid self-inflicted outages by:</p>
+        <p>Carelessly configured rate limits can lock out your own systems or real users. Avoid self-inflicted outages
+          by:</p>
         <ul class="styled-list">
-          <li><strong>Exempting health checks:</strong> Never apply strict rate limits to <code>GET /api/v1/health</code>; cloud load balancers ping health endpoints continuously and will restart your server if they receive <code>429</code>!</li>
-          <li><strong>Testing thresholds safely:</strong> Use realistic quotas and verify with controlled local requests rather than flooding live production services.</li>
-          <li><strong>Using clean JSON <code>429</code> handlers:</strong> Return your standard API error structure so frontend clients handle throttling gracefully instead of crashing on plain-text error strings.</li>
+          <li><strong>Exempting health checks:</strong> Never apply strict rate limits to
+            <code>GET /api/v1/health</code>; cloud load balancers ping health endpoints continuously and will restart
+            your server if they receive <code>429</code>!</li>
+          <li><strong>Testing thresholds safely:</strong> Use realistic quotas and verify with controlled local requests
+            rather than flooding live production services.</li>
+          <li><strong>Using clean JSON <code>429</code> handlers:</strong> Return your standard API error structure so
+            frontend clients handle throttling gracefully instead of crashing on plain-text error strings.</li>
         </ul>
       </section>
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Rate-Limiting Request Flow</h2>
-        <p>Observe how global, route-specific, and health-check bypass rules evaluate incoming requests before controllers run:</p>
-        <div class="diagram-container" role="img" aria-label="Flowchart showing an incoming request arriving via a Reverse Proxy (requiring trust proxy for real req.ip), bypassing rate limits if it is a /health probe, passing through the General API Limiter, and if targeting /auth/login passing through the Strict Auth Limiter which either increments the counter and calls next() with RateLimit headers or terminates with HTTP 429 Too Many Requests and Retry-After.">
+        <p>Observe how global, route-specific, and health-check bypass rules evaluate incoming requests before
+          controllers run:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Flowchart showing an incoming request arriving via a Reverse Proxy (requiring trust proxy for real req.ip), bypassing rate limits if it is a /health probe, passing through the General API Limiter, and if targeting /auth/login passing through the Strict Auth Limiter which either increments the counter and calls next() with RateLimit headers or terminates with HTTP 429 Too Many Requests and Retry-After.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">1. Incoming Traffic</span>
               <strong>Client &rarr; Reverse Proxy &rarr; Express (<code>trust proxy = 1</code>)</strong>
-              <span>Resolves accurate client <code>req.ip</code>; skips rate limiters for <code>/api/v1/health</code></span>
+              <span>Resolves accurate client <code>req.ip</code>; skips rate limiters for
+                <code>/api/v1/health</code></span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-step flow-app">
               <span class="flow-tag">2. Tier 1 &bull; General API Limiter</span>
               <strong>Store Lookup (MemoryStore or Shared Redis)</strong>
-              <span>Checks quota for <code>req.ip</code> (e.g., 120 req / 15 min) &amp; attaches <code>RateLimit-*</code> headers</span>
+              <span>Checks quota for <code>req.ip</code> (e.g., 120 req / 15 min) &amp; attaches
+                <code>RateLimit-*</code> headers</span>
             </div>
             <div class="flow-arrow" aria-hidden="true">&#8595;</div>
             <div class="flow-branch">
@@ -251,7 +313,8 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial: Adding Tiered Rate Limiting to Express</h2>
         <p>
-          Let us implement global and route-specific rate limiters using <code>express-rate-limit</code> inside a <strong>Node.js (server-side)</strong> Express API.
+          Let us implement global and route-specific rate limiters using <code>express-rate-limit</code> inside a
+          <strong>Node.js (server-side)</strong> Express API.
         </p>
 
         <h3>Step 1: Install <code>express-rate-limit</code></h3>
@@ -267,7 +330,9 @@ RATE_LIMIT_MAX_AUTH=5</code></pre>
 
         <h3>Step 2: Create Reusable Rate-Limiter Middleware (<code>src/middleware/rateLimiters.js</code>)</h3>
         <p>
-          Notice how we use <code>standardHeaders: 'draft-7'</code>, disable legacy headers, customize the JSON <code>429</code> response handler, and key the login limiter by both IP and normalized email so one shared office IP does not lock out other employees!
+          Notice how we use <code>standardHeaders: 'draft-7'</code>, disable legacy headers, customize the JSON
+          <code>429</code> response handler, and key the login limiter by both IP and normalized email so one shared
+          office IP does not lock out other employees!
         </p>
         <p class="code-label">Backend Source Code: <code>src/middleware/rateLimiters.js</code></p>
         <pre><code>import rateLimit from 'express-rate-limit';
@@ -321,7 +386,8 @@ export const accountActionLimiter = rateLimit({
 
         <h3>Step 3: Mount Health Checks, Global Limiter, and Route-Specific Limiters</h3>
         <p>
-          Mount <code>app.set('trust proxy', 1)</code> before rate limiters so <code>req.ip</code> resolves accurately behind proxies, and attach <code>authAttemptLimiter</code> specifically to sensitive routes.
+          Mount <code>app.set('trust proxy', 1)</code> before rate limiters so <code>req.ip</code> resolves accurately
+          behind proxies, and attach <code>authAttemptLimiter</code> specifically to sensitive routes.
         </p>
         <p class="code-label">Backend Source Code: <code>src/routes/authRoutes.js</code></p>
         <pre><code>import express from 'express';
@@ -385,7 +451,8 @@ app.post('/api/v1/reports/export', (req, res, next) => {
 export default app;</code></pre>
 
         <h3>Step 4: Safely Test Normal vs. Excessive Requests Locally</h3>
-        <p>Never run aggressive loops against third-party websites. Test safely against your own local <code>http://localhost:5000</code> server using <code>curl</code>.</p>
+        <p>Never run aggressive loops against third-party websites. Test safely against your own local
+          <code>http://localhost:5000</code> server using <code>curl</code>.</p>
         <p class="code-label">Terminal Test Commands (Bash loop sending 6 consecutive failed logins locally)</p>
         <pre><code>for i in {1..6}; do
   echo "Attempt $i:"
@@ -403,7 +470,9 @@ retry-after: 900
 {"status":"fail","errorCode":"RATE_LIMIT_EXCEEDED","message":"Too many failed authentication attempts. Please wait 15 minutes before retrying.","retryAfterSeconds":900}</code></pre>
 
         <h3>Step 5: Notes on Distributed Production Store (Redis)</h3>
-        <p>When scaling to multiple Node.js instances behind a load balancer, swap the default in-memory store for a shared Redis store (<code>rate-limit-redis</code> + <code>redis</code>) passed via the <code>store</code> option inside <code>rateLimit({ store: new RedisStore(...), ... })</code>.</p>
+        <p>When scaling to multiple Node.js instances behind a load balancer, swap the default in-memory store for a
+          shared Redis store (<code>rate-limit-redis</code> + <code>redis</code>) passed via the <code>store</code>
+          option inside <code>rateLimit({ store: new RedisStore(...), ... })</code>.</p>
       </section>
 
       <section class="card-section" id="use-cases">
@@ -411,19 +480,23 @@ retry-after: 900
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. Login &amp; 2FA OTP Protection</h3>
-            <p>A 6-digit OTP has only 1,000,000 combinations. Tight rate limiting (e.g., 5 attempts per 15 minutes) stops bots from brute-forcing verification codes within seconds.</p>
+            <p>A 6-digit OTP has only 1,000,000 combinations. Tight rate limiting (e.g., 5 attempts per 15 minutes)
+              stops bots from brute-forcing verification codes within seconds.</p>
           </article>
           <article class="info-box">
             <h3>2. Preventing Email/SMS Abuse</h3>
-            <p>Without strict limits on <code>/forgot-password</code> or <code>/contact</code>, an attacker can trigger thousands of outbound emails or SMS messages, costing real money and ruining domain sender reputation.</p>
+            <p>Without strict limits on <code>/forgot-password</code> or <code>/contact</code>, an attacker can trigger
+              thousands of outbound emails or SMS messages, costing real money and ruining domain sender reputation.</p>
           </article>
           <article class="info-box">
             <h3>3. Tiered SaaS API Quotas</h3>
-            <p>Public developer APIs use account/API-key-based limiters to grant free-tier users 60 requests/minute and paid-tier users 1,000 requests/minute.</p>
+            <p>Public developer APIs use account/API-key-based limiters to grant free-tier users 60 requests/minute and
+              paid-tier users 1,000 requests/minute.</p>
           </article>
           <article class="info-box">
             <h3>4. Heavy Compute Endpoint Shielding</h3>
-            <p>Endpoints that generate PDFs, export large CSVs, or run complex search aggregations receive lower per-user rate limits so one user cannot degrade performance for everyone else.</p>
+            <p>Endpoints that generate PDFs, export large CSVs, or run complex search aggregations receive lower
+              per-user rate limits so one user cannot degrade performance for everyone else.</p>
           </article>
         </div>
       </section>
@@ -434,19 +507,30 @@ retry-after: 900
           <article class="warning-box">
             <h3>Common Rate-Limiting Mistakes</h3>
             <ul class="styled-list">
-              <li><strong>Forgetting <code>app.set('trust proxy', 1)</code> in cloud hosting:</strong> Without it, Express sees the load balancer's IP for every single visitor, causing one user to trigger <code>429</code> for the entire website!</li>
-              <li><strong>Rate limiting health-check endpoints:</strong> Blocking <code>/health</code> causes container orchestrators to mark healthy servers as dead and restart them repeatedly.</li>
-              <li><strong>Using one ultra-tight limit globally:</strong> Setting 5 requests/minute on all routes breaks normal page loads that fetch user profiles, notifications, and settings in parallel.</li>
-              <li><strong>Trusting client-supplied spoofing headers:</strong> Never manually trust arbitrary <code>req.headers['x-forwarded-for']</code> strings without configuring Express <code>trust proxy</code> properly—attackers can fake custom headers to bypass IP limits!</li>
+              <li><strong>Forgetting <code>app.set('trust proxy', 1)</code> in cloud hosting:</strong> Without it,
+                Express sees the load balancer's IP for every single visitor, causing one user to trigger
+                <code>429</code> for the entire website!</li>
+              <li><strong>Rate limiting health-check endpoints:</strong> Blocking <code>/health</code> causes container
+                orchestrators to mark healthy servers as dead and restart them repeatedly.</li>
+              <li><strong>Using one ultra-tight limit globally:</strong> Setting 5 requests/minute on all routes breaks
+                normal page loads that fetch user profiles, notifications, and settings in parallel.</li>
+              <li><strong>Trusting client-supplied spoofing headers:</strong> Never manually trust arbitrary
+                <code>req.headers['x-forwarded-for']</code> strings without configuring Express <code>trust proxy</code>
+                properly—attackers can fake custom headers to bypass IP limits!</li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Run rate limiting BEFORE expensive work:</strong> Mount rate limiters above database queries and <code>bcrypt.compare()</code> so blocked bots do not consume CPU or DB connections.</li>
-              <li><strong>Combine <code>ip + email</code> on login limiters:</strong> Protects shared NAT networks while still stopping distributed password guessing against a single user account.</li>
-              <li><strong>Use <code>skipSuccessfulRequests: true</code> thoughtfully:</strong> Helpful on login endpoints so normal users logging in multiple times a day are not penalized while failed guesses still hit the cap.</li>
-              <li><strong>Remember distributed state:</strong> Use a shared store like Redis whenever running clustered Node processes or multiple replicas.</li>
+              <li><strong>Run rate limiting BEFORE expensive work:</strong> Mount rate limiters above database queries
+                and <code>bcrypt.compare()</code> so blocked bots do not consume CPU or DB connections.</li>
+              <li><strong>Combine <code>ip + email</code> on login limiters:</strong> Protects shared NAT networks while
+                still stopping distributed password guessing against a single user account.</li>
+              <li><strong>Use <code>skipSuccessfulRequests: true</code> thoughtfully:</strong> Helpful on login
+                endpoints so normal users logging in multiple times a day are not penalized while failed guesses still
+                hit the cap.</li>
+              <li><strong>Remember distributed state:</strong> Use a shared store like Redis whenever running clustered
+                Node processes or multiple replicas.</li>
             </ul>
           </article>
         </div>
@@ -455,80 +539,119 @@ retry-after: 900
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Inspect Rate-Limit Headers:</strong> Make 3 consecutive <code>GET</code> requests to an endpoint protected by <code>generalApiLimiter</code> with <code>curl -i</code> and observe how <code>RateLimit-Remaining</code> decrements on each call.</li>
-          <li><strong>Health Check Exemption Test:</strong> Set a temporary low limit of <code>3</code> requests on <code>generalApiLimiter</code>, call <code>GET /api/v1/health</code> 5 times, and verify it always returns <code>200 OK</code> due to the <code>skip</code> rule.</li>
-          <li><strong>Account-Based vs. IP-Based Simulation:</strong> Test <code>accountActionLimiter</code> by sending requests with two different simulated user IDs from the same localhost IP and verify each user gets an independent quota.</li>
-          <li><strong>Verify <code>skipSuccessfulRequests</code>:</strong> Send 5 successful logins to <code>/api/v1/auth/login</code> and verify none trigger <code>429</code>, then send 5 failed logins and verify the 6th fails with <code>429 Too Many Requests</code>.</li>
+          <li><strong>Inspect Rate-Limit Headers:</strong> Make 3 consecutive <code>GET</code> requests to an endpoint
+            protected by <code>generalApiLimiter</code> with <code>curl -i</code> and observe how
+            <code>RateLimit-Remaining</code> decrements on each call.</li>
+          <li><strong>Health Check Exemption Test:</strong> Set a temporary low limit of <code>3</code> requests on
+            <code>generalApiLimiter</code>, call <code>GET /api/v1/health</code> 5 times, and verify it always returns
+            <code>200 OK</code> due to the <code>skip</code> rule.</li>
+          <li><strong>Account-Based vs. IP-Based Simulation:</strong> Test <code>accountActionLimiter</code> by sending
+            requests with two different simulated user IDs from the same localhost IP and verify each user gets an
+            independent quota.</li>
+          <li><strong>Verify <code>skipSuccessfulRequests</code>:</strong> Send 5 successful logins to
+            <code>/api/v1/auth/login</code> and verify none trigger <code>429</code>, then send 5 failed logins and
+            verify the 6th fails with <code>429 Too Many Requests</code>.</li>
         </ol>
       </section>
 
       <section class="card-section" id="mini-project">
         <h2>Day 7 Mini Project: Multi-Tier Rate-Limited Feedback &amp; Auth API</h2>
         <p>
-          Add production-styled rate limiting to an Express API and safely verify both normal and excessive traffic patterns.
+          Add production-styled rate limiting to an Express API and safely verify both normal and excessive traffic
+          patterns.
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Configure <code>app.set('trust proxy', 1)</code> and create a dedicated <code>src/middleware/rateLimiters.js</code> module with three distinct limiters: <code>generalLimiter</code> (100 req / 15 min), <code>loginLimiter</code> (5 failed attempts / 15 min, keyed by <code>ip + email</code>, <code>skipSuccessfulRequests: true</code>), and <code>contactLimiter</code> (3 submissions / 1 hour per IP).</li>
+          <li>Configure <code>app.set('trust proxy', 1)</code> and create a dedicated
+            <code>src/middleware/rateLimiters.js</code> module with three distinct limiters: <code>generalLimiter</code>
+            (100 req / 15 min), <code>loginLimiter</code> (5 failed attempts / 15 min, keyed by <code>ip + email</code>,
+            <code>skipSuccessfulRequests: true</code>), and <code>contactLimiter</code> (3 submissions / 1 hour per IP).
+          </li>
           <li>Mount a <code>GET /api/v1/health</code> route that bypasses all rate limits.</li>
-          <li>Return consistent JSON <code>429</code> payloads containing <code>status</code>, <code>errorCode: 'RATE_LIMIT_EXCEEDED'</code>, <code>message</code>, and <code>retryAfterSeconds</code> alongside standard <code>RateLimit-*</code> and <code>Retry-After</code> headers.</li>
-          <li>Test normal requests and safe local burst requests with <code>curl</code>, capturing both <code>200</code>/<code>401</code> and <code>429</code> responses.</li>
+          <li>Return consistent JSON <code>429</code> payloads containing <code>status</code>,
+            <code>errorCode: 'RATE_LIMIT_EXCEEDED'</code>, <code>message</code>, and <code>retryAfterSeconds</code>
+            alongside standard <code>RateLimit-*</code> and <code>Retry-After</code> headers.</li>
+          <li>Test normal requests and safe local burst requests with <code>curl</code>, capturing both
+            <code>200</code>/<code>401</code> and <code>429</code> responses.</li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 7 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and
+          explanations.</p>
 
         <form id="day7QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
             <legend>1. Which HTTP status code should an API return when a client exceeds its rate limit?</legend>
             <label class="quiz-option"><input type="radio" name="q1" value="a"> <code>403 Forbidden</code></label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> <code>429 Too Many Requests</code></label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b">
+              <code>429 Too Many Requests</code></label>
             <label class="quiz-option"><input type="radio" name="q1" value="c"> <code>409 Conflict</code></label>
             <label class="quiz-option"><input type="radio" name="q1" value="d"> <code>502 Bad Gateway</code></label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
-            <legend>2. What happens on a cloud platform behind a reverse proxy if you enable IP-based rate limiting WITHOUT <code>app.set('trust proxy', 1)</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q2" value="a"> Express disables rate limiting automatically</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="b"> All users appear to share the reverse proxy's IP address, so a few requests from one user can lock out every user on your site</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="c"> Rate limits increase to unlimited</label>
-            <label class="quiz-option"><input type="radio" name="q2" value="d"> Node.js switches from HTTP to FTP</label>
+            <legend>2. What happens on a cloud platform behind a reverse proxy if you enable IP-based rate limiting
+              WITHOUT <code>app.set('trust proxy', 1)</code>?</legend>
+            <label class="quiz-option"><input type="radio" name="q2" value="a"> Express disables rate limiting
+              automatically</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="b"> All users appear to share the reverse
+              proxy's IP address, so a few requests from one user can lock out every user on your site</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="c"> Rate limits increase to
+              unlimited</label>
+            <label class="quiz-option"><input type="radio" name="q2" value="d"> Node.js switches from HTTP to
+              FTP</label>
             <div class="quiz-feedback" id="feedback-q2" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
-            <legend>3. Why is applying a stricter rate limit specifically on <code>POST /api/v1/auth/login</code> and <code>/forgot-password</code> important?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> Because login routes never accept JSON bodies</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> To stop automated password brute-forcing, credential stuffing, and email-flooding abuse without breaking normal API browsing</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> Because browsers forbid more than 5 <code>GET</code> requests per hour</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="d"> To eliminate the need for password hashing</label>
+            <legend>3. Why is applying a stricter rate limit specifically on <code>POST /api/v1/auth/login</code> and
+              <code>/forgot-password</code> important?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Because login routes never accept JSON
+              bodies</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> To stop automated password
+              brute-forcing, credential stuffing, and email-flooding abuse without breaking normal API browsing</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> Because browsers forbid more than 5
+              <code>GET</code> requests per hour</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> To eliminate the need for password
+              hashing</label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
             <legend>4. What does the <code>Retry-After</code> HTTP header tell an API client?</legend>
-            <label class="quiz-option"><input type="radio" name="q4" value="a"> The user's password expiration date</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="b"> How long (in seconds or an HTTP date) the client should wait before sending another request</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="c"> How many database collections exist</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="d"> Which Node.js version is installed</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> The user's password expiration
+              date</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> How long (in seconds or an HTTP date)
+              the client should wait before sending another request</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> How many database collections
+              exist</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> Which Node.js version is
+              installed</label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
-            <legend>5. Why does an in-memory rate-limit store (<code>MemoryStore</code>) break down when scaling an Express app across 4 server containers?</legend>
-            <label class="quiz-option"><input type="radio" name="q5" value="a"> Each container keeps its own separate RAM counter, so clients can multiply their effective quota across instances</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> MemoryStore only works on Windows computers</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="c"> MemoryStore deletes MongoDB collections when full</label>
-            <label class="quiz-option"><input type="radio" name="q5" value="d"> Express forbids using <code>MemoryStore</code> on <code>POST</code> routes</label>
+            <legend>5. Why does an in-memory rate-limit store (<code>MemoryStore</code>) break down when scaling an
+              Express app across 4 server containers?</legend>
+            <label class="quiz-option"><input type="radio" name="q5" value="a"> Each container keeps its own separate
+              RAM counter, so clients can multiply their effective quota across instances</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> MemoryStore only works on Windows
+              computers</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="c"> MemoryStore deletes MongoDB collections
+              when full</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d"> Express forbids using
+              <code>MemoryStore</code> on <code>POST</code> routes</label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
-            <legend>6. What external store is commonly used to share rate-limit counters across distributed Node.js servers?</legend>
-            <label class="quiz-option"><input type="radio" name="q6" value="a"> Local browser <code>localStorage</code></label>
+            <legend>6. What external store is commonly used to share rate-limit counters across distributed Node.js
+              servers?</legend>
+            <label class="quiz-option"><input type="radio" name="q6" value="a"> Local browser
+              <code>localStorage</code></label>
             <label class="quiz-option"><input type="radio" name="q6" value="b"> Redis</label>
             <label class="quiz-option"><input type="radio" name="q6" value="c"> CSS custom properties</label>
             <label class="quiz-option"><input type="radio" name="q6" value="d"> <code>package-lock.json</code></label>
@@ -536,37 +659,55 @@ retry-after: 900
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. Why should health-check endpoints like <code>GET /api/v1/health</code> usually skip strict rate limiting?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> So load balancers and uptime monitors pinging continuously do not receive <code>429</code> and falsely restart healthy servers</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> Because health checks cannot return JSON</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="c"> Because Express always crashes on <code>/health</code> routes</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="d"> To expose environment variables publicly</label>
+            <legend>7. Why should health-check endpoints like <code>GET /api/v1/health</code> usually skip strict rate
+              limiting?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> So load balancers and uptime monitors
+              pinging continuously do not receive <code>429</code> and falsely restart healthy servers</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> Because health checks cannot return
+              JSON</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> Because Express always crashes on
+              <code>/health</code> routes</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> To expose environment variables
+              publicly</label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
-            <legend>8. What is the benefit of setting <code>skipSuccessfulRequests: true</code> on a login rate limiter?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> Attackers can guess passwords infinitely without counting</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> Only failed login attempts count toward the limit, preventing normal users from getting locked out when they enter the right password</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> It bypasses password verification completely</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="d"> It converts <code>401</code> responses into <code>200 OK</code></label>
+            <legend>8. What is the benefit of setting <code>skipSuccessfulRequests: true</code> on a login rate limiter?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Attackers can guess passwords infinitely
+              without counting</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> Only failed login attempts count toward
+              the limit, preventing normal users from getting locked out when they enter the right password</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> It bypasses password verification
+              completely</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> It converts <code>401</code> responses
+              into <code>200 OK</code></label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. Why is combining <code>req.ip</code> and the normalized email in <code>keyGenerator</code> useful for login throttling?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> It lets users on a shared office/campus Wi-Fi IP fail independently without locking out other people on the same network</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> It stores plaintext passwords inside HTTP headers</label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> It prevents MongoDB from creating indexes</label>
+            <legend>9. Why is combining <code>req.ip</code> and the normalized email in <code>keyGenerator</code> useful
+              for login throttling?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a"> It lets users on a shared office/campus
+              Wi-Fi IP fail independently without locking out other people on the same network</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b"> It stores plaintext passwords inside
+              HTTP headers</label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c"> It prevents MongoDB from creating
+              indexes</label>
             <label class="quiz-option"><input type="radio" name="q9" value="d"> It disables CORS checks</label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. Where in the middleware pipeline should rate-limiting middleware run relative to database queries and password hashing?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> After database queries and <code>bcrypt.compare()</code> finish</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> Before expensive database queries and <code>bcrypt.compare()</code> so blocked requests are rejected cheaply</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> Inside the global 4-argument error handler</label>
+            <legend>10. Where in the middleware pipeline should rate-limiting middleware run relative to database
+              queries and password hashing?</legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> After database queries and
+              <code>bcrypt.compare()</code> finish</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> Before expensive database queries and
+              <code>bcrypt.compare()</code> so blocked requests are rejected cheaply</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> Inside the global 4-argument error
+              handler</label>
             <label class="quiz-option"><input type="radio" name="q10" value="d"> Inside browser HTML forms only</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
@@ -586,23 +727,35 @@ retry-after: 900
         <div class="qa-list">
           <details class="qa-item">
             <summary>1. What problem does rate limiting solve on password-reset and contact-form endpoints?</summary>
-            <p>It prevents bots from triggering thousands of automated emails or SMS messages, protecting your server against spam abuse, wasted third-party API costs, and email sender reputation damage.</p>
+            <p>It prevents bots from triggering thousands of automated emails or SMS messages, protecting your server
+              against spam abuse, wasted third-party API costs, and email sender reputation damage.</p>
           </details>
           <details class="qa-item">
             <summary>2. Compare IP-based rate limiting and account-based rate limiting.</summary>
-            <p>IP-based rate limiting identifies clients by network IP address and works before authentication (such as on signup/login), though users behind shared NAT Wi-Fi share an IP. Account-based limiting identifies authenticated users via <code>req.user.id</code> or API key, giving each user a fair, independent quota.</p>
+            <p>IP-based rate limiting identifies clients by network IP address and works before authentication (such as
+              on signup/login), though users behind shared NAT Wi-Fi share an IP. Account-based limiting identifies
+              authenticated users via <code>req.user.id</code> or API key, giving each user a fair, independent quota.
+            </p>
           </details>
           <details class="qa-item">
             <summary>3. What is the boundary burst trade-off of a Fixed Window counter?</summary>
-            <p>If a fixed window allows 100 requests per minute, a client could send 100 requests at 12:00:59 and another 100 requests at 12:01:01—creating 200 requests in two seconds across the reset boundary. Sliding window and token bucket algorithms smooth out this spike.</p>
+            <p>If a fixed window allows 100 requests per minute, a client could send 100 requests at 12:00:59 and
+              another 100 requests at 12:01:01—creating 200 requests in two seconds across the reset boundary. Sliding
+              window and token bucket algorithms smooth out this spike.</p>
           </details>
           <details class="qa-item">
-            <summary>4. Why is <code>trust proxy</code> essential before deploying an Express rate limiter to production?</summary>
-            <p>Behind a cloud load balancer or reverse proxy, Express sees the proxy's internal IP in <code>req.ip</code> unless <code>trust proxy</code> is configured. Without it, all internet users share one counter and quickly block one another.</p>
+            <summary>4. Why is <code>trust proxy</code> essential before deploying an Express rate limiter to
+              production?</summary>
+            <p>Behind a cloud load balancer or reverse proxy, Express sees the proxy's internal IP in
+              <code>req.ip</code> unless <code>trust proxy</code> is configured. Without it, all internet users share
+              one counter and quickly block one another.</p>
           </details>
           <details class="qa-item">
-            <summary>5. Explain why distributed Node.js deployments require Redis (or another shared store) for rate limiting.</summary>
-            <p>Each Node.js container or cluster worker has isolated RAM. A shared Redis store ensures every server instance reads and increments the same central counter atomically so limits remain accurate regardless of which server handles each request.</p>
+            <summary>5. Explain why distributed Node.js deployments require Redis (or another shared store) for rate
+              limiting.</summary>
+            <p>Each Node.js container or cluster worker has isolated RAM. A shared Redis store ensures every server
+              instance reads and increments the same central counter atomically so limits remain accurate regardless of
+              which server handles each request.</p>
           </details>
         </div>
       </section>
@@ -622,12 +775,19 @@ app.post('/api/v1/login', loginController);</code></pre>
 
           <article class="challenge-card">
             <h3>Challenge 2: Build a Custom In-Memory Fixed-Window Limiter from Scratch</h3>
-            <p>Without installing <code>express-rate-limit</code>, write a small educational Express middleware factory <code>createSimpleRateLimiter({ windowMs, maxRequests })</code> using a JavaScript <code>Map</code> that tracks <code>{ count, resetAt }</code> per <code>req.ip</code>, sets <code>RateLimit-Limit</code> and <code>RateLimit-Remaining</code> headers, and returns <code>429 Too Many Requests</code> when exceeded.</p>
+            <p>Without installing <code>express-rate-limit</code>, write a small educational Express middleware factory
+              <code>createSimpleRateLimiter({ windowMs, maxRequests })</code> using a JavaScript <code>Map</code> that
+              tracks <code>{ count, resetAt }</code> per <code>req.ip</code>, sets <code>RateLimit-Limit</code> and
+              <code>RateLimit-Remaining</code> headers, and returns <code>429 Too Many Requests</code> when exceeded.
+            </p>
           </article>
 
           <article class="challenge-card">
             <h3>Challenge 3: Per-User Tiered Quota Key Generator</h3>
-            <p>Suppose authenticated users have <code>req.user.plan</code> equal to <code>'free'</code> or <code>'pro'</code>. Configure <code>express-rate-limit</code> using dynamic <code>limit: (req) =&gt; ...</code> and <code>keyGenerator: (req) =&gt; ...</code> so free accounts get 30 requests/minute and pro accounts get 300 requests/minute.</p>
+            <p>Suppose authenticated users have <code>req.user.plan</code> equal to <code>'free'</code> or
+              <code>'pro'</code>. Configure <code>express-rate-limit</code> using dynamic
+              <code>limit: (req) =&gt; ...</code> and <code>keyGenerator: (req) =&gt; ...</code> so free accounts get 30
+              requests/minute and pro accounts get 300 requests/minute.</p>
           </article>
         </div>
       </section>
@@ -635,23 +795,32 @@ app.post('/api/v1/login', loginController);</code></pre>
       <section class="card-section" id="summary">
         <h2>Day 7 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Rate limiting caps requests per time window to defend against brute-force attacks, scraping, DoS, and runaway costs.</li>
-          <li>Always set <code>app.set('trust proxy', 1)</code> behind reverse proxies so <code>req.ip</code> reflects the real client.</li>
-          <li>Apply tiered limiters: moderate global limits across <code>/api</code>, strict limits on sensitive routes (<code>/login</code>, <code>/forgot-password</code>, <code>/contact</code>), and exemptions for <code>/health</code> probes.</li>
-          <li>Return HTTP <code>429 Too Many Requests</code> with <code>RateLimit-*</code> and <code>Retry-After</code> headers in a consistent JSON format.</li>
+          <li>Rate limiting caps requests per time window to defend against brute-force attacks, scraping, DoS, and
+            runaway costs.</li>
+          <li>Always set <code>app.set('trust proxy', 1)</code> behind reverse proxies so <code>req.ip</code> reflects
+            the real client.</li>
+          <li>Apply tiered limiters: moderate global limits across <code>/api</code>, strict limits on sensitive routes
+            (<code>/login</code>, <code>/forgot-password</code>, <code>/contact</code>), and exemptions for
+            <code>/health</code> probes.</li>
+          <li>Return HTTP <code>429 Too Many Requests</code> with <code>RateLimit-*</code> and <code>Retry-After</code>
+            headers in a consistent JSON format.</li>
           <li>Use a shared store like Redis when running multiple Node.js instances in production.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 7 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 7: Rate-limiting request flow, window counters, headers, and distributed store architecture.</p>
+        <p>Visual summary diagram for Day 7: Rate-limiting request flow, window counters, headers, and distributed store
+          architecture.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating API rate limiting request flow, 429 responses, and Redis shared counter architecture" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating API rate limiting request flow, 429 responses, and Redis shared counter architecture"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 7 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 7/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 7/</code> folder to
+              display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -670,11 +839,12 @@ app.post('/api/v1/login', loginController);</code></pre>
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -690,7 +860,8 @@ app.post('/api/v1/login', loginController);</code></pre>
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -705,4 +876,5 @@ app.post('/api/v1/login', loginController);</code></pre>
 
   <script src="script.js"></script>
 </body>
+
 </html>

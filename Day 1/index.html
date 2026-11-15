@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
   <link rel="icon" href="../logo.webp">
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
 
@@ -17,7 +19,8 @@
         <span class="brand-text">Arslan Weblab</span>
       </a>
 
-      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false" aria-controls="topNavLinks" aria-label="Toggle navigation menu">
+      <button type="button" class="mobile-menu-toggle" id="mobileMenuToggle" aria-expanded="false"
+        aria-controls="topNavLinks" aria-label="Toggle navigation menu">
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
         <span class="hamburger-line"></span>
@@ -69,7 +72,11 @@
         </div>
         <h1>Day 1: Advanced Express.js</h1>
         <p class="lead-intro">
-          Express.js is the most widely used web framework in the Node.js ecosystem. While beginners often start by putting every route in a single <code>server.js</code> file, production backends require structured routers, clear controller responsibilities, deep mastery of request and response objects, safe async handling, and predictable RESTful API design. Today you will learn how Express works under the hood and how to organize scalable APIs from the ground up.
+          Express.js is the most widely used web framework in the Node.js ecosystem. While beginners often start by
+          putting every route in a single <code>server.js</code> file, production backends require structured routers,
+          clear controller responsibilities, deep mastery of request and response objects, safe async handling, and
+          predictable RESTful API design. Today you will learn how Express works under the hood and how to organize
+          scalable APIs from the ground up.
         </p>
       </section>
 
@@ -80,9 +87,12 @@
           <li>Explain the Express.js application lifecycle from server initialization to graceful shutdown.</li>
           <li>Trace how an incoming HTTP request travels through Express and produces an HTTP response.</li>
           <li>Organize endpoints cleanly using <code>express.Router()</code> and separate controller functions.</li>
-          <li>Read and validate route parameters (<code>req.params</code>), query parameters (<code>req.query</code>), and JSON request bodies (<code>req.body</code>).</li>
+          <li>Read and validate route parameters (<code>req.params</code>), query parameters (<code>req.query</code>),
+            and JSON request bodies (<code>req.body</code>).</li>
           <li>Use advanced properties and methods on the <code>req</code> and <code>res</code> objects accurately.</li>
-          <li>Configure Express application settings such as <code>trust proxy</code>, <code>etag</code>, and <code>x-powered-by</code>.</li>
+          <li>Configure Express application settings such as <code>trust proxy</code>, <code>etag</code>, and
+            <code>x-powered-by</code>.
+          </li>
           <li>Write async route handlers and forward errors safely without crashing the Node.js process.</li>
           <li>Design clean, consistent RESTful endpoints and build a multi-route Express API.</li>
         </ul>
@@ -92,10 +102,21 @@
         <h2>Prerequisites</h2>
         <p>Before diving into Day 1, make sure you understand these foundational concepts:</p>
         <ul class="styled-list">
-          <li><strong>Browser JavaScript vs. Node.js Runtime:</strong> Browser JavaScript runs inside a user's browser (Chrome, Firefox, Safari) to manipulate the DOM and make network requests via <code>fetch()</code>. Node.js runs on a server machine, allowing JavaScript to open network ports, read files, and talk to databases. Express.js runs exclusively on Node.js, never directly inside a web browser.</li>
-          <li><strong>Basic JavaScript ES6+ Syntax:</strong> Variables (<code>const</code>, <code>let</code>), arrow functions, destructuring, modules (<code>import</code>/<code>export</code> or <code>require</code>), and <code>async/await</code>.</li>
-          <li><strong>HTTP Basics:</strong> Understanding HTTP methods (<code>GET</code>, <code>POST</code>, <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>), URLs, headers, and status codes (<code>200</code>, <code>201</code>, <code>400</code>, <code>404</code>, <code>500</code>).</li>
-          <li><strong>Node.js &amp; npm Installed:</strong> Ability to run commands like <code>npm init -y</code> and <code>node server.js</code> in your terminal.</li>
+          <li><strong>Browser JavaScript vs. Node.js Runtime:</strong> Browser JavaScript runs inside a user's browser
+            (Chrome, Firefox, Safari) to manipulate the DOM and make network requests via <code>fetch()</code>. Node.js
+            runs on a server machine, allowing JavaScript to open network ports, read files, and talk to databases.
+            Express.js runs exclusively on Node.js, never directly inside a web browser.</li>
+          <li><strong>Basic JavaScript ES6+ Syntax:</strong> Variables (<code>const</code>, <code>let</code>), arrow
+            functions, destructuring, modules (<code>import</code>/<code>export</code> or <code>require</code>), and
+            <code>async/await</code>.
+          </li>
+          <li><strong>HTTP Basics:</strong> Understanding HTTP methods (<code>GET</code>, <code>POST</code>,
+            <code>PUT</code>, <code>PATCH</code>, <code>DELETE</code>), URLs, headers, and status codes
+            (<code>200</code>, <code>201</code>, <code>400</code>, <code>404</code>, <code>500</code>).
+          </li>
+          <li><strong>Node.js &amp; npm Installed:</strong> Ability to run commands like <code>npm init -y</code> and
+            <code>node server.js</code> in your terminal.
+          </li>
         </ul>
       </section>
 
@@ -104,27 +125,35 @@
         <div class="term-grid">
           <article class="term-card">
             <h3>Express Application (<code>app</code>)</h3>
-            <p>The core object created by calling <code>express()</code>. It holds application settings, mounts middleware and routers, and listens for HTTP connections or connects to Node's HTTP server.</p>
+            <p>The core object created by calling <code>express()</code>. It holds application settings, mounts
+              middleware and routers, and listens for HTTP connections or connects to Node's HTTP server.</p>
           </article>
           <article class="term-card">
             <h3>Express Router (<code>express.Router()</code>)</h3>
-            <p>A mini, isolated routing system that acts like a modular sub-application. Routers group related endpoints (for example, all <code>/api/v1/courses</code> routes) into separate files.</p>
+            <p>A mini, isolated routing system that acts like a modular sub-application. Routers group related endpoints
+              (for example, all <code>/api/v1/courses</code> routes) into separate files.</p>
           </article>
           <article class="term-card">
             <h3>Route Handler / Controller</h3>
-            <p>A function that receives <code>(req, res, next)</code> for a matched URL and HTTP method, processes inputs, coordinates with data services, and sends the response.</p>
+            <p>A function that receives <code>(req, res, next)</code> for a matched URL and HTTP method, processes
+              inputs, coordinates with data services, and sends the response.</p>
           </article>
           <article class="term-card">
             <h3>Request Object (<code>req</code>)</h3>
-            <p>An enhanced Node.js <code>http.IncomingMessage</code> object representing the client's HTTP request, including URL paths, headers, parameters, query strings, and parsed body data.</p>
+            <p>An enhanced Node.js <code>http.IncomingMessage</code> object representing the client's HTTP request,
+              including URL paths, headers, parameters, query strings, and parsed body data.</p>
           </article>
           <article class="term-card">
             <h3>Response Object (<code>res</code>)</h3>
-            <p>An enhanced Node.js <code>http.ServerResponse</code> object used to set status codes, attach headers, and send JSON, text, files, or redirects back to the client.</p>
+            <p>An enhanced Node.js <code>http.ServerResponse</code> object used to set status codes, attach headers, and
+              send JSON, text, files, or redirects back to the client.</p>
           </article>
           <article class="term-card">
             <h3>RESTful API</h3>
-            <p>An architectural style for APIs that models data as resources (like <code>/users</code> or <code>/orders</code>), uses standard HTTP methods to act on them, and communicates via stateless JSON payloads.</p>
+            <p>An architectural style for APIs that models data as resources (like <code>/users</code> or
+              <code>/orders</code>), uses standard HTTP methods to act on them, and communicates via stateless JSON
+              payloads.
+            </p>
           </article>
         </div>
       </section>
@@ -134,30 +163,54 @@
 
         <h3>1. Review of Express.js Fundamentals</h3>
         <p>
-          Node.js includes a built-in <code>http</code> module that can create web servers, but using it directly requires manually parsing URL strings, collecting raw data chunks from streams for request bodies, checking HTTP methods with nested <code>if</code> statements, and manually setting content-type headers. Express.js is a minimal, unopinionated web framework built on top of Node's <code>http</code> module that automates these repetitive tasks while keeping full access to the underlying Node.js primitives.
+          Node.js includes a built-in <code>http</code> module that can create web servers, but using it directly
+          requires manually parsing URL strings, collecting raw data chunks from streams for request bodies, checking
+          HTTP methods with nested <code>if</code> statements, and manually setting content-type headers. Express.js is
+          a minimal, unopinionated web framework built on top of Node's <code>http</code> module that automates these
+          repetitive tasks while keeping full access to the underlying Node.js primitives.
         </p>
 
         <h3>2. Express Application Lifecycle</h3>
         <p>
-          Understanding when things happen in an Express app prevents subtle startup and shutdown bugs. An Express application goes through four distinct phases:
+          Understanding when things happen in an Express app prevents subtle startup and shutdown bugs. An Express
+          application goes through four distinct phases:
         </p>
         <ol class="styled-list">
-          <li><strong>Configuration &amp; Setup Phase:</strong> You load environment variables, create the Express instance (<code>const app = express()</code>), apply settings with <code>app.set()</code>, and register global middleware (such as <code>express.json()</code>).</li>
-          <li><strong>Route Mounting Phase:</strong> You connect feature routers to base URL prefixes using <code>app.use('/api/v1/courses', courseRouter)</code>, followed by a 404 fallback handler and an error-handling middleware at the very end.</li>
-          <li><strong>Listening Phase:</strong> Calling <code>app.listen(PORT)</code> internally wraps <code>app</code> with Node's <code>http.createServer(app)</code> and opens a TCP port to accept incoming client connections continuously.</li>
-          <li><strong>Graceful Shutdown Phase:</strong> When the server receives termination signals like <code>SIGINT</code> (Ctrl+C) or <code>SIGTERM</code> (from hosting platforms), calling <code>server.close()</code> stops accepting new requests, lets active requests finish, and closes database connections cleanly.</li>
+          <li><strong>Configuration &amp; Setup Phase:</strong> You load environment variables, create the Express
+            instance (<code>const app = express()</code>), apply settings with <code>app.set()</code>, and register
+            global middleware (such as <code>express.json()</code>).</li>
+          <li><strong>Route Mounting Phase:</strong> You connect feature routers to base URL prefixes using
+            <code>app.use('/api/v1/courses', courseRouter)</code>, followed by a 404 fallback handler and an
+            error-handling middleware at the very end.
+          </li>
+          <li><strong>Listening Phase:</strong> Calling <code>app.listen(PORT)</code> internally wraps <code>app</code>
+            with Node's <code>http.createServer(app)</code> and opens a TCP port to accept incoming client connections
+            continuously.</li>
+          <li><strong>Graceful Shutdown Phase:</strong> When the server receives termination signals like
+            <code>SIGINT</code> (Ctrl+C) or <code>SIGTERM</code> (from hosting platforms), calling
+            <code>server.close()</code> stops accepting new requests, lets active requests finish, and closes database
+            connections cleanly.
+          </li>
         </ol>
 
         <h3>3. How Express Handles Requests and Responses</h3>
         <p>
-          When a client (like a browser running <code>fetch()</code>, a mobile app, or Postman) sends an HTTP request to your server, Node.js parses the raw TCP stream into an incoming request and a response stream. Express wraps those streams into <code>req</code> and <code>res</code> and pushes them sequentially through its internal stack of registered layers (middleware and routes) in the exact order they were registered in your code.
+          When a client (like a browser running <code>fetch()</code>, a mobile app, or Postman) sends an HTTP request to
+          your server, Node.js parses the raw TCP stream into an incoming request and a response stream. Express wraps
+          those streams into <code>req</code> and <code>res</code> and pushes them sequentially through its internal
+          stack of registered layers (middleware and routes) in the exact order they were registered in your code.
         </p>
         <p>
-          Each layer checks whether the incoming request matches its path prefix and HTTP method. If it matches, Express runs that layer's callback function. The cycle ends only when a handler calls a terminating method such as <code>res.json()</code>, <code>res.send()</code>, <code>res.sendStatus()</code>, or <code>res.end()</code>. If a handler forgets to send a response and forgets to call <code>next()</code>, the client request hangs indefinitely until it times out.
+          Each layer checks whether the incoming request matches its path prefix and HTTP method. If it matches, Express
+          runs that layer's callback function. The cycle ends only when a handler calls a terminating method such as
+          <code>res.json()</code>, <code>res.send()</code>, <code>res.sendStatus()</code>, or <code>res.end()</code>. If
+          a handler forgets to send a response and forgets to call <code>next()</code>, the client request hangs
+          indefinitely until it times out.
         </p>
 
         <h3>4. Request and Response Objects in Depth</h3>
-        <p>Knowing the exact properties of <code>req</code> and <code>res</code> allows you to handle any HTTP interaction cleanly:</p>
+        <p>Knowing the exact properties of <code>req</code> and <code>res</code> allows you to handle any HTTP
+          interaction cleanly:</p>
         <div class="table-wrap">
           <table class="data-table">
             <thead>
@@ -171,21 +224,27 @@
               <tr>
                 <td><code>req.params</code></td>
                 <td>Captures dynamic named segments defined in the route path.</td>
-                <td>Route <code>/courses/:courseId</code> with URL <code>/courses/42</code> gives <code>{ courseId: "42" }</code></td>
+                <td>Route <code>/courses/:courseId</code> with URL <code>/courses/42</code> gives
+                  <code>{ courseId: "42" }</code>
+                </td>
               </tr>
               <tr>
                 <td><code>req.query</code></td>
                 <td>Parses key-value pairs after the <code>?</code> in the URL. Always strings by default.</td>
-                <td>URL <code>/courses?level=beginner&amp;limit=10</code> gives <code>{ level: "beginner", limit: "10" }</code></td>
+                <td>URL <code>/courses?level=beginner&amp;limit=10</code> gives
+                  <code>{ level: "beginner", limit: "10" }</code>
+                </td>
               </tr>
               <tr>
                 <td><code>req.body</code></td>
-                <td>Holds parsed payload data sent in <code>POST</code>/<code>PUT</code>/<code>PATCH</code> requests (requires <code>express.json()</code>).</td>
+                <td>Holds parsed payload data sent in <code>POST</code>/<code>PUT</code>/<code>PATCH</code> requests
+                  (requires <code>express.json()</code>).</td>
                 <td><code>{ title: "Node Streams", durationHours: 4 }</code></td>
               </tr>
               <tr>
                 <td><code>req.headers</code> / <code>req.get()</code></td>
-                <td>Reads HTTP headers case-insensitively (e.g., <code>Authorization</code>, <code>Content-Type</code>).</td>
+                <td>Reads HTTP headers case-insensitively (e.g., <code>Authorization</code>, <code>Content-Type</code>).
+                </td>
                 <td><code>req.get('content-type')</code></td>
               </tr>
               <tr>
@@ -205,7 +264,8 @@
               </tr>
               <tr>
                 <td><code>res.json(data)</code></td>
-                <td>Serializes JS objects/arrays to JSON, sets <code>Content-Type: application/json</code>, and ends the response.</td>
+                <td>Serializes JS objects/arrays to JSON, sets <code>Content-Type: application/json</code>, and ends the
+                  response.</td>
                 <td><code>res.json({ status: "success", data: courses })</code></td>
               </tr>
               <tr>
@@ -224,18 +284,30 @@
 
         <h3>5. Routers, Application-Level vs. Router-Level Organization</h3>
         <p>
-          In a real backend, you do not put 50 endpoints inside <code>app.js</code>. Instead, you separate <strong>application-level organization</strong> (creating <code>app</code>, applying global settings, parsing JSON, mounting top-level path prefixes) from <strong>router-level organization</strong> (feature modules created with <code>express.Router()</code>).
+          In a real backend, you do not put 50 endpoints inside <code>app.js</code>. Instead, you separate
+          <strong>application-level organization</strong> (creating <code>app</code>, applying global settings, parsing
+          JSON, mounting top-level path prefixes) from <strong>router-level organization</strong> (feature modules
+          created with <code>express.Router()</code>).
         </p>
         <p>
-          When you mount a router at <code>app.use('/api/v1/courses', courseRouter)</code>, Express strips <code>/api/v1/courses</code> inside <code>courseRouter</code>. Inside <code>courseRouter</code>, <code>router.get('/')</code> matches <code>GET /api/v1/courses</code>, and <code>router.get('/:id')</code> matches <code>GET /api/v1/courses/123</code>. You can also use <code>router.route('/:id')</code> to chain <code>.get()</code>, <code>.patch()</code>, and <code>.delete()</code> on the same path without repeating the path string.
+          When you mount a router at <code>app.use('/api/v1/courses', courseRouter)</code>, Express strips
+          <code>/api/v1/courses</code> inside <code>courseRouter</code>. Inside <code>courseRouter</code>,
+          <code>router.get('/')</code> matches <code>GET /api/v1/courses</code>, and <code>router.get('/:id')</code>
+          matches <code>GET /api/v1/courses/123</code>. You can also use <code>router.route('/:id')</code> to chain
+          <code>.get()</code>, <code>.patch()</code>, and <code>.delete()</code> on the same path without repeating the
+          path string.
         </p>
 
         <h3>6. Controller Responsibilities</h3>
         <p>
-          A router file should only map URLs and HTTP methods to controller functions. It should not contain complex calculations, validation loops, or database queries directly. A <strong>controller</strong> has a clear, focused job:
+          A router file should only map URLs and HTTP methods to controller functions. It should not contain complex
+          calculations, validation loops, or database queries directly. A <strong>controller</strong> has a clear,
+          focused job:
         </p>
         <ul class="styled-list">
-          <li>Extract and validate inputs from <code>req.params</code>, <code>req.query</code>, and <code>req.body</code>.</li>
+          <li>Extract and validate inputs from <code>req.params</code>, <code>req.query</code>, and
+            <code>req.body</code>.
+          </li>
           <li>Call data layer or service logic to read or update state.</li>
           <li>Format a consistent JSON response with the appropriate HTTP status code.</li>
           <li>Pass unexpected errors forward using <code>next(error)</code>.</li>
@@ -243,26 +315,41 @@
 
         <h3>7. Express Settings and Configuration</h3>
         <p>
-          Express provides built-in configuration switches controlled via <code>app.set(key, value)</code>, <code>app.enable(key)</code>, and <code>app.disable(key)</code>:
+          Express provides built-in configuration switches controlled via <code>app.set(key, value)</code>,
+          <code>app.enable(key)</code>, and <code>app.disable(key)</code>:
         </p>
         <ul class="styled-list">
-          <li><code>app.disable('x-powered-by')</code>: Removes the default <code>X-Powered-By: Express</code> response header so attackers do not immediately know your server framework.</li>
-          <li><code>app.set('trust proxy', 1)</code>: Essential when deploying behind reverse proxies like Nginx, Cloudflare, Render, or Railway so <code>req.ip</code> and <code>req.protocol</code> reflect the real client instead of the local proxy.</li>
-          <li><code>app.set('json spaces', 2)</code>: Optional formatting for readable JSON in development (avoid in production to save bandwidth).</li>
-          <li><code>app.set('case sensitive routing', false)</code> and <code>app.set('strict routing', false)</code>: Controls whether <code>/Courses</code> and <code>/courses/</code> behave identically to <code>/courses</code>.</li>
+          <li><code>app.disable('x-powered-by')</code>: Removes the default <code>X-Powered-By: Express</code> response
+            header so attackers do not immediately know your server framework.</li>
+          <li><code>app.set('trust proxy', 1)</code>: Essential when deploying behind reverse proxies like Nginx,
+            Cloudflare, Render, or Railway so <code>req.ip</code> and <code>req.protocol</code> reflect the real client
+            instead of the local proxy.</li>
+          <li><code>app.set('json spaces', 2)</code>: Optional formatting for readable JSON in development (avoid in
+            production to save bandwidth).</li>
+          <li><code>app.set('case sensitive routing', false)</code> and <code>app.set('strict routing', false)</code>:
+            Controls whether <code>/Courses</code> and <code>/courses/</code> behave identically to
+            <code>/courses</code>.
+          </li>
         </ul>
 
         <h3>8. Async Route Handlers and Error Flow</h3>
         <p>
-          In real backends, nearly every controller talks to a database or external service asynchronously using <code>async/await</code>. In Express 4, if an <code>async</code> route handler throws an error or rejects a Promise without a <code>try/catch</code> block, Express 4 does <strong>not</strong> catch it automatically—the promise rejection remains unhandled, leaving the request hanging and potentially crashing Node.js.
+          In real backends, nearly every controller talks to a database or external service asynchronously using
+          <code>async/await</code>. In Express 4, if an <code>async</code> route handler throws an error or rejects a
+          Promise without a <code>try/catch</code> block, Express 4 does <strong>not</strong> catch it automatically—the
+          promise rejection remains unhandled, leaving the request hanging and potentially crashing Node.js.
         </p>
         <p>
-          To handle async errors reliably in Express 4 (and maintain clean code in Express 5 as well), wrap async logic in <code>try/catch</code> and call <code>next(error)</code>, or wrap controller functions with an <code>asyncHandler</code> higher-order helper that catches rejected promises and passes them to <code>next(error)</code> automatically.
+          To handle async errors reliably in Express 4 (and maintain clean code in Express 5 as well), wrap async logic
+          in <code>try/catch</code> and call <code>next(error)</code>, or wrap controller functions with an
+          <code>asyncHandler</code> higher-order helper that catches rejected promises and passes them to
+          <code>next(error)</code> automatically.
         </p>
 
         <h3>9. RESTful Route Design</h3>
         <p>
-          RESTful APIs use nouns (plural resource names) in URLs and HTTP methods for actions. Avoid action verbs in URLs like <code>/getAllCourses</code> or <code>/deleteCourseById</code>.
+          RESTful APIs use nouns (plural resource names) in URLs and HTTP methods for actions. Avoid action verbs in
+          URLs like <code>/getAllCourses</code> or <code>/deleteCourseById</code>.
         </p>
         <div class="table-wrap">
           <table class="data-table">
@@ -318,8 +405,10 @@
 
       <section class="card-section" id="diagram">
         <h2>Diagram: Express Request Lifecycle &amp; Layered Routing Flow</h2>
-        <p>Follow the path of an incoming HTTP request from the client through Express application layers, routers, and controllers back to the client:</p>
-        <div class="diagram-container" role="img" aria-label="Flowchart showing an HTTP request arriving at Node HTTP server, passing through Express app configuration and JSON parser, entering a mounted feature router, reaching an async controller, and returning a JSON response or passing errors to the error handler.">
+        <p>Follow the path of an incoming HTTP request from the client through Express application layers, routers, and
+          controllers back to the client:</p>
+        <div class="diagram-container" role="img"
+          aria-label="Flowchart showing an HTTP request arriving at Node HTTP server, passing through Express app configuration and JSON parser, entering a mounted feature router, reaching an async controller, and returning a JSON response or passing errors to the error handler.">
           <div class="flow-diagram">
             <div class="flow-step flow-client">
               <span class="flow-tag">1. Client</span>
@@ -358,7 +447,8 @@
       <section class="card-section" id="tutorial">
         <h2>Step-by-Step Tutorial &amp; Practical Backend Code</h2>
         <p>
-          Let us build a clean, production-styled multi-route Express API for managing technical workshops. Every file below runs on <strong>Node.js (server-side)</strong>, never in a browser.
+          Let us build a clean, production-styled multi-route Express API for managing technical workshops. Every file
+          below runs on <strong>Node.js (server-side)</strong>, never in a browser.
         </p>
 
         <h3>Step 1: Initialize the Project and Install Dependencies</h3>
@@ -367,7 +457,8 @@
 cd workshop-api
 npm init -y
 npm install express dotenv</code></pre>
-        <p>Enable ES modules by adding <code>"type": "module"</code> inside your generated <code>package.json</code> file, and create a <code>.env</code> file for configuration.</p>
+        <p>Enable ES modules by adding <code>"type": "module"</code> inside your generated <code>package.json</code>
+          file, and create a <code>.env</code> file for configuration.</p>
 
         <p class="code-label">Configuration File: <code>.env</code> (Never commit real secrets to Git)</p>
         <pre><code>PORT=5000
@@ -375,7 +466,8 @@ NODE_ENV=development
 API_VERSION=v1</code></pre>
 
         <h3>Step 2: Create an Async Handler Utility</h3>
-        <p>This small helper prevents repetitive <code>try/catch</code> blocks in every async controller while guaranteeing rejected promises reach Express error handling.</p>
+        <p>This small helper prevents repetitive <code>try/catch</code> blocks in every async controller while
+          guaranteeing rejected promises reach Express error handling.</p>
         <p class="code-label">Backend Source Code: <code>utils/asyncHandler.js</code></p>
         <pre><code>export const asyncHandler = (fn) => {
   return (req, res, next) => {
@@ -384,7 +476,10 @@ API_VERSION=v1</code></pre>
 };</code></pre>
 
         <h3>Step 3: Create the Controller with Input Validation &amp; Proper Status Codes</h3>
-        <p>Notice how the controller handles <code>req.query</code> filtering, <code>req.params</code> lookup, and <code>req.body</code> validation cleanly, and uses <code>async/await</code> to simulate asynchronous storage access.</p>
+        <p>Notice how the controller handles <code>req.query</code> filtering, <code>req.params</code> lookup, and
+          <code>req.body</code> validation cleanly, and uses <code>async/await</code> to simulate asynchronous storage
+          access.
+        </p>
         <p class="code-label">Backend Source Code: <code>controllers/workshopController.js</code></p>
         <pre><code>import { asyncHandler } from '../utils/asyncHandler.js';
 
@@ -580,8 +675,10 @@ router.get('/', (req, res) => {
 
 export default router;</code></pre>
 
-        <h3>Step 5: Configure the Express Application (<code>app.js</code>) and Server Entry (<code>server.js</code>)</h3>
-        <p>Separating <code>app.js</code> from <code>server.js</code> keeps Express configuration independent from TCP port binding, which also makes automated testing much easier later.</p>
+        <h3>Step 5: Configure the Express Application (<code>app.js</code>) and Server Entry (<code>server.js</code>)
+        </h3>
+        <p>Separating <code>app.js</code> from <code>server.js</code> keeps Express configuration independent from TCP
+          port binding, which also makes automated testing much easier later.</p>
         <p class="code-label">Backend Source Code: <code>app.js</code></p>
         <pre><code>import express from 'express';
 import healthRoutes from './routes/healthRoutes.js';
@@ -636,7 +733,8 @@ process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
 
         <h3>Step 6: Verify from the Browser or Terminal Client</h3>
-        <p>Notice the distinction: our Node.js server listens on port 5000, while a browser or curl client sends HTTP requests to it.</p>
+        <p>Notice the distinction: our Node.js server listens on port 5000, while a browser or curl client sends HTTP
+          requests to it.</p>
         <p class="code-label">Terminal Client Test Command (<code>curl</code>)</p>
         <pre><code>curl -X POST http://localhost:5000/api/v1/workshops \
   -H "Content-Type: application/json" \
@@ -666,19 +764,28 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
         <div class="two-col-grid">
           <article class="info-box">
             <h3>1. SaaS Multi-Resource Backends</h3>
-            <p>A project-management platform separates endpoints into <code>/api/v1/workspaces</code>, <code>/api/v1/tasks</code>, and <code>/api/v1/billing</code> routers so different backend engineers can maintain features independently without merge conflicts in a single massive file.</p>
+            <p>A project-management platform separates endpoints into <code>/api/v1/workspaces</code>,
+              <code>/api/v1/tasks</code>, and <code>/api/v1/billing</code> routers so different backend engineers can
+              maintain features independently without merge conflicts in a single massive file.
+            </p>
           </article>
           <article class="info-box">
             <h3>2. E-Commerce Product Filtering</h3>
-            <p>Product listing endpoints inspect <code>req.query</code> (e.g., <code>?category=laptops&amp;inStock=true</code>) while product detail endpoints read <code>req.params.productId</code> and return <code>404</code> if an item is discontinued.</p>
+            <p>Product listing endpoints inspect <code>req.query</code> (e.g.,
+              <code>?category=laptops&amp;inStock=true</code>) while product detail endpoints read
+              <code>req.params.productId</code> and return <code>404</code> if an item is discontinued.
+            </p>
           </article>
           <article class="info-box">
             <h3>3. Health Check Probes in Cloud Hosting</h3>
-            <p>Load balancers on AWS, Render, or Kubernetes ping <code>GET /api/v1/health</code> every few seconds. If the Express app responds with <code>200 OK</code>, traffic continues flowing; if it fails, the host restarts the container safely.</p>
+            <p>Load balancers on AWS, Render, or Kubernetes ping <code>GET /api/v1/health</code> every few seconds. If
+              the Express app responds with <code>200 OK</code>, traffic continues flowing; if it fails, the host
+              restarts the container safely.</p>
           </article>
           <article class="info-box">
             <h3>4. Graceful Deployments Without Dropped Users</h3>
-            <p>When deploying a new version of an API, handling <code>SIGTERM</code> with <code>server.close()</code> ensures in-flight checkout requests complete properly before the old Node process exits.</p>
+            <p>When deploying a new version of an API, handling <code>SIGTERM</code> with <code>server.close()</code>
+              ensures in-flight checkout requests complete properly before the old Node process exits.</p>
           </article>
         </div>
       </section>
@@ -689,21 +796,42 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
           <article class="warning-box">
             <h3>Common Mistakes to Avoid</h3>
             <ul class="styled-list">
-              <li><strong>Calling <code>res.json()</code> twice:</strong> Sending a response inside an <code>if</code> block without <code>return</code> causes Express to continue executing and throw <code>ERR_HTTP_HEADERS_SENT</code>. Always write <code>return res.status(400).json(...)</code> when exiting early.</li>
-              <li><strong>Forgetting <code>express.json()</code>:</strong> Without registering <code>app.use(express.json())</code> before your routes, <code>req.body</code> will be <code>undefined</code>.</li>
-              <li><strong>Assuming <code>req.query</code> types:</strong> Query parameters are always strings (or arrays/objects if repeated). Always convert and validate numbers or booleans explicitly.</li>
-              <li><strong>Placing wildcard routes before specific routes:</strong> Defining <code>GET /users/:id</code> above <code>GET /users/profile</code> treats <code>"profile"</code> as an <code>id</code>! Always register static paths before parameterized paths.</li>
-              <li><strong>Swallowing async errors:</strong> Writing an <code>async</code> handler without <code>try/catch</code> or an async wrapper in Express 4 leaves failed requests hanging forever.</li>
+              <li><strong>Calling <code>res.json()</code> twice:</strong> Sending a response inside an <code>if</code>
+                block without <code>return</code> causes Express to continue executing and throw
+                <code>ERR_HTTP_HEADERS_SENT</code>. Always write <code>return res.status(400).json(...)</code> when
+                exiting early.
+              </li>
+              <li><strong>Forgetting <code>express.json()</code>:</strong> Without registering
+                <code>app.use(express.json())</code> before your routes, <code>req.body</code> will be
+                <code>undefined</code>.
+              </li>
+              <li><strong>Assuming <code>req.query</code> types:</strong> Query parameters are always strings (or
+                arrays/objects if repeated). Always convert and validate numbers or booleans explicitly.</li>
+              <li><strong>Placing wildcard routes before specific routes:</strong> Defining <code>GET /users/:id</code>
+                above <code>GET /users/profile</code> treats <code>"profile"</code> as an <code>id</code>! Always
+                register static paths before parameterized paths.</li>
+              <li><strong>Swallowing async errors:</strong> Writing an <code>async</code> handler without
+                <code>try/catch</code> or an async wrapper in Express 4 leaves failed requests hanging forever.
+              </li>
             </ul>
           </article>
           <article class="security-box">
             <h3>Security &amp; Best-Practice Notes</h3>
             <ul class="styled-list">
-              <li><strong>Limit JSON payload sizes:</strong> Always pass <code>{ limit: '10kb' }</code> (or an appropriate limit) to <code>express.json()</code> so attackers cannot exhaust server memory with gigabyte payloads.</li>
-              <li><strong>Disable <code>x-powered-by</code>:</strong> Reduce unnecessary server fingerprinting with <code>app.disable('x-powered-by')</code>.</li>
-              <li><strong>Validate every input:</strong> Never trust <code>req.params</code>, <code>req.query</code>, or <code>req.body</code> blindly. Check types, allowed ranges, and allowed values before processing.</li>
-              <li><strong>Keep secrets in environment variables:</strong> Load ports, API keys, and modes through <code>process.env</code> and never commit <code>.env</code> files.</li>
-              <li><strong>Avoid leaking stack traces in production:</strong> Check <code>process.env.NODE_ENV</code> before returning detailed error messages to clients.</li>
+              <li><strong>Limit JSON payload sizes:</strong> Always pass <code>{ limit: '10kb' }</code> (or an
+                appropriate limit) to <code>express.json()</code> so attackers cannot exhaust server memory with
+                gigabyte payloads.</li>
+              <li><strong>Disable <code>x-powered-by</code>:</strong> Reduce unnecessary server fingerprinting with
+                <code>app.disable('x-powered-by')</code>.
+              </li>
+              <li><strong>Validate every input:</strong> Never trust <code>req.params</code>, <code>req.query</code>, or
+                <code>req.body</code> blindly. Check types, allowed ranges, and allowed values before processing.
+              </li>
+              <li><strong>Keep secrets in environment variables:</strong> Load ports, API keys, and modes through
+                <code>process.env</code> and never commit <code>.env</code> files.
+              </li>
+              <li><strong>Avoid leaking stack traces in production:</strong> Check <code>process.env.NODE_ENV</code>
+                before returning detailed error messages to clients.</li>
             </ul>
           </article>
         </div>
@@ -712,10 +840,20 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
       <section class="card-section" id="exercises">
         <h2>Hands-On Exercises</h2>
         <ol class="styled-list">
-          <li><strong>Trace Request Inspection:</strong> Create a temporary <code>GET /api/v1/inspect/:category</code> route that returns a JSON object showing <code>req.method</code>, <code>req.originalUrl</code>, <code>req.params</code>, <code>req.query</code>, and the <code>User-Agent</code> header using <code>req.get('user-agent')</code>. Test it with multiple query parameters.</li>
-          <li><strong>Route Ordering Experiment:</strong> Add <code>GET /api/v1/workshops/featured</code> both <em>after</em> and <em>before</em> <code>GET /api/v1/workshops/:id</code>. Observe how Express matches <code>featured</code> as <code>:id</code> when placed below the parameterized route, then fix the order.</li>
-          <li><strong>Router Chaining:</strong> Refactor two separate routes (<code>router.get('/:id', ...)</code> and <code>router.delete('/:id', ...)</code>) into a single <code>router.route('/:id')</code> chain.</li>
-          <li><strong>Payload Limit Test:</strong> Set <code>express.json({ limit: '1kb' })</code> temporarily and send a 2KB JSON payload to verify Express rejects oversized bodies before reaching your controller.</li>
+          <li><strong>Trace Request Inspection:</strong> Create a temporary <code>GET /api/v1/inspect/:category</code>
+            route that returns a JSON object showing <code>req.method</code>, <code>req.originalUrl</code>,
+            <code>req.params</code>, <code>req.query</code>, and the <code>User-Agent</code> header using
+            <code>req.get('user-agent')</code>. Test it with multiple query parameters.
+          </li>
+          <li><strong>Route Ordering Experiment:</strong> Add <code>GET /api/v1/workshops/featured</code> both
+            <em>after</em> and <em>before</em> <code>GET /api/v1/workshops/:id</code>. Observe how Express matches
+            <code>featured</code> as <code>:id</code> when placed below the parameterized route, then fix the order.
+          </li>
+          <li><strong>Router Chaining:</strong> Refactor two separate routes (<code>router.get('/:id', ...)</code> and
+            <code>router.delete('/:id', ...)</code>) into a single <code>router.route('/:id')</code> chain.
+          </li>
+          <li><strong>Payload Limit Test:</strong> Set <code>express.json({ limit: '1kb' })</code> temporarily and send
+            a 2KB JSON payload to verify Express rejects oversized bodies before reaching your controller.</li>
         </ol>
       </section>
 
@@ -726,36 +864,51 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
         </p>
         <h3>Project Requirements</h3>
         <ul class="styled-list">
-          <li>Initialize a Node.js project with <code>express</code> and <code>dotenv</code>, separating <code>server.js</code> and <code>app.js</code>.</li>
+          <li>Initialize a Node.js project with <code>express</code> and <code>dotenv</code>, separating
+            <code>server.js</code> and <code>app.js</code>.
+          </li>
           <li>Disable <code>x-powered-by</code> and configure <code>express.json({ limit: '10kb' })</code>.</li>
-          <li>Create two separate routers: <code>routes/bookRoutes.js</code> mounted at <code>/api/v1/books</code> and <code>routes/memberRoutes.js</code> mounted at <code>/api/v1/members</code>.</li>
+          <li>Create two separate routers: <code>routes/bookRoutes.js</code> mounted at <code>/api/v1/books</code> and
+            <code>routes/memberRoutes.js</code> mounted at <code>/api/v1/members</code>.
+          </li>
           <li>Implement full RESTful endpoints for books:
-            <code>GET /</code> (support optional <code>?available=true</code> and <code>?author=...</code> query filtering),
+            <code>GET /</code> (support optional <code>?available=true</code> and <code>?author=...</code> query
+            filtering),
             <code>GET /:id</code>,
             <code>POST /</code> (validate <code>title</code>, <code>author</code>, and <code>copies</code>),
-            <code>PATCH /:id/borrow</code> (decrements available copies safely or returns <code>409 Conflict</code> if none remain), and
+            <code>PATCH /:id/borrow</code> (decrements available copies safely or returns <code>409 Conflict</code> if
+            none remain), and
             <code>DELETE /:id</code> (returns <code>204 No Content</code>).
           </li>
-          <li>Keep all logic inside dedicated controller files using <code>asyncHandler</code>, return early on validation errors, add a 404 fallback route, and support graceful shutdown on <code>SIGINT</code>/<code>SIGTERM</code>.</li>
+          <li>Keep all logic inside dedicated controller files using <code>asyncHandler</code>, return early on
+            validation errors, add a 404 fallback route, and support graceful shutdown on
+            <code>SIGINT</code>/<code>SIGTERM</code>.
+          </li>
         </ul>
       </section>
 
       <section class="card-section" id="quiz-section">
         <h2>Day 1 Knowledge Check: Interactive Quiz (10 MCQs)</h2>
-        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and detailed explanations.</p>
+        <p>Select one option for each question and click <strong>Submit Quiz</strong> to view your score and detailed
+          explanations.</p>
 
         <form id="day1QuizForm" class="quiz-form" novalidate>
           <fieldset class="quiz-question" data-question="q1">
             <legend>1. Where does Express.js application code execute?</legend>
-            <label class="quiz-option"><input type="radio" name="q1" value="a"> Inside the client's web browser DOM</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="b"> On the server inside the Node.js runtime</label>
-            <label class="quiz-option"><input type="radio" name="q1" value="c"> Inside CSS stylesheets during rendering</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="a"> Inside the client's web browser
+              DOM</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="b"> On the server inside the Node.js
+              runtime</label>
+            <label class="quiz-option"><input type="radio" name="q1" value="c"> Inside CSS stylesheets during
+              rendering</label>
             <label class="quiz-option"><input type="radio" name="q1" value="d"> Directly inside the HTML parser</label>
             <div class="quiz-feedback" id="feedback-q1" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q2">
-            <legend>2. When a request hits <code>GET /api/v1/courses/42?level=advanced</code> matching route <code>/api/v1/courses/:courseId</code>, what does <code>req.params.courseId</code> contain?</legend>
+            <legend>2. When a request hits <code>GET /api/v1/courses/42?level=advanced</code> matching route
+              <code>/api/v1/courses/:courseId</code>, what does <code>req.params.courseId</code> contain?
+            </legend>
             <label class="quiz-option"><input type="radio" name="q2" value="a"> The number <code>42</code></label>
             <label class="quiz-option"><input type="radio" name="q2" value="b"> The string <code>"42"</code></label>
             <label class="quiz-option"><input type="radio" name="q2" value="c"> <code>"42?level=advanced"</code></label>
@@ -764,74 +917,115 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q3">
-            <legend>3. Why is <code>req.body</code> equal to <code>undefined</code> in a newly created Express app receiving JSON?</legend>
-            <label class="quiz-option"><input type="radio" name="q3" value="a"> Express does not support JSON payloads</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="b"> The <code>express.json()</code> body-parsing middleware has not been registered</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="c"> JSON payloads are automatically stored in <code>req.query</code> instead</label>
-            <label class="quiz-option"><input type="radio" name="q3" value="d"> <code>req.body</code> only works for <code>GET</code> requests</label>
+            <legend>3. Why is <code>req.body</code> equal to <code>undefined</code> in a newly created Express app
+              receiving JSON?</legend>
+            <label class="quiz-option"><input type="radio" name="q3" value="a"> Express does not support JSON
+              payloads</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="b"> The <code>express.json()</code>
+              body-parsing middleware has not been registered</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="c"> JSON payloads are automatically stored
+              in <code>req.query</code> instead</label>
+            <label class="quiz-option"><input type="radio" name="q3" value="d"> <code>req.body</code> only works for
+              <code>GET</code> requests</label>
             <div class="quiz-feedback" id="feedback-q3" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q4">
-            <legend>4. What happens if you define <code>router.get('/:id', getOne)</code> above <code>router.get('/featured', getFeatured)</code> and a client requests <code>GET /featured</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q4" value="a"> Express automatically prioritizes static routes over dynamic routes</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="b"> Express matches <code>/:id</code> first and treats <code>"featured"</code> as <code>req.params.id</code></label>
-            <label class="quiz-option"><input type="radio" name="q4" value="c"> Express throws a syntax error at startup</label>
-            <label class="quiz-option"><input type="radio" name="q4" value="d"> Express executes both handlers sequentially</label>
+            <legend>4. What happens if you define <code>router.get('/:id', getOne)</code> above
+              <code>router.get('/featured', getFeatured)</code> and a client requests <code>GET /featured</code>?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q4" value="a"> Express automatically prioritizes static
+              routes over dynamic routes</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="b"> Express matches <code>/:id</code> first
+              and treats <code>"featured"</code> as <code>req.params.id</code></label>
+            <label class="quiz-option"><input type="radio" name="q4" value="c"> Express throws a syntax error at
+              startup</label>
+            <label class="quiz-option"><input type="radio" name="q4" value="d"> Express executes both handlers
+              sequentially</label>
             <div class="quiz-feedback" id="feedback-q4" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q5">
-            <legend>5. What error occurs if a controller sends <code>res.status(400).json(...)</code> inside an <code>if</code> check without <code>return</code>, and then calls <code>res.json(...)</code> later in the same function?</legend>
+            <legend>5. What error occurs if a controller sends <code>res.status(400).json(...)</code> inside an
+              <code>if</code> check without <code>return</code>, and then calls <code>res.json(...)</code> later in the
+              same function?
+            </legend>
             <label class="quiz-option"><input type="radio" name="q5" value="a"> <code>EADDRINUSE</code></label>
-            <label class="quiz-option"><input type="radio" name="q5" value="b"> <code>ERR_HTTP_HEADERS_SENT</code> (Cannot set headers after they are sent to the client)</label>
+            <label class="quiz-option"><input type="radio" name="q5" value="b"> <code>ERR_HTTP_HEADERS_SENT</code>
+              (Cannot set headers after they are sent to the client)</label>
             <label class="quiz-option"><input type="radio" name="q5" value="c"> <code>ECONNREFUSED</code></label>
-            <label class="quiz-option"><input type="radio" name="q5" value="d"> <code>TypeError: res.json is not a function</code></label>
+            <label class="quiz-option"><input type="radio" name="q5" value="d">
+              <code>TypeError: res.json is not a function</code></label>
             <div class="quiz-feedback" id="feedback-q5" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q6">
             <legend>6. What is the main purpose of calling <code>app.disable('x-powered-by')</code>?</legend>
             <label class="quiz-option"><input type="radio" name="q6" value="a"> To speed up JSON parsing by 50%</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="b"> To stop Express from sending a header that reveals the server framework name</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="c"> To enable HTTPS encryption automatically</label>
-            <label class="quiz-option"><input type="radio" name="q6" value="d"> To disable <code>POST</code> requests across the application</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="b"> To stop Express from sending a header
+              that reveals the server framework name</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="c"> To enable HTTPS encryption
+              automatically</label>
+            <label class="quiz-option"><input type="radio" name="q6" value="d"> To disable <code>POST</code> requests
+              across the application</label>
             <div class="quiz-feedback" id="feedback-q6" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q7">
-            <legend>7. Why should you configure <code>app.set('trust proxy', 1)</code> when deploying behind Nginx or a cloud load balancer?</legend>
-            <label class="quiz-option"><input type="radio" name="q7" value="a"> So Express reads forwarded headers accurately to determine the real client IP and protocol</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="b"> To bypass all authentication checks in production</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="c"> To convert all <code>POST</code> requests into <code>GET</code> requests</label>
-            <label class="quiz-option"><input type="radio" name="q7" value="d"> To allow the browser to skip CORS checks</label>
+            <legend>7. Why should you configure <code>app.set('trust proxy', 1)</code> when deploying behind Nginx or a
+              cloud load balancer?</legend>
+            <label class="quiz-option"><input type="radio" name="q7" value="a"> So Express reads forwarded headers
+              accurately to determine the real client IP and protocol</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="b"> To bypass all authentication checks in
+              production</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="c"> To convert all <code>POST</code>
+              requests into <code>GET</code> requests</label>
+            <label class="quiz-option"><input type="radio" name="q7" value="d"> To allow the browser to skip CORS
+              checks</label>
             <div class="quiz-feedback" id="feedback-q7" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q8">
-            <legend>8. In Express 4, why do we wrap async controllers in an <code>asyncHandler</code> utility or <code>try/catch</code>?</legend>
-            <label class="quiz-option"><input type="radio" name="q8" value="a"> Because Node.js does not support <code>async/await</code> syntax</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="b"> Because Express 4 does not automatically catch rejected promises from async handlers and forward them to <code>next(err)</code></label>
-            <label class="quiz-option"><input type="radio" name="q8" value="c"> Because <code>asyncHandler</code> converts JSON responses into HTML</label>
-            <label class="quiz-option"><input type="radio" name="q8" value="d"> To keep the database connection open after a crash</label>
+            <legend>8. In Express 4, why do we wrap async controllers in an <code>asyncHandler</code> utility or
+              <code>try/catch</code>?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q8" value="a"> Because Node.js does not support
+              <code>async/await</code> syntax</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="b"> Because Express 4 does not automatically
+              catch rejected promises from async handlers and forward them to <code>next(err)</code></label>
+            <label class="quiz-option"><input type="radio" name="q8" value="c"> Because <code>asyncHandler</code>
+              converts JSON responses into HTML</label>
+            <label class="quiz-option"><input type="radio" name="q8" value="d"> To keep the database connection open
+              after a crash</label>
             <div class="quiz-feedback" id="feedback-q8" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q9">
-            <legend>9. Which RESTful HTTP method and endpoint design is best for partially updating a user's email address?</legend>
-            <label class="quiz-option"><input type="radio" name="q9" value="a"> <code>GET /api/v1/updateUserEmail/15</code></label>
-            <label class="quiz-option"><input type="radio" name="q9" value="b"> <code>POST /api/v1/users/delete/15</code></label>
-            <label class="quiz-option"><input type="radio" name="q9" value="c"> <code>PATCH /api/v1/users/15</code></label>
-            <label class="quiz-option"><input type="radio" name="q9" value="d"> <code>DELETE /api/v1/users/15/email</code></label>
+            <legend>9. Which RESTful HTTP method and endpoint design is best for partially updating a user's email
+              address?</legend>
+            <label class="quiz-option"><input type="radio" name="q9" value="a">
+              <code>GET /api/v1/updateUserEmail/15</code></label>
+            <label class="quiz-option"><input type="radio" name="q9" value="b">
+              <code>POST /api/v1/users/delete/15</code></label>
+            <label class="quiz-option"><input type="radio" name="q9" value="c">
+              <code>PATCH /api/v1/users/15</code></label>
+            <label class="quiz-option"><input type="radio" name="q9" value="d">
+              <code>DELETE /api/v1/users/15/email</code></label>
             <div class="quiz-feedback" id="feedback-q9" aria-live="polite"></div>
           </fieldset>
 
           <fieldset class="quiz-question" data-question="q10">
-            <legend>10. What is the advantage of separating <code>app.js</code> (Express configuration) from <code>server.js</code> (<code>app.listen()</code>)?</legend>
-            <label class="quiz-option"><input type="radio" name="q10" value="a"> It lets Express run directly inside Chrome without Node.js</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="b"> It keeps routing and middleware configuration modular and allows importing <code>app</code> in tests without binding a real port</label>
-            <label class="quiz-option"><input type="radio" name="q10" value="c"> It eliminates the need for <code>package.json</code></label>
-            <label class="quiz-option"><input type="radio" name="q10" value="d"> It doubles the CPU speed of Node.js</label>
+            <legend>10. What is the advantage of separating <code>app.js</code> (Express configuration) from
+              <code>server.js</code> (<code>app.listen()</code>)?
+            </legend>
+            <label class="quiz-option"><input type="radio" name="q10" value="a"> It lets Express run directly inside
+              Chrome without Node.js</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="b"> It keeps routing and middleware
+              configuration modular and allows importing <code>app</code> in tests without binding a real port</label>
+            <label class="quiz-option"><input type="radio" name="q10" value="c"> It eliminates the need for
+              <code>package.json</code></label>
+            <label class="quiz-option"><input type="radio" name="q10" value="d"> It doubles the CPU speed of
+              Node.js</label>
             <div class="quiz-feedback" id="feedback-q10" aria-live="polite"></div>
           </fieldset>
 
@@ -849,24 +1043,44 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
         <p>Think through each answer carefully before clicking to reveal the model answer.</p>
         <div class="qa-list">
           <details class="qa-item">
-            <summary>1. Explain the difference between <code>req.params</code>, <code>req.query</code>, and <code>req.body</code>.</summary>
-            <p><code>req.params</code> holds dynamic named segments from the URL path (e.g., <code>:id</code>). <code>req.query</code> holds optional key-value pairs after the <code>?</code> in the URL, commonly used for filtering or sorting. <code>req.body</code> holds structured payload data (such as JSON) sent inside the body of <code>POST</code>, <code>PUT</code>, or <code>PATCH</code> requests after body-parsing middleware runs.</p>
+            <summary>1. Explain the difference between <code>req.params</code>, <code>req.query</code>, and
+              <code>req.body</code>.
+            </summary>
+            <p><code>req.params</code> holds dynamic named segments from the URL path (e.g., <code>:id</code>).
+              <code>req.query</code> holds optional key-value pairs after the <code>?</code> in the URL, commonly used
+              for filtering or sorting. <code>req.body</code> holds structured payload data (such as JSON) sent inside
+              the body of <code>POST</code>, <code>PUT</code>, or <code>PATCH</code> requests after body-parsing
+              middleware runs.
+            </p>
           </details>
           <details class="qa-item">
             <summary>2. Why should routers avoid containing heavy business logic or database queries directly?</summary>
-            <p>Routers are responsible only for mapping HTTP methods and URL paths to controllers. Keeping logic inside controllers (and later services) improves readability, makes code reusable across routes, and simplifies unit testing.</p>
+            <p>Routers are responsible only for mapping HTTP methods and URL paths to controllers. Keeping logic inside
+              controllers (and later services) improves readability, makes code reusable across routes, and simplifies
+              unit testing.</p>
           </details>
           <details class="qa-item">
-            <summary>3. What happens during the Express application lifecycle when <code>SIGTERM</code> is handled gracefully?</summary>
-            <p>Instead of killing the Node process immediately and cutting off active users mid-request, <code>server.close()</code> stops accepting new connections, allows existing in-flight HTTP requests to finish sending their responses, closes open resources, and exits cleanly with status <code>0</code>.</p>
+            <summary>3. What happens during the Express application lifecycle when <code>SIGTERM</code> is handled
+              gracefully?</summary>
+            <p>Instead of killing the Node process immediately and cutting off active users mid-request,
+              <code>server.close()</code> stops accepting new connections, allows existing in-flight HTTP requests to
+              finish sending their responses, closes open resources, and exits cleanly with status <code>0</code>.
+            </p>
           </details>
           <details class="qa-item">
-            <summary>4. Why should <code>express.json()</code> specify a <code>limit</code> option such as <code>{ limit: '10kb' }</code>?</summary>
-            <p>Without a payload size cap (or with overly large limits), a malicious client could send huge JSON bodies to consume excessive server RAM and CPU during parsing, causing a denial-of-service condition.</p>
+            <summary>4. Why should <code>express.json()</code> specify a <code>limit</code> option such as
+              <code>{ limit: '10kb' }</code>?
+            </summary>
+            <p>Without a payload size cap (or with overly large limits), a malicious client could send huge JSON bodies
+              to consume excessive server RAM and CPU during parsing, causing a denial-of-service condition.</p>
           </details>
           <details class="qa-item">
-            <summary>5. What is the difference between <code>req.originalUrl</code> and <code>req.url</code> inside a mounted Express router?</summary>
-            <p>Inside a router mounted at <code>/api/v1/workshops</code>, Express strips the mount prefix from <code>req.url</code> (making it <code>/</code> or <code>/5</code>), whereas <code>req.originalUrl</code> preserves the complete path requested by the client (<code>/api/v1/workshops/5</code>).</p>
+            <summary>5. What is the difference between <code>req.originalUrl</code> and <code>req.url</code> inside a
+              mounted Express router?</summary>
+            <p>Inside a router mounted at <code>/api/v1/workshops</code>, Express strips the mount prefix from
+              <code>req.url</code> (making it <code>/</code> or <code>/5</code>), whereas <code>req.originalUrl</code>
+              preserves the complete path requested by the client (<code>/api/v1/workshops/5</code>).
+            </p>
           </details>
         </div>
       </section>
@@ -876,7 +1090,10 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));</code></pre>
         <div class="challenge-list">
           <article class="challenge-card">
             <h3>Challenge 1: Fix the Hanging Async Route</h3>
-            <p>A teammate wrote the endpoint below using Express 4, and whenever <code>fetchRecordFromDb()</code> rejects, the client hangs forever instead of receiving a JSON error response. Refactor it using <code>asyncHandler</code> so errors always reach the Express error middleware.</p>
+            <p>A teammate wrote the endpoint below using Express 4, and whenever <code>fetchRecordFromDb()</code>
+              rejects, the client hangs forever instead of receiving a JSON error response. Refactor it using
+              <code>asyncHandler</code> so errors always reach the Express error middleware.
+            </p>
             <pre><code>router.get('/:id', async (req, res) => {
   const record = await fetchRecordFromDb(req.params.id);
   res.json({ data: record });
@@ -900,7 +1117,12 @@ router.get('/stats', (req, res) => {
 
           <article class="challenge-card">
             <h3>Challenge 3: Build a Filtered Search Endpoint with Validation</h3>
-            <p>Implement <code>GET /api/v1/products</code> in Express that accepts optional query parameters <code>category</code> (string) and <code>maxPrice</code> (positive number). If <code>maxPrice</code> is provided but is not a valid positive number (for example <code>?maxPrice=abc</code> or <code>?maxPrice=-10</code>), respond with <code>400 Bad Request</code> and a helpful message; otherwise return matching products with <code>200 OK</code>.</p>
+            <p>Implement <code>GET /api/v1/products</code> in Express that accepts optional query parameters
+              <code>category</code> (string) and <code>maxPrice</code> (positive number). If <code>maxPrice</code> is
+              provided but is not a valid positive number (for example <code>?maxPrice=abc</code> or
+              <code>?maxPrice=-10</code>), respond with <code>400 Bad Request</code> and a helpful message; otherwise
+              return matching products with <code>200 OK</code>.
+            </p>
           </article>
         </div>
       </section>
@@ -908,24 +1130,35 @@ router.get('/stats', (req, res) => {
       <section class="card-section" id="summary">
         <h2>Day 1 Revision Summary</h2>
         <ul class="styled-list">
-          <li>Express runs on Node.js on the server and wraps Node's <code>http</code> streams into enriched <code>req</code> and <code>res</code> objects.</li>
+          <li>Express runs on Node.js on the server and wraps Node's <code>http</code> streams into enriched
+            <code>req</code> and <code>res</code> objects.
+          </li>
           <li>An Express app flows through configuration, route mounting, listening, and graceful shutdown phases.</li>
-          <li>Use <code>express.Router()</code> to split endpoints by feature and delegate request handling to focused controller functions.</li>
-          <li>Always validate <code>req.params</code>, <code>req.query</code>, and <code>req.body</code>, return early after sending error responses, and place static routes before dynamic <code>:param</code> routes.</li>
-          <li>Configure security-friendly settings like <code>app.disable('x-powered-by')</code>, <code>trust proxy</code>, and payload limits on <code>express.json()</code>.</li>
-          <li>Wrap async route handlers cleanly so rejected promises pass to <code>next(err)</code> instead of hanging requests.</li>
+          <li>Use <code>express.Router()</code> to split endpoints by feature and delegate request handling to focused
+            controller functions.</li>
+          <li>Always validate <code>req.params</code>, <code>req.query</code>, and <code>req.body</code>, return early
+            after sending error responses, and place static routes before dynamic <code>:param</code> routes.</li>
+          <li>Configure security-friendly settings like <code>app.disable('x-powered-by')</code>,
+            <code>trust proxy</code>, and payload limits on <code>express.json()</code>.
+          </li>
+          <li>Wrap async route handlers cleanly so rejected promises pass to <code>next(err)</code> instead of hanging
+            requests.</li>
         </ul>
       </section>
 
       <section class="card-section visual-aid-section" id="lesson-visual">
         <h2>Day 1 Visual Architecture Reference</h2>
-        <p>Visual summary diagram for Day 1: Advanced Express.js request lifecycle, router mounting, and controller flow.</p>
+        <p>Visual summary diagram for Day 1: Advanced Express.js request lifecycle, router mounting, and controller
+          flow.</p>
         <div class="lesson-image-frame" id="lessonImageFrame">
-          <img src="image.webp" alt="Diagram illustrating Express.js request lifecycle, router mounting, and controller flow" class="lesson-image" id="lessonImage">
+          <img src="image.webp"
+            alt="Diagram illustrating Express.js request lifecycle, router mounting, and controller flow"
+            class="lesson-image" id="lessonImage">
           <div class="lesson-image-fallback" id="lessonImageFallback" hidden>
             <div class="fallback-icon" aria-hidden="true">&#128202;</div>
             <p class="fallback-title">Day 1 Visual Reference (<code>image.webp</code>)</p>
-            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 1/</code> folder to display the custom illustration here.</p>
+            <p class="fallback-desc">Place your <code>image.webp</code> diagram inside the <code>Day 1/</code> folder to
+              display the custom illustration here.</p>
           </div>
         </div>
       </section>
@@ -944,11 +1177,12 @@ router.get('/stats', (req, res) => {
   <footer class="site-footer">
     <div class="container footer-grid">
       <div class="footer-brand">
-        <div class="footer-brand-head">
+        <a class="footer-brand-head" href="https://arslan-weblab.netlify.app/" target="_blank">
           <img src="../logo.webp" alt="Arslan Weblab logo" width="32" height="32">
           <strong>Arslan Weblab</strong>
-        </div>
-        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js, Express.js, and MongoDB.</p>
+        </a>
+        <p>Phase 5: Advanced Backend Development &mdash; 16-Day Structured Learning Curriculum covering Node.js,
+          Express.js, and MongoDB.</p>
       </div>
       <div class="footer-links">
         <h3>Course Navigation</h3>
@@ -963,7 +1197,8 @@ router.get('/stats', (req, res) => {
         <h3>External Links</h3>
         <ul>
           <li><a href="https://arslan-weblab.netlify.app/" target="_blank" rel="noopener noreferrer">Portfolio</a></li>
-          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a></li>
+          <li><a href="https://myprojects-hub.netlify.app/" target="_blank" rel="noopener noreferrer">Projects Hub</a>
+          </li>
           <li><a href="https://github.com/arslansahil850-alt/" target="_blank" rel="noopener noreferrer">GitHub</a></li>
           <li><a href="mailto:arslansahil850@gmail.com">Contact</a></li>
         </ul>
@@ -978,4 +1213,5 @@ router.get('/stats', (req, res) => {
 
   <script src="script.js"></script>
 </body>
+
 </html>
